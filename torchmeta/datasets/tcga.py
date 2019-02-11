@@ -6,7 +6,7 @@ import pandas as pd
 from torchmeta.dataset import Dataset, Task
 
 class TCGA(Dataset):
-    folder = 'datasets' #'tcga'
+    folder = 'tcga'
     clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
     clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
     gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
@@ -22,7 +22,7 @@ class TCGA(Dataset):
         self.transform = transform
         self.target_transform = target_transform
 
-        self.assets_path = os.path.join(os.path.dirname(__file__), 'assets', 'tcga') #self.folder)
+        self.assets_path = os.path.join(os.path.dirname(__file__), 'assets', self.folder)
         self._cancers = None
         self._task_variables = None
         self._all_sample_ids = None
