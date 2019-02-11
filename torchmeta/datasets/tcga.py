@@ -235,8 +235,6 @@ class TCGATask(Task):
 
         if self.transform is not None:
             sample = self.transform(sample)
-        if self.class_transform is not None:
-            sample = self.class_transform(sample)
 
         if self.target_transform is not None:
             target = self.target_transform(target)
