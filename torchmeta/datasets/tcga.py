@@ -220,11 +220,13 @@ class TCGA(Dataset):
 class TCGATask(Task):
     def __init__(self, data, labels, categories, transform=None,
                  target_transform=None):
-        super(TCGATask, self).__init__(transform=transform,
-            target_transform=target_transform, class_transform=None)
+        super(TCGATask, self).__init__()
         self.data = data
         self.labels = labels
         self.categories = categories
+
+        self.transform = transform
+        self.target_transform = target_transform
 
     def __len__(self):
         return len(self.labels)

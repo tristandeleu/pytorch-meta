@@ -23,11 +23,8 @@ class Dataset(object):
         return self.num_classes * (len(self.class_transforms) + 1)
 
 class Task(object):
-    def __init__(self, transform=None, target_transform=None,
-                 class_transform=None):
-        self.transform = transform
-        self.target_transform = target_transform
-        self.class_transform = class_transform
+    def __len__(self):
+        raise NotImplementedError()
 
     def __getitem__(self, index):
         raise NotImplementedError()
