@@ -5,6 +5,10 @@ import pandas as pd
 
 from torchmetadatasets.dataset import Dataset, Task
 
+class classproperty(property):
+    """Subclass property to make classmethod properties possible"""
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
 
 class TCGA(Dataset):
     folder = 'tcga'
@@ -12,6 +16,9 @@ class TCGA(Dataset):
     clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
     gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
     gene_expression_torrent = '4070a45bc7dd69584f33e86ce193a2c903f0776d'
+    
+    _task_variables = None
+    _cancers = None
 
     def __init__(self, root, meta_train=True, min_samples_per_class=3, transform=None,
                  target_transform=None, download=False, preload=True):
@@ -22,10 +29,7 @@ class TCGA(Dataset):
 
         self.transform = transform
         self.target_transform = target_transform
-
-        self.assets_path = os.path.join(os.path.dirname(__file__), 'assets', self.folder)
-        self._cancers = None
-        self._task_variables = None
+        
         self._all_sample_ids = None
         self._gene_ids = None
 
@@ -38,7 +42,7 @@ class TCGA(Dataset):
             self._preload_gene_expression_data()
             self.preloaded = True
 
-        self.task_ids = self._get_task_ids()
+        self.task_ids = self.get_task_ids()
 
     @property
     def num_classes(self):
@@ -50,26 +54,34 @@ class TCGA(Dataset):
         if not os.path.isfile(filename):
             raise IOError()
         return filename
+    
+    @classproperty
+    @classmethod
+    def assets_path(cls):
+        cls._assets_path = os.path.join(os.path.dirname(__file__), 'assets', cls.folder)
+        return cls._assets_path 
 
-    @property
-    def cancers(self):
-        if self._cancers is None:
-            filename = os.path.join(self.assets_path, 'cancers.json')
+    @classproperty
+    @classmethod
+    def cancers(cls):
+        if cls._cancers is None:
+            filename = os.path.join(cls.assets_path, 'cancers.json')
             if not os.path.isfile(filename):
                 raise IOError()
             with open(filename, 'r') as f:
-                self._cancers = json.load(f)
-        return self._cancers
+                cls._cancers = json.load(f)
+        return tuple(cls._cancers)
 
-    @property
-    def task_variables(self):
-        if self._task_variables is None:
-            filename = os.path.join(self.assets_path, 'task_variables.json')
+    @classproperty
+    @classmethod
+    def task_variables(cls):
+        if cls._task_variables is None:
+            filename = os.path.join(cls.assets_path, 'task_variables.json')
             if not os.path.isfile(filename):
                 raise IOError()
             with open(filename, 'r') as f:
-                self._task_variables = set(json.load(f))
-        return self._task_variables
+                cls._task_variables = set(json.load(f))
+        return tuple(cls._task_variables)
 
     @property
     def gene_ids(self):
@@ -138,7 +150,7 @@ class TCGA(Dataset):
         self.gene_expression_file = h5py.File(self.gene_expression_path, 'r')
         self.gene_expression_data = self.gene_expression_file['expression_data']
 
-    def _get_task_ids(self):
+    def get_task_ids(self):
         clinical_matrices_folder = os.path.join(self.root, 'clinicalMatrices')
         processed_folder = os.path.join(clinical_matrices_folder, 'processed')
         if not os.path.exists(processed_folder):
@@ -231,6 +243,10 @@ class TCGATask(Task):
 
         self.transform = transform
         self.target_transform = target_transform
+
+    @property
+    def input_size(self):
+        return len(self.data[0])
 
     @property
     def num_classes(self):
