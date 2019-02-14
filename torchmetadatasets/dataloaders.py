@@ -6,9 +6,36 @@ from torch.utils.data import DataLoader as TorchDataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
-from torchmeta.sampler import DatasetSampler, BatchDatasetSampler
+from torchmetadatasets.sampler import DatasetSampler, BatchDatasetSampler
 
 Dataset = namedtuple('Dataset', 'train test')
+
+
+class MetaDataLoader(TorchDataLoader):
+    def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None, batch_sampler=None,
+                 num_workers=0, pin_memory=False, drop_last=False,
+                 timeout=0, worker_init_fn=None):
+
+        def _collate_fn(data):
+            """
+            Args:
+                task (Dataset) : A task from a Metadataset.
+
+            Returns:
+                dataset: the argument dataset unchanged.
+
+                This function performs no operation. It is used to overwrite the default collate_fn of torchs
+                DataLoader because it is not compatible with a batch of Datasets.
+            """
+
+            return data
+
+        super(MetaDataLoader, self).__init__(dataset, batch_size=batch_size, shuffle=shuffle,
+                                             sampler=sampler, batch_sampler=batch_sampler,
+                                             num_workers=num_workers, collate_fn=_collate_fn,
+                                             pin_memory=pin_memory, drop_last=drop_last, timeout=timeout,
+                                             worker_init_fn=worker_init_fn)
+
 
 def meta_collate_fn(collate_fn, meta_batch_size, num_classes,
                     train_size_per_class, test_size_per_class=None):
@@ -36,6 +63,7 @@ def meta_collate_fn(collate_fn, meta_batch_size, num_classes,
         return Dataset(train=train_dataset, test=test_dataset)
 
     return _collate_fn
+
 
 class DataLoader(TorchDataLoader):
     def __init__(self, dataset, meta_batch_size=1, num_classes=1,
