@@ -5,6 +5,7 @@ import pandas as pd
 
 from torchmetadatasets.dataset import Dataset, Task
 
+
 class TCGA(Dataset):
     folder = 'tcga'
     clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
@@ -117,6 +118,7 @@ class TCGA(Dataset):
         return filepath
 
     def __getitem__(self, index):
+        # TODO: Can we remove this modulo operation?
         label, cancer = self.task_ids[index % self.num_classes]
         filename = self.get_processed_filename(cancer)
         dataframe = pd.read_csv(filename, sep='\t', index_col=0)
@@ -125,10 +127,10 @@ class TCGA(Dataset):
         if self.gene_expression_file is not None:
             data = self.gene_expression_data[labels.index]
         else:
-            with open(self.gene_expression_path, 'r') as f:
+            with h5py.File(self.gene_expression_path, 'r') as f:
                 data = f['expression_data'][labels.index]
 
-        return TCGATask(data, labels.cat.codes.tolist(),
+        return TCGATask((label, cancer), data, labels.cat.codes.tolist(),
             labels.cat.categories.tolist(), transform=self.transform,
             target_transform=self.target_transform)
 
@@ -217,16 +219,22 @@ class TCGA(Dataset):
             self.gene_expression_file = None
             self.preloaded = False
 
+
 class TCGATask(Task):
-    def __init__(self, data, labels, categories, transform=None,
+    def __init__(self, task_id, data, labels, categories, transform=None,
                  target_transform=None):
         super(TCGATask, self).__init__()
+        self.id = task_id
         self.data = data
         self.labels = labels
         self.categories = categories
 
         self.transform = transform
         self.target_transform = target_transform
+
+    @property
+    def num_classes(self):
+        return len(self.categories)
 
     def __len__(self):
         return len(self.labels)
@@ -242,3 +250,37 @@ class TCGATask(Task):
             target = self.target_transform(target)
 
         return (sample, target)
+
+
+class SingleTCGATask(TCGATask):
+    folder = 'tcga'
+    clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
+    clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
+    gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
+
+    @property
+    def gene_expression_path(self):
+        filenpath = os.path.join(self.root, self.gene_expression_filename)
+        if not os.path.isfile(filenpath):
+            raise IOError()
+        return filenpath
+
+    def __init__(self, root, task_id, transform=None, target_transform=None):
+        self.root = os.path.join(os.path.expanduser(root), self.folder)
+        label, cancer = task_id
+
+        processed_folder = os.path.join(self.root, 'clinicalMatrices', 'processed')
+        filename = '{0}.tsv'.format(self.clinical_matrix_filename.format(cancer))
+        filepath = os.path.join(processed_folder, filename)
+        if not os.path.isfile(filepath):
+            raise IOError()
+
+        dataframe = pd.read_csv(filepath, sep='\t', index_col=0)
+        labels = dataframe[label].dropna().astype('category')
+
+        with h5py.File(self.gene_expression_path, 'r') as f:
+            data = f['expression_data'][labels.index]
+
+        super(SingleTCGATask, self).__init__(task_id, data, labels.cat.codes.tolist(),
+                                             labels.cat.categories.tolist(),
+                                             transform=transform, target_transform=target_transform)
