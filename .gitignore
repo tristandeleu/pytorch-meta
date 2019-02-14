@@ -103,5 +103,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# Data folder
-data/
+# Pycharm configuration files
+.idea/
