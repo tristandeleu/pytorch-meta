@@ -3,7 +3,7 @@ import json
 import h5py
 import pandas as pd
 
-from torchmeta.dataset import Dataset, Task
+from torchmetadatasets.dataset import Dataset, Task
 
 class TCGA(Dataset):
     folder = 'tcga'
