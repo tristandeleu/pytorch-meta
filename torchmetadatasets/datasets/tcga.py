@@ -233,6 +233,35 @@ class TCGA(Dataset):
 
 
 class TCGATask(Task):
+    @classmethod
+    def from_id(cls, root, task_id, transform=None, target_transform=None):
+        root = os.path.join(os.path.expanduser(root), 'tcga')
+
+        clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
+        clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
+        gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
+        gene_filepath = os.path.join(root, gene_expression_filename)
+        if not os.path.isfile(gene_filepath):
+            raise IOError()
+        
+        label, cancer = task_id
+
+        processed_folder = os.path.join(root, 'clinicalMatrices', 'processed')
+        filename = '{0}.tsv'.format(clinical_matrix_filename.format(cancer))
+        filepath = os.path.join(processed_folder, filename)
+        if not os.path.isfile(filepath):
+            raise IOError()
+
+        dataframe = pd.read_csv(filepath, sep='\t', index_col=0)
+        labels = dataframe[label].dropna().astype('category')
+
+        with h5py.File(gene_filepath, 'r') as f:
+            data = f['expression_data'][labels.index]
+
+        return cls(task_id, data, labels.cat.codes.tolist(),
+                   labels.cat.categories.tolist(),
+                   transform=transform, target_transform=target_transform)
+    
     def __init__(self, task_id, data, labels, categories, transform=None,
                  target_transform=None):
         super(TCGATask, self).__init__()
@@ -266,37 +295,3 @@ class TCGATask(Task):
             target = self.target_transform(target)
 
         return (sample, target)
-
-
-class SingleTCGATask(TCGATask):
-    folder = 'tcga'
-    clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
-    clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
-    gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
-
-    @property
-    def gene_expression_path(self):
-        filenpath = os.path.join(self.root, self.gene_expression_filename)
-        if not os.path.isfile(filenpath):
-            raise IOError()
-        return filenpath
-
-    def __init__(self, root, task_id, transform=None, target_transform=None):
-        self.root = os.path.join(os.path.expanduser(root), self.folder)
-        label, cancer = task_id
-
-        processed_folder = os.path.join(self.root, 'clinicalMatrices', 'processed')
-        filename = '{0}.tsv'.format(self.clinical_matrix_filename.format(cancer))
-        filepath = os.path.join(processed_folder, filename)
-        if not os.path.isfile(filepath):
-            raise IOError()
-
-        dataframe = pd.read_csv(filepath, sep='\t', index_col=0)
-        labels = dataframe[label].dropna().astype('category')
-
-        with h5py.File(self.gene_expression_path, 'r') as f:
-            data = f['expression_data'][labels.index]
-
-        super(SingleTCGATask, self).__init__(task_id, data, labels.cat.codes.tolist(),
-                                             labels.cat.categories.tolist(),
-                                             transform=transform, target_transform=target_transform)

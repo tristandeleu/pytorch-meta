@@ -40,7 +40,7 @@ class TestDatasets(unittest.TestCase):
 
     def test_tasks(self):
 
-        dataset = tmds.SingleTCGATask(self.data_dir, self.task_id)
+        dataset = tmds.TCGATask.from_id(self.data_dir, self.task_id)
         trainloader = torch.utils.data.DataLoader(dataset=dataset, batch_size=15, shuffle=True)
 
         for data, labels in trainloader:
