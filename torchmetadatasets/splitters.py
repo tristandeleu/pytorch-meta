@@ -1,6 +1,14 @@
 import torch
 import torch.utils.data as data
 
+def fractions_to_lengths(dataset, fractions):
+    lengths = []
+    for fraction in fractions:
+        lengths.append(int(round(len(dataset) * fraction)))
+    
+    num_rest = len(dataset) - sum(lengths)
+    lengths.append(num_rest)
+    return lengths
 
 def classwise_split(dataset, shuffle=True):
     classes = set()
@@ -22,7 +30,6 @@ def classwise_split(dataset, shuffle=True):
             classwise_indices[key] = [value[index] for index in iter(torch.randperm(len(value)))]
 
     return [data.Subset(dataset, classwise_indices[key]) for key in classwise_indices.keys()]
-
 
 def stratified_split(dataset, lengths, min_num_minority=1):
     total_length = sum(lengths)
