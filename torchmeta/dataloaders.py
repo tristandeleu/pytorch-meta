@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader as TorchDataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
-from torchmetadatasets.sampler import DatasetSampler, BatchDatasetSampler
+from torchmeta.sampler import DatasetSampler, BatchDatasetSampler
 
 Dataset = namedtuple('Dataset', 'train test')
 

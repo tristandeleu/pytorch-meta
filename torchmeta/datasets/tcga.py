@@ -3,7 +3,7 @@ import json
 import h5py
 import pandas as pd
 
-from torchmetadatasets.dataset import Dataset, Task
+from torchmeta.dataset import Dataset, Task
 
 class classproperty(property):
     """Subclass property to make classmethod properties possible"""

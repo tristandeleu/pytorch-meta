@@ -3,7 +3,7 @@ import os
 import torch
 import collections
 
-import torchmetadatasets as tmds
+import torchmeta as tmds
 
 
 class DummyDataset(torch.utils.data.Dataset):

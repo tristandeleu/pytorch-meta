@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data.sampler import Sampler, BatchSampler
 
-from torchmetadatasets.dataset import Dataset
+from torchmeta.dataset import Dataset
 
 class DatasetSampler(Sampler):
     def __init__(self, data_source, class_sampler, num_classes,

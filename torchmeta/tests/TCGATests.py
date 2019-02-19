@@ -5,7 +5,7 @@ import os
 import shutil
 import torch
 
-import torchmetadatasets as tmds
+import torchmeta as tmds
 
 
 class DummyFile(object):

@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='torchmetadatasets',
+    name='torchmeta',
     version='1.0.0',
     description='Dataloaders for meta-learning in Pytorch',
     long_description=long_description,
