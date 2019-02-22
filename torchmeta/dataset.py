@@ -1,6 +1,11 @@
+import torch
 from itertools import combinations
+from collections import defaultdict
+from torch.utils.data import Dataset, ConcatDataset
+from torchvision.transforms import Compose
+from torchmeta.transforms import FixedClass
 
-class Dataset(object):
+class ClassDataset(object):
     def __init__(self, class_transforms=None):
         if class_transforms is not None:
             if not isinstance(class_transforms, list):
@@ -11,11 +16,23 @@ class Dataset(object):
             class_transforms = []
         self.class_transforms = class_transforms
 
-    def class_transform(self, index):
+    def get_class_transform(self, index, transform):
         transform_index = (index // self.num_classes) - 1
         if transform_index < 0:
-            return None
-        return self.class_transforms[transform_index]
+            return transform
+        class_transform = self.class_transforms[transform_index]
+        if transform is None:
+            return class_transform
+        return Compose([class_transform, transform])
+
+    def get_target_transform(self, index, transform):
+        categorical_transform = FixedClass(index)
+        if transform is None:
+            return categorical_transform
+        return Compose([transform, categorical_transform])
+
+    def __getitem__(self, index):
+        raise NotImplementedError()
 
     @property
     def num_classes(self):
@@ -25,26 +42,71 @@ class Dataset(object):
         return self.num_classes * (len(self.class_transforms) + 1)
 
 
-class TaskDataset(object):
-    def __init__(self, meta_dataset, classes_per_task):
-        super(TaskDataset, self).__init__()
-        self.meta_dataset = meta_dataset
-        self.classes_per_task = classes_per_task
-
+class MetaDataset(object):
     def __iter__(self):
-        num_classes = len(self.meta_dataset)
-        for index in combinations(num_classes, self.classes_per_task):
+        for index in range(len(self)):
             yield self[index]
 
     def __getitem__(self, index):
-        assert len(index) == self.classes_per_task
-        datasets = tuple(self.meta_dataset[i] for i in index)
-        return ConcatTask(datasets)
+        raise NotImplementedError()
 
-
-class Task(object):
     def __len__(self):
         raise NotImplementedError()
 
+
+class CombinationMetaDataset(MetaDataset):
+    def __init__(self, dataset, num_classes_per_task, categorical_task_target=True):
+        super(CombinationMetaDataset, self).__init__()
+        if not isinstance(num_classes_per_task, int):
+            raise ValueError()
+        self.dataset = dataset
+        self.num_classes_per_task = num_classes_per_task
+        self.categorical_task_target = categorical_task_target
+
+    def __iter__(self):
+        num_classes = len(self.dataset)
+        for index in combinations(num_classes, self.num_classes_per_task):
+            yield self[index]
+
     def __getitem__(self, index):
-        raise NotImplementedError()
+        assert len(index) == self.num_classes_per_task
+        datasets = [self.dataset[i] for i in index]
+        return ConcatTask(datasets, self.num_classes_per_task,
+            categorical_task_target=self.categorical_task_target)
+
+    def __len__(self):
+        from scipy.special import binom
+        num_classes = len(self.dataset)
+        return int(binom(num_classes, self.num_classes_per_task))
+
+
+class Task(Dataset):
+    def __init__(self, num_classes, categorical_task_target=False):
+        self.num_classes = num_classes
+        self.categorical_task_target = categorical_task_target
+        self._classes = None
+        self._targets = torch.randperm(self.num_classes).tolist()
+
+    @property
+    def classes(self):
+        if self._classes is None:
+            default_factory = lambda: self._targets[len(self._classes)]
+            self._classes = defaultdict(None)
+            self._classes.default_factory = default_factory
+        if len(self._classes) > self.num_classes:
+            raise ValueError()
+        return self._classes
+
+
+class ConcatTask(Task, ConcatDataset):
+    def __init__(self, datasets, num_classes, categorical_task_target=False):
+        Task.__init__(self, num_classes,
+            categorical_task_target=categorical_task_target)
+        ConcatDataset.__init__(self, datasets)
+
+    def __getitem__(self, index):
+        sample = ConcatDataset.__getitem__(self, index)
+        if self.categorical_task_target:
+            if (not isinstance(sample, tuple)) or (len(sample) < 2):
+                raise ValueError()
+            return sample[:-1] + (self.classes[sample[-1]],)
