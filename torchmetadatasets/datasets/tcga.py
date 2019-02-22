@@ -21,7 +21,7 @@ class TCGA(Dataset):
     _cancers = None
 
     def __init__(self, root, meta_train=True, min_samples_per_class=3, transform=None,
-                 target_transform=None, download=False, preload=True):
+                 target_transform=None, dataset_transform=None, download=False, preload=True):
         super(TCGA, self).__init__(class_transforms=None)
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.meta_train = meta_train
@@ -29,6 +29,7 @@ class TCGA(Dataset):
 
         self.transform = transform
         self.target_transform = target_transform
+        self.dataset_transform = dataset_transform
         
         self._all_sample_ids = None
         self._gene_ids = None
@@ -130,8 +131,7 @@ class TCGA(Dataset):
         return filepath
 
     def __getitem__(self, index):
-        # TODO: Can we remove this modulo operation?
-        label, cancer = self.task_ids[index % self.num_classes]
+        label, cancer = self.task_ids[index]
         filename = self.get_processed_filename(cancer)
         dataframe = pd.read_csv(filename, sep='\t', index_col=0)
         labels = dataframe[label].dropna().astype('category')
@@ -141,10 +141,15 @@ class TCGA(Dataset):
         else:
             with h5py.File(self.gene_expression_path, 'r') as f:
                 data = f['expression_data'][labels.index]
-
-        return TCGATask((label, cancer), data, labels.cat.codes.tolist(),
+                
+        task = TCGATask((label, cancer), data, labels.cat.codes.tolist(),
             labels.cat.categories.tolist(), transform=self.transform,
             target_transform=self.target_transform)
+        
+        if self.dataset_transform is None:
+            return task
+        else:
+            return self.dataset_transform(task)
 
     def _preload_gene_expression_data(self):
         self.gene_expression_file = h5py.File(self.gene_expression_path, 'r')
