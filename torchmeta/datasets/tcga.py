@@ -3,14 +3,14 @@ import json
 import h5py
 import pandas as pd
 
-from torchmeta.dataset import Dataset, Task
+from torchmeta.dataset import MetaDataset, Task
 
 class classproperty(property):
     """Subclass property to make classmethod properties possible"""
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)()
 
-class TCGA(Dataset):
+class TCGA(MetaDataset):
     folder = 'tcga'
     clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
     clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
@@ -21,8 +21,9 @@ class TCGA(Dataset):
     _cancers = None
 
     def __init__(self, root, meta_train=True, min_samples_per_class=3, transform=None,
-                 target_transform=None, dataset_transform=None, download=False, preload=True):
-        super(TCGA, self).__init__(class_transforms=None)
+                 target_transform=None, dataset_transform=None, categorical_task_target=False,
+                 download=False, preload=True):
+        super(TCGA, self).__init__()
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.meta_train = meta_train
         self.min_samples_per_class = min_samples_per_class
@@ -30,6 +31,7 @@ class TCGA(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.dataset_transform = dataset_transform
+        self.categorical_task_target = categorical_task_target
         
         self._all_sample_ids = None
         self._gene_ids = None
@@ -45,8 +47,7 @@ class TCGA(Dataset):
 
         self.task_ids = self.get_task_ids()
 
-    @property
-    def num_classes(self):
+    def __len__(self):
         return len(self.task_ids)
 
     @property
@@ -144,7 +145,8 @@ class TCGA(Dataset):
                 
         task = TCGATask((label, cancer), data, labels.cat.codes.tolist(),
             labels.cat.categories.tolist(), transform=self.transform,
-            target_transform=self.target_transform)
+            target_transform=self.target_transform,
+            categorical_task_target=self.categorical_task_target)
         
         if self.dataset_transform is None:
             return task
@@ -239,7 +241,8 @@ class TCGA(Dataset):
 
 class TCGATask(Task):
     @classmethod
-    def from_id(cls, root, task_id, transform=None, target_transform=None):
+    def from_id(cls, root, task_id, transform=None, target_transform=None,
+                categorical_task_target=False):
         root = os.path.join(os.path.expanduser(root), 'tcga')
 
         clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
@@ -264,12 +267,13 @@ class TCGATask(Task):
             data = f['expression_data'][labels.index]
 
         return cls(task_id, data, labels.cat.codes.tolist(),
-                   labels.cat.categories.tolist(),
-                   transform=transform, target_transform=target_transform)
+                   labels.cat.categories.tolist(), transform=transform,
+                   target_transform=target_transform, categorical_task_target=categorical_task_target)
     
     def __init__(self, task_id, data, labels, categories, transform=None,
-                 target_transform=None):
-        super(TCGATask, self).__init__()
+                 target_transform=None, categorical_task_target=False):
+        super(TCGATask, self).__init__(len(categories),
+            categorical_task_target=categorical_task_target)
         self.id = task_id
         self.data = data
         self.labels = labels
@@ -281,10 +285,6 @@ class TCGATask(Task):
     @property
     def input_size(self):
         return len(self.data[0])
-
-    @property
-    def num_classes(self):
-        return len(self.categories)
 
     def __len__(self):
         return len(self.labels)
@@ -298,5 +298,7 @@ class TCGATask(Task):
 
         if self.target_transform is not None:
             target = self.target_transform(target)
+        if self.categorical_task_target:
+            target = self.classes[target]
 
         return (sample, target)
