@@ -1,45 +1,27 @@
 import os
 from PIL import Image
 
+from torch.utils.data import Dataset
 from torchvision.datasets import Omniglot as TorchvisionOmniglot
-from torchmeta.dataset import Dataset, Task
+from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 
-class DeprecatedOmniglot(Dataset, TorchvisionOmniglot):
-    def __init__(self, root, meta_train=True, transform=None,
-                 class_transforms=None, download=False):
-        TorchvisionOmniglot.__init__(self, root, background=meta_train,
-                                     transform=transform, download=download)
-        Dataset.__init__(self, class_transforms=class_transforms)
-        self._num_classes = len(self._characters)
+class Omniglot(CombinationMetaDataset):
+    def __init__(self, root, num_classes_per_task=None, meta_train=True,
+                 transform=None, target_transform=None, class_transforms=None,
+                 categorical_task_target=True, download=False):
+        dataset = OmniglotClassDataset(root, meta_train=meta_train,
+            transform=transform, target_transform=target_transform,
+            class_transforms=class_transforms, download=download)
+        super(Omniglot, self).__init__(dataset, num_classes_per_task,
+            categorical_task_target=categorical_task_target)
 
-    @property
-    def num_classes(self):
-        return self._num_classes
 
-    def get_length(self, char_index):
-        return len(self._character_images[char_index % self.num_classes])
-
-    def __getitem__(self, index):
-        char_index, class_index, index = index
-        images = self._character_images[char_index % self.num_classes]
-        assert index < len(images)
-        image_name, _ = images[index]
-        image_filename = os.path.join(self.target_folder,
-            self._characters[char_index % self.num_classes], image_name)
-        image = Image.open(image_filename, mode='r').convert('L')
-
-        image = self.class_transform(char_index, image)
-        if self.transform:
-            image = self.transform(image)
-
-        return image, class_index
-
-class Omniglot(Dataset, TorchvisionOmniglot):
+class OmniglotClassDataset(ClassDataset, TorchvisionOmniglot):
     def __init__(self, root, meta_train=True, transform=None,
                  target_transform=None, class_transforms=None, download=False):
         TorchvisionOmniglot.__init__(self, root, background=meta_train,
-                                     transform=transform, download=download)
-        Dataset.__init__(self, class_transforms=class_transforms)
+            transform=transform, target_transform=None, download=download)
+        ClassDataset.__init__(self, class_transforms=class_transforms)
         self._num_classes = len(self._characters)
 
     @property
@@ -49,23 +31,22 @@ class Omniglot(Dataset, TorchvisionOmniglot):
     def __getitem__(self, index):
         character = self._characters[index % self.num_classes]
         images = self._character_images[index % self.num_classes]
-        class_transform = self.class_transform(index)
+        transform = self.get_class_transform(index, self.transform)
+        target_transform = self.get_target_transform(index, self.target_transform)
 
-        return OmniglotTask(self.target_folder, character, images,
-            transform=self.transform, target_transform=self.target_transform,
-            class_transform=class_transform)
+        return OmniglotDataset(self.target_folder, character, images,
+            transform=transform, target_transform=target_transform)
 
-class OmniglotTask(Task):
+
+class OmniglotDataset(Dataset):
     def __init__(self, folder, character, images, transform=None,
-                 target_transform=None, class_transform=None):
-        super(OmniglotTask, self).__init__()
+                 target_transform=None):
+        super(OmniglotDataset, self).__init__()
         self.folder = folder
         self.character = character
         self.images = images
-
         self.transform = transform
         self.target_transform = target_transform
-        self.class_transform = class_transform
 
     def __len__(self):
         return len(self.images)
@@ -75,8 +56,6 @@ class OmniglotTask(Task):
         filename = os.path.join(self.folder, self.character, name)
         image = Image.open(filename, mode='r').convert('L')
 
-        if self.class_transform is not None:
-            image = self.class_transform(image)
         if self.transform is not None:
             image = self.transform(image)
 
@@ -84,14 +63,3 @@ class OmniglotTask(Task):
             target = self.target_transform(target)
 
         return (image, target)
-
-if __name__ == '__main__':
-    dataset = Omniglot('data')
-    task = dataset[1]
-
-    print(task.images)
-    print(dataset._character_images[1])
-    # dataset._character_images[1] = None
-    task.images = None
-    print(dataset._character_images[1])
-    print(task.images)
