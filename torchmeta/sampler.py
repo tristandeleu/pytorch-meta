@@ -1,12 +1,12 @@
 import torch
 from torch.utils.data.sampler import Sampler, BatchSampler
 
-from torchmeta.dataset import Dataset
+from torchmeta.dataset import ClassDataset
 
 class DatasetSampler(Sampler):
     def __init__(self, data_source, class_sampler, num_classes,
                  train_size_per_class, test_size_per_class=None, shuffle=False):
-        if not isinstance(data_source, Dataset):
+        if not isinstance(data_source, ClassDataset):
             raise ValueError()
         self.data_source = data_source
         self.class_sampler = class_sampler
