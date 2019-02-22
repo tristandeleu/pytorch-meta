@@ -1,90 +1,107 @@
 import torch
 from torch._six import container_abcs
 from collections import namedtuple
+import random
 
 from torch.utils.data import DataLoader as TorchDataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
+from torch.utils.data.dataset import Subset
+from torch.utils.data.dataset import Dataset as TorchDataset
 
 from torchmeta.sampler import DatasetSampler, BatchDatasetSampler
 
+from torchmeta.dataset import CombinationMetaDataset, MetaDataset, Task, ConcatTask
+from torchmeta.samplers import CombinationSequentialSampler, CombinationRandomSampler
+
 Dataset = namedtuple('Dataset', 'train test')
 
+def basic_meta_collate(collate_fn, shuffle_datasets, train_size_per_class,
+                       test_size_per_class=None):
+    num_samples = train_size_per_class
+    if test_size_per_class is not None:
+        num_samples += test_size_per_class
 
-class MetaDataLoader(TorchDataLoader):
-    def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None, batch_sampler=None,
-                 num_workers=0, pin_memory=False, drop_last=False,
-                 timeout=0, worker_init_fn=None):
-
-        def _collate_fn(data):
-            """
-            Args:
-                task (Dataset) : A task from a Metadataset.
-
-            Returns:
-                dataset: the argument dataset unchanged.
-
-                This function performs no operation. It is used to overwrite the default collate_fn of torchs
-                DataLoader because it is not compatible with a batch of Datasets.
-            """
-
-            return data
-
-        super(MetaDataLoader, self).__init__(dataset, batch_size=batch_size, shuffle=shuffle,
-                                             sampler=sampler, batch_sampler=batch_sampler,
-                                             num_workers=num_workers, collate_fn=_collate_fn,
-                                             pin_memory=pin_memory, drop_last=drop_last, timeout=timeout,
-                                             worker_init_fn=worker_init_fn)
-
-
-def meta_collate_fn(collate_fn, meta_batch_size, num_classes,
-                    train_size_per_class, test_size_per_class=None):
-    train_dataset_size = meta_batch_size * num_classes * train_size_per_class
-
-    def _reshape(tensor):
-        if isinstance(tensor, torch.Tensor):
-            shape = tensor.shape
-            return tensor.view((meta_batch_size, -1) + shape[1:])
-        elif isinstance(tensor, container_abcs.Sequence):
-            return [_reshape(subtensor) for subtensor in tensor]
+    def get_subset_task(task):
+        assert isinstance(task, TorchDataset), type(task)
+        if isinstance(task, ConcatTask):
+            subsets = [get_subset_task(subtask) for subtask in task.datasets]
+            if test_size_per_class is None:
+                return ConcatTask(subsets, task.num_classes,
+                    categorical_task_target=task.categorical_task_target)
+            else:
+                train_subsets, test_subsets = zip(*subsets)
+            return (ConcatTask(train_subsets, task.num_classes,
+                categorical_task_target=task.categorical_task_target),
+                ConcatTask(test_subsets, task.num_classes,
+                categorical_task_target=task.categorical_task_target))
         else:
-            raise TypeError()
+            if shuffle_datasets:
+                indices = random.sample(len(task), num_samples)
+            else:
+                indices = range(min(len(task), num_samples))
+            if test_size_per_class is None:
+                return Subset(task, indices)
+            else:
+                return (Subset(task, indices[:train_size_per_class]),
+                    Subset(task, indices[train_size_per_class:]))
+
+    def collate_task(task):
+        assert isinstance(task, TorchDataset)
+        if isinstance(task, tuple):
+            train_samples = collate_task(task[0])
+            test_samples = collate_task(task[1])
+            return Dataset(train=train_samples, test=test_samples)
+        elif isinstance(task, TorchDataset):
+            return [task[index] for index in range(len(task))]
+        else:
+            raise NotImplementedError()
 
     def _collate_fn(batch):
-        train_batch = batch[:train_dataset_size]
-        test_batch = batch[train_dataset_size:]
-
-        train_dataset = _reshape(collate_fn(train_batch))
-        if test_size_per_class is not None:
-            test_dataset = _reshape(collate_fn(test_batch))
-        else:
-            test_dataset = None
-
-        return Dataset(train=train_dataset, test=test_dataset)
+        if not isinstance(batch[0], Task):
+            raise ValueError()
+        subset_batch = [get_subset_task(task) for task in batch]
+        samples = [collate_fn(collate_task(task)) for task in subset_batch]
+        return collate_fn(samples)
 
     return _collate_fn
 
 
-class DataLoader(TorchDataLoader):
-    def __init__(self, dataset, meta_batch_size=1, num_classes=1,
+class MetaDataLoader(TorchDataLoader):
+    def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None,
+                 batch_sampler=None, num_workers=0, collate_fn=None,
+                 pin_memory=False, drop_last=False, timeout=0,
+                 worker_init_fn=None):
+        if not isinstance(dataset, MetaDataset):
+            raise ValueError()
+
+        if collate_fn is None:
+            collate_fn = lambda batch: batch
+
+        if isinstance(dataset, CombinationMetaDataset) and (sampler is None):
+            if shuffle:
+                sampler = CombinationRandomSampler(dataset)
+            else:
+                sampler = CombinationSequentialSampler(dataset)
+            shuffle = False
+
+        super(MetaDataLoader, self).__init__(dataset, batch_size=batch_size,
+            shuffle=shuffle, sampler=sampler, batch_sampler=batch_sampler,
+            num_workers=num_workers, collate_fn=collate_fn,
+            pin_memory=pin_memory, drop_last=drop_last, timeout=timeout,
+            worker_init_fn=worker_init_fn)
+
+
+class BasicMetaDataLoader(MetaDataLoader):
+    def __init__(self, dataset, batch_size=1, shuffle=False, num_workers=0,
                  train_size_per_class=1, test_size_per_class=None,
-                 shuffle=False, shuffle_datasets=False, num_workers=0,
-                 collate_fn=default_collate, pin_memory=False,
-                 drop_last=False, timeout=0):
-        if shuffle:
-            class_sampler = RandomSampler(dataset)
-        else:
-            class_sampler = SequentialSampler(dataset)
+                 shuffle_datasets=False, pin_memory=False, drop_last=False,
+                 timeout=0, worker_init_fn=None):
+        collate_fn = basic_meta_collate(default_collate, shuffle_datasets,
+            train_size_per_class, test_size_per_class=test_size_per_class)
 
-        dataset_sampler = DatasetSampler(dataset, class_sampler, num_classes,
-            train_size_per_class, test_size_per_class, shuffle=shuffle_datasets)
-        batch_sampler = BatchDatasetSampler(dataset_sampler,
-            batch_size=meta_batch_size, drop_last=drop_last)
-        
-        _collate_fn = meta_collate_fn(collate_fn, meta_batch_size, num_classes,
-            train_size_per_class, test_size_per_class)
-
-        super(DataLoader, self).__init__(dataset, batch_size=1, shuffle=False,
-            sampler=None, batch_sampler=batch_sampler, num_workers=num_workers,
-            collate_fn=_collate_fn, pin_memory=pin_memory, drop_last=False,
-            timeout=timeout, worker_init_fn=None)
+        super(BasicMetaDataLoader, self).__init__(dataset,
+            batch_size=batch_size, shuffle=shuffle, sampler=None,
+            batch_sampler=None, num_workers=num_workers,
+            collate_fn=collate_fn, pin_memory=pin_memory, drop_last=drop_last,
+            timeout=timeout, worker_init_fn=worker_init_fn)
