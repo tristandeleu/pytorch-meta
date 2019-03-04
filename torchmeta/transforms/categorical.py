@@ -26,6 +26,9 @@ class CategoricalWrapper(Task):
             raise ValueError()
         return sample[:-1] + (self.classes[sample[-1]],)
 
+    def __len__(self):
+        return len(self.task)
+
 
 class CategoricalTaskTarget(object):
     def __call__(self, task):
