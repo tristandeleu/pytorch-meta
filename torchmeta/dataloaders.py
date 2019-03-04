@@ -72,9 +72,6 @@ class MetaDataLoader(TorchDataLoader):
                  batch_sampler=None, num_workers=0, collate_fn=None,
                  pin_memory=False, drop_last=False, timeout=0,
                  worker_init_fn=None):
-        if not isinstance(dataset, MetaDataset):
-            raise ValueError()
-
         if collate_fn is None:
             collate_fn = lambda batch: batch
 
