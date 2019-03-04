@@ -21,17 +21,14 @@ class TCGA(MetaDataset):
     _cancers = None
 
     def __init__(self, root, meta_train=True, min_samples_per_class=3, transform=None,
-                 target_transform=None, dataset_transform=None, categorical_task_target=False,
-                 download=False, preload=True):
-        super(TCGA, self).__init__()
+                 target_transform=None, dataset_transform=None, download=False, preload=True):
+        super(TCGA, self).__init__(dataset_transform=dataset_transform)
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.meta_train = meta_train
         self.min_samples_per_class = min_samples_per_class
 
         self.transform = transform
         self.target_transform = target_transform
-        self.dataset_transform = dataset_transform
-        self.categorical_task_target = categorical_task_target
         
         self._all_sample_ids = None
         self._gene_ids = None
@@ -145,13 +142,12 @@ class TCGA(MetaDataset):
                 
         task = TCGATask((label, cancer), data, labels.cat.codes.tolist(),
             labels.cat.categories.tolist(), transform=self.transform,
-            target_transform=self.target_transform,
-            categorical_task_target=self.categorical_task_target)
+            target_transform=self.target_transform)
         
-        if self.dataset_transform is None:
-            return task
-        else:
-            return self.dataset_transform(task)
+        if self.dataset_transform is not None:
+            task = self.dataset_transform(task)
+
+        return task
 
     def _preload_gene_expression_data(self):
         self.gene_expression_file = h5py.File(self.gene_expression_path, 'r')
@@ -241,8 +237,7 @@ class TCGA(MetaDataset):
 
 class TCGATask(Task):
     @classmethod
-    def from_id(cls, root, task_id, transform=None, target_transform=None,
-                categorical_task_target=False):
+    def from_id(cls, root, task_id, transform=None, target_transform=None):
         root = os.path.join(os.path.expanduser(root), 'tcga')
 
         clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
@@ -268,12 +263,11 @@ class TCGATask(Task):
 
         return cls(task_id, data, labels.cat.codes.tolist(),
                    labels.cat.categories.tolist(), transform=transform,
-                   target_transform=target_transform, categorical_task_target=categorical_task_target)
+                   target_transform=target_transform)
     
     def __init__(self, task_id, data, labels, categories, transform=None,
-                 target_transform=None, categorical_task_target=False):
-        super(TCGATask, self).__init__(len(categories),
-            categorical_task_target=categorical_task_target)
+                 target_transform=None):
+        super(TCGATask, self).__init__(len(categories))
         self.id = task_id
         self.data = data
         self.labels = labels
@@ -298,7 +292,5 @@ class TCGATask(Task):
 
         if self.target_transform is not None:
             target = self.target_transform(target)
-        if self.categorical_task_target:
-            target = self.classes[target]
 
         return (sample, target)

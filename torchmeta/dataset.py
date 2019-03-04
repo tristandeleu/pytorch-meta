@@ -1,9 +1,7 @@
 import torch
 from itertools import combinations
-from collections import defaultdict
 from torch.utils.data import Dataset, ConcatDataset
 from torchvision.transforms import Compose
-from torchmeta.transforms import FixedClass
 
 class ClassDataset(object):
     def __init__(self, class_transforms=None):
@@ -26,7 +24,7 @@ class ClassDataset(object):
         return Compose([class_transform, transform])
 
     def get_target_transform(self, index, transform):
-        categorical_transform = FixedClass(index)
+        categorical_transform = lambda _: index
         if transform is None:
             return categorical_transform
         return Compose([transform, categorical_transform])
@@ -43,6 +41,9 @@ class ClassDataset(object):
 
 
 class MetaDataset(object):
+    def __init__(self, dataset_transform=None):
+        self.dataset_transform = dataset_transform
+
     def __iter__(self):
         for index in range(len(self)):
             yield self[index]
@@ -55,13 +56,12 @@ class MetaDataset(object):
 
 
 class CombinationMetaDataset(MetaDataset):
-    def __init__(self, dataset, num_classes_per_task, categorical_task_target=True):
-        super(CombinationMetaDataset, self).__init__()
+    def __init__(self, dataset, num_classes_per_task, dataset_transform=None):
+        super(CombinationMetaDataset, self).__init__(dataset_transform=dataset_transform)
         if not isinstance(num_classes_per_task, int):
             raise ValueError()
         self.dataset = dataset
         self.num_classes_per_task = num_classes_per_task
-        self.categorical_task_target = categorical_task_target
 
     def __iter__(self):
         num_classes = len(self.dataset)
@@ -71,8 +71,12 @@ class CombinationMetaDataset(MetaDataset):
     def __getitem__(self, index):
         assert len(index) == self.num_classes_per_task
         datasets = [self.dataset[i] for i in index]
-        return ConcatTask(datasets, self.num_classes_per_task,
-            categorical_task_target=self.categorical_task_target)
+        task = ConcatTask(datasets, self.num_classes_per_task)
+
+        if self.dataset_transform is not None:
+            task = self.dataset_transform(task)
+
+        return task
 
     def __len__(self):
         from scipy.special import binom
@@ -81,32 +85,14 @@ class CombinationMetaDataset(MetaDataset):
 
 
 class Task(Dataset):
-    def __init__(self, num_classes, categorical_task_target=False):
+    def __init__(self, num_classes):
         self.num_classes = num_classes
-        self.categorical_task_target = categorical_task_target
-        self._classes = None
-        self._targets = torch.randperm(self.num_classes).tolist()
-
-    @property
-    def classes(self):
-        if self._classes is None:
-            default_factory = lambda: self._targets[len(self._classes)]
-            self._classes = defaultdict(None)
-            self._classes.default_factory = default_factory
-        if len(self._classes) > self.num_classes:
-            raise ValueError()
-        return self._classes
 
 
 class ConcatTask(Task, ConcatDataset):
-    def __init__(self, datasets, num_classes, categorical_task_target=False):
-        Task.__init__(self, num_classes,
-            categorical_task_target=categorical_task_target)
+    def __init__(self, datasets, num_classes):
+        Task.__init__(self, num_classes)
         ConcatDataset.__init__(self, datasets)
 
     def __getitem__(self, index):
-        sample = ConcatDataset.__getitem__(self, index)
-        if self.categorical_task_target:
-            if (not isinstance(sample, tuple)) or (len(sample) < 2):
-                raise ValueError()
-            return sample[:-1] + (self.classes[sample[-1]],)
+        return ConcatDataset.__getitem__(self, index)

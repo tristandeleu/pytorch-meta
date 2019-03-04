@@ -7,13 +7,13 @@ from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 
 class Omniglot(CombinationMetaDataset):
     def __init__(self, root, num_classes_per_task=None, meta_train=True,
-                 transform=None, target_transform=None, class_transforms=None,
-                 categorical_task_target=True, download=False):
+                 transform=None, target_transform=None, dataset_transform=None,
+                 class_transforms=None, download=False):
         dataset = OmniglotClassDataset(root, meta_train=meta_train,
             transform=transform, target_transform=target_transform,
             class_transforms=class_transforms, download=download)
         super(Omniglot, self).__init__(dataset, num_classes_per_task,
-            categorical_task_target=categorical_task_target)
+            dataset_transform=dataset_transform)
 
 
 class OmniglotClassDataset(ClassDataset, TorchvisionOmniglot):
