@@ -14,7 +14,7 @@ class ClassDataset(object):
             class_transforms = []
         self.class_transforms = class_transforms
 
-    def get_class_transform(self, index, transform):
+    def get_transform(self, index, transform):
         transform_index = (index // self.num_classes) - 1
         if transform_index < 0:
             return transform
