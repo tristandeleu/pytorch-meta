@@ -14,8 +14,8 @@ class TCGA(MetaDataset):
     folder = 'tcga'
     clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
     clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
-    gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
-    gene_expression_torrent = '4070a45bc7dd69584f33e86ce193a2c903f0776d'
+    gene_expression_filename = 'TCGA_HiSeqV2.hdf5'
+    gene_expression_torrent = 'e4081b995625f9fc599ad860138acf7b6eb1cf6f'
     
     _task_variables = None
     _cancers = None
@@ -88,10 +88,10 @@ class TCGA(MetaDataset):
             gene_ids_file = os.path.join(self.root, 'gene_ids.json')
             if not os.path.isfile(gene_ids_file):
                 if self.gene_expression_file is not None:
-                    names = self.gene_expression_file['gene_names']
+                    names = self.gene_expression_file['gene_ids']
                 else:
                     with h5py.File(self.gene_expression_path, 'r') as f:
-                        names = f['gene_names']
+                        names = f['gene_ids']
                 gene_ids = [name.decode('utf-8') for name in names]
                 with open(gene_ids_file, 'w') as f:
                     json.dump(gene_ids, f)
@@ -214,11 +214,38 @@ class TCGA(MetaDataset):
                 with open(filepath, 'wb') as f:
                     shutil.copyfileobj(gzf, f)
 
+        #gene_expression_file = os.path.join(self.root, self.gene_expression_filename)
+        #if not os.path.isfile(gene_expression_file):
+        #    import academictorrents as at
+        #    print('Downloading `{0}` using `academictorrent`...'.format(self.gene_expression_filename))
+        #    at.get(self.gene_expression_torrent, datastore=self.root)
+        #    print('Done')
+        import academictorrents as at
         gene_expression_file = os.path.join(self.root, self.gene_expression_filename)
-        if not os.path.isfile(gene_expression_file):
-            import academictorrents as at
-            print('Downloading `{0}` using `academictorrent`...'.format(self.gene_expression_filename))
-            at.get(self.gene_expression_torrent, datastore=self.root)
+        print('Downloading `{0}` using `academictorrent`...'.format(self.gene_expression_filename))
+        csv_file = at.get(self.gene_expression_torrent, datastore=self.root)
+        if not os.path.isfile(gene_expression_file) and os.path.isfile(csv_file):
+            print("Downloaded to: " + csv_file)
+            print("Converting TCGA CSV dataset to HDF5. This only happens on first run.")
+            df = pd.read_csv(csv_file, compression="gzip", sep="\t")
+            df = df.transpose()
+            df.columns = df.iloc[0]
+            df = df.drop(df.index[0])
+            df = df.astype(float)
+            gene_ids = df.columns.values
+            all_sample_ids = df.index.values
+            # with open(gene_ids_file, "w") as text_file:
+            #     for gene_id in gene_ids:
+            #         text_file.write('{}\n'.format(gene_id))
+            # with open(all_sample_ids_file, "w") as text_file:
+            #     for sample_id in all_sample_ids:
+            #         text_file.write('{}\n'.format(sample_id))
+
+            f = h5py.File(gene_expression_file)
+            f.create_dataset("expression_data", data=df.values)
+            f.create_dataset("gene_ids", data=gene_ids.astype('S20'))
+            f.create_dataset("sample_names", data=all_sample_ids.astype('S20'))
+            f.close()
             print('Done')
 
         # Clean up
@@ -242,7 +269,7 @@ class TCGATask(Task):
 
         clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
         clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
-        gene_expression_filename = 'TCGA_tissue_ppi.hdf5'
+        gene_expression_filename = 'TCGA_HiSeqV2.hdf5'
         gene_filepath = os.path.join(root, gene_expression_filename)
         if not os.path.isfile(gene_filepath):
             raise IOError()
