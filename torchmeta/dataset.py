@@ -88,6 +88,24 @@ class Task(Dataset):
     def __init__(self, num_classes):
         self.num_classes = num_classes
 
+    @property
+    def unwrapped(self):
+        return self
+
+
+class TaskWrapper(Task):
+    def __init__(self, task):
+        assert isinstance(task, Task)
+        super(TaskWrapper, self).__init__(task.num_classes)
+        self.task = task
+
+    def __len__(self):
+        return len(self.task)
+
+    @property
+    def unwrapped(self):
+        return self.task.unwrapped
+
 
 class ConcatTask(Task, ConcatDataset):
     def __init__(self, datasets, num_classes):

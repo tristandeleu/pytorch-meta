@@ -1,12 +1,11 @@
 import torch
-from torchmeta.dataset import Task
+from torchmeta.dataset import TaskWrapper
 from collections import defaultdict
 
 
-class CategoricalWrapper(Task):
+class CategoricalWrapper(TaskWrapper):
     def __init__(self, task):
-        super(CategoricalWrapper, self).__init__(task.num_classes)
-        self.task = task
+        super(CategoricalWrapper, self).__init__(task)
         self._classes = None
         self._labels = torch.randperm(self.num_classes).tolist()
 
@@ -26,13 +25,9 @@ class CategoricalWrapper(Task):
             raise ValueError()
         return sample[:-1] + (self.classes[sample[-1]],)
 
-    def __len__(self):
-        return len(self.task)
-
 
 class CategoricalTaskTarget(object):
     def __call__(self, task):
-        assert isinstance(task, Task)
         return CategoricalWrapper(task)
 
     def __repr__(self):
