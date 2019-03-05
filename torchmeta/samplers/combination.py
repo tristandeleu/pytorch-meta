@@ -26,7 +26,6 @@ class CombinationRandomSampler(RandomSampler):
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)
-        print(num_classes)
         num_classes_per_task = self.data_source.num_classes_per_task
         for _ in range(len(self)):
             yield tuple(random.sample(range(num_classes), num_classes_per_task))
