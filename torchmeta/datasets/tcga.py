@@ -214,12 +214,6 @@ class TCGA(MetaDataset):
                 with open(filepath, 'wb') as f:
                     shutil.copyfileobj(gzf, f)
 
-        #gene_expression_file = os.path.join(self.root, self.gene_expression_filename)
-        #if not os.path.isfile(gene_expression_file):
-        #    import academictorrents as at
-        #    print('Downloading `{0}` using `academictorrent`...'.format(self.gene_expression_filename))
-        #    at.get(self.gene_expression_torrent, datastore=self.root)
-        #    print('Done')
         import academictorrents as at
         gene_expression_file = os.path.join(self.root, self.gene_expression_filename)
         print('Downloading `{0}` using `academictorrent`...'.format(self.gene_expression_filename))
@@ -234,15 +228,9 @@ class TCGA(MetaDataset):
             df = df.astype(float)
             gene_ids = df.columns.values
             all_sample_ids = df.index.values
-            # with open(gene_ids_file, "w") as text_file:
-            #     for gene_id in gene_ids:
-            #         text_file.write('{}\n'.format(gene_id))
-            # with open(all_sample_ids_file, "w") as text_file:
-            #     for sample_id in all_sample_ids:
-            #         text_file.write('{}\n'.format(sample_id))
 
             f = h5py.File(gene_expression_file)
-            f.create_dataset("expression_data", data=df.values)
+            f.create_dataset("expression_data", data=df.values, dtype='f4')
             f.create_dataset("gene_ids", data=gene_ids.astype('S20'))
             f.create_dataset("sample_names", data=all_sample_ids.astype('S20'))
             f.close()
