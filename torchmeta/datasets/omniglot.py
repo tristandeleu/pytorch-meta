@@ -31,7 +31,7 @@ class OmniglotClassDataset(ClassDataset, TorchvisionOmniglot):
     def __getitem__(self, index):
         character = self._characters[index % self.num_classes]
         images = self._character_images[index % self.num_classes]
-        transform = self.get_class_transform(index, self.transform)
+        transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)
 
         return OmniglotDataset(self.target_folder, character, images,
