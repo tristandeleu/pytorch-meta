@@ -1,0 +1,21 @@
+import os
+import json
+
+def get_asset_path(*args):
+    basedir = os.path.dirname(__file__)
+    return os.path.join(basedir, 'assets', *args)
+
+def get_asset(*args, dtype=None):
+    filename = get_asset_path(*args)
+    if not os.path.isfile(filename):
+        raise IOError()
+
+    if dtype is None:
+        _, dtype = os.path.splitext(filename)
+
+    if dtype == 'json':
+        with open(filename, 'r') as f:
+            data = json.load(f)
+    else:
+        raise NotImplementedError()
+    return data

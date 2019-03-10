@@ -4,11 +4,18 @@ import h5py
 import pandas as pd
 
 from torchmeta.dataset import MetaDataset, Task
+from torchmeta.datasets.utils import get_asset
 
 class classproperty(property):
     """Subclass property to make classmethod properties possible"""
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)()
+
+def get_cancers():
+    return get_asset(TCGA.folder, 'cancers.json', dtype='json')
+
+def get_task_variables():
+    return get_asset(TCGA.folder, 'task_variables.json', dtype='json')
 
 class TCGA(MetaDataset):
     folder = 'tcga'
@@ -20,8 +27,9 @@ class TCGA(MetaDataset):
     _task_variables = None
     _cancers = None
 
-    def __init__(self, root, meta_train=True, min_samples_per_class=3, transform=None,
-                 target_transform=None, dataset_transform=None, download=False, preload=True):
+    def __init__(self, root, meta_train=True, min_samples_per_class=3,
+                 transform=None, target_transform=None, dataset_transform=None,
+                 download=False, chunksize=100, preload=True):
         super(TCGA, self).__init__(dataset_transform=dataset_transform)
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.meta_train = meta_train
@@ -34,7 +42,7 @@ class TCGA(MetaDataset):
         self._gene_ids = None
 
         if download:
-            self.download()
+            self.download(chunksize)
 
         self.preloaded = False
         self.gene_expression_file = None
@@ -79,7 +87,7 @@ class TCGA(MetaDataset):
             if not os.path.isfile(filename):
                 raise IOError()
             with open(filename, 'r') as f:
-                cls._task_variables = set(json.load(f))
+                cls._task_variables = frozenset(json.load(f))
         return tuple(cls._task_variables)
 
     @property
@@ -87,18 +95,9 @@ class TCGA(MetaDataset):
         if self._gene_ids is None:
             gene_ids_file = os.path.join(self.root, 'gene_ids.json')
             if not os.path.isfile(gene_ids_file):
-                if self.gene_expression_file is not None:
-                    names = self.gene_expression_file['gene_ids']
-                else:
-                    with h5py.File(self.gene_expression_path, 'r') as f:
-                        names = f['gene_ids']
-                gene_ids = [name.decode('utf-8') for name in names]
-                with open(gene_ids_file, 'w') as f:
-                    json.dump(gene_ids, f)
-            else:
-                with open(gene_ids_file, 'r') as f:
-                    gene_ids = json.load(f)
-            self._gene_ids = set(gene_ids)
+                raise IOError()
+            with open(gene_ids_file, 'r') as f:
+                self._gene_ids = set(json.load(f))
         return self._gene_ids
 
     @property
@@ -106,17 +105,9 @@ class TCGA(MetaDataset):
         if self._all_sample_ids is None:
             all_sample_ids_file = os.path.join(self.root, 'all_sample_ids.json')
             if not os.path.isfile(all_sample_ids_file):
-                if self.gene_expression_file is not None:
-                    names = self.gene_expression_file['sample_names']
-                else:
-                    with h5py.File(self.gene_expression_path, 'r') as f:
-                        names = f['sample_names']
-                all_sample_ids = [name.decode('utf-8') for name in names]
-                with open(all_sample_ids_file, 'w') as f:
-                    json.dump(all_sample_ids, f)
-            else:
-                with open(all_sample_ids_file, 'r') as f:
-                    all_sample_ids = json.load(f)
+                raise IOError()
+            with open(all_sample_ids_file, 'r') as f:
+                all_sample_ids = json.load(f)
             self._all_sample_ids = dict((v, k) for (k, v) in enumerate(all_sample_ids))
         return self._all_sample_ids
 
@@ -131,7 +122,7 @@ class TCGA(MetaDataset):
     def __getitem__(self, index):
         label, cancer = self.task_ids[index]
         filename = self.get_processed_filename(cancer)
-        dataframe = pd.read_csv(filename, sep='\t', index_col=0)
+        dataframe = pd.read_csv(filename, sep='\t', index_col=0, header=0)
         labels = dataframe[label].dropna().astype('category')
 
         if self.gene_expression_file is not None:
@@ -168,7 +159,7 @@ class TCGA(MetaDataset):
             processed = os.path.join(processed_folder, '{0}.tsv'.format(filename))
 
             if not os.path.isfile(processed):
-                raw_df = pd.read_csv(filepath, sep='\t', index_col=0,
+                raw_df = pd.read_csv(filepath, sep='\t', index_col=0, header=0,
                     usecols=col_in_task_variables)#.dropna(axis=0, how='any')
                 dataframe = raw_df[raw_df.index.isin(self.all_sample_ids)]
                 dataframe.index = dataframe.index.map(lambda index: self.all_sample_ids[index])
@@ -176,7 +167,7 @@ class TCGA(MetaDataset):
                 dataframe = dataframe.sort_index(axis=0)
                 dataframe.to_csv(processed, sep='\t')
             else:
-                dataframe = pd.read_csv(processed, sep='\t', index_col=0)
+                dataframe = pd.read_csv(processed, sep='\t', index_col=0, header=0)
 
             num_samples_per_label = dataframe.apply(pd.value_counts)
             min_samples_per_class = num_samples_per_label.min(axis=0)
@@ -187,7 +178,7 @@ class TCGA(MetaDataset):
 
         return task_ids
 
-    def download(self):
+    def download(self, chunksize=100):
         import gzip
         import shutil
         from six.moves import urllib
@@ -214,26 +205,44 @@ class TCGA(MetaDataset):
                 with open(filepath, 'wb') as f:
                     shutil.copyfileobj(gzf, f)
 
-        import academictorrents as at
         gene_expression_file = os.path.join(self.root, self.gene_expression_filename)
-        print('Downloading `{0}` using `academictorrent`...'.format(self.gene_expression_filename))
-        csv_file = at.get(self.gene_expression_torrent, datastore=self.root)
-        if not os.path.isfile(gene_expression_file) and os.path.isfile(csv_file):
-            print("Downloaded to: " + csv_file)
-            print("Converting TCGA CSV dataset to HDF5. This only happens on first run.")
-            df = pd.read_csv(csv_file, compression="gzip", sep="\t")
-            df = df.transpose()
-            df.columns = df.iloc[0]
-            df = df.drop(df.index[0])
-            df = df.astype(float)
-            gene_ids = df.columns.values
-            all_sample_ids = df.index.values
+        if not os.path.isfile(gene_expression_file):
+            import academictorrents as at
+            from tqdm import tqdm
+            print('Downloading `{0}` using `academictorrents`...'.format(
+                self.gene_expression_filename))
+            csv_file = at.get(self.gene_expression_torrent, datastore=self.root)
+            print('Downloaded to: `{0}`'.format(csv_file))
 
-            f = h5py.File(gene_expression_file)
-            f.create_dataset("expression_data", data=df.values, dtype='f4')
-            f.create_dataset("gene_ids", data=gene_ids.astype('S20'))
-            f.create_dataset("sample_names", data=all_sample_ids.astype('S20'))
-            f.close()
+            print('Converting TCGA CSV dataset to HDF5. This may take a while, '
+                'but only happens on the first run.')
+            reader = pd.read_csv(csv_file, compression='gzip', sep='\t',
+                header=0, index_col=0, chunksize=chunksize)
+            shape = (10459, 20530)
+
+            with tqdm(total=shape[1]) as pbar:
+                with h5py.File(gene_expression_file, 'w') as f:
+                    dataset = f.create_dataset('expression_data',
+                        shape=shape, dtype='f4')
+                    gene_ids = []
+                    for idx, chunk in enumerate(reader):
+                        slice_ = slice(idx * chunksize, (idx + 1) * chunksize)
+                        dataset[:, slice_] = chunk.T
+                        gene_ids.extend(chunk.index)
+                        pbar.update(chunk.shape[0])
+                    all_sample_ids = chunk.columns.tolist()
+
+            gene_ids_file = os.path.join(self.root, 'gene_ids.json')
+            with open(gene_ids_file, 'w') as f:
+                json.dump(gene_ids, f)
+
+            all_sample_ids_file = os.path.join(self.root, 'all_sample_ids.json')
+            with open(all_sample_ids_file, 'w') as f:
+                json.dump(all_sample_ids, f)
+
+            # if os.path.isfile(csv_file):
+            #     os.remove(csv_file)
+
             print('Done')
 
         # Clean up
@@ -253,24 +262,20 @@ class TCGA(MetaDataset):
 class TCGATask(Task):
     @classmethod
     def from_id(cls, root, task_id, transform=None, target_transform=None):
-        root = os.path.join(os.path.expanduser(root), 'tcga')
-
-        clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
-        clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
-        gene_expression_filename = 'TCGA_HiSeqV2.hdf5'
-        gene_filepath = os.path.join(root, gene_expression_filename)
+        root = os.path.join(os.path.expanduser(root), TCGA.folder)
+        gene_filepath = os.path.join(root, TCGA.gene_expression_filename)
         if not os.path.isfile(gene_filepath):
             raise IOError()
         
         label, cancer = task_id
 
         processed_folder = os.path.join(root, 'clinicalMatrices', 'processed')
-        filename = '{0}.tsv'.format(clinical_matrix_filename.format(cancer))
+        filename = '{0}.tsv'.format(TCGA.clinical_matrix_filename.format(cancer))
         filepath = os.path.join(processed_folder, filename)
         if not os.path.isfile(filepath):
             raise IOError()
 
-        dataframe = pd.read_csv(filepath, sep='\t', index_col=0)
+        dataframe = pd.read_csv(filepath, sep='\t', index_col=0, header=0)
         labels = dataframe[label].dropna().astype('category')
 
         with h5py.File(gene_filepath, 'r') as f:
