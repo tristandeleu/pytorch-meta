@@ -100,9 +100,10 @@ class CombinationMetaDataset(MetaDataset):
         return task
 
     def __len__(self):
-        from scipy.special import binom
-        num_classes = len(self.dataset)
-        return int(binom(num_classes, self.num_classes_per_task))
+        num_classes, length = len(self.dataset), 1
+        for i in range(1, self.num_classes_per_task + 1):
+            length *= (num_classes - i + 1) / i
+        return int(length)
 
 
 class Task(Dataset):
