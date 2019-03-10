@@ -3,12 +3,10 @@ from itertools import combinations
 from torch.utils.data import Dataset, ConcatDataset
 from torchvision.transforms import Compose
 
-class Category:
-    def __init__(self, index):
-        self.index = index
-
-    def __call__(self, _):
-        return self.index
+def fixed_category(index):
+    def _fixed_category(i):
+        return index
+    return _fixed_category
 
 class ClassDataset(object):
     def __init__(self, class_transforms=None):
@@ -31,7 +29,7 @@ class ClassDataset(object):
         return Compose([class_transform, transform])
 
     def get_target_transform(self, index, transform):
-        categorical_transform = Category(index)
+        categorical_transform = fixed_category(index)
         if transform is None:
             return categorical_transform
         return Compose([transform, categorical_transform])
