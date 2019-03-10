@@ -53,6 +53,10 @@ class MetaDataset(object):
         for index in range(len(self)):
             yield self[index]
 
+    def sample_task(self):
+        index = torch.randint(len(self), size=()).item()
+        return self[index]
+
     def __getitem__(self, index):
         raise NotImplementedError()
 
@@ -72,6 +76,11 @@ class CombinationMetaDataset(MetaDataset):
         num_classes = len(self.dataset)
         for index in combinations(num_classes, self.num_classes_per_task):
             yield self[index]
+
+    def sample_task(self):
+        import random
+        index = random.sample(range(self.dataset.num_classes), self.num_classes_per_task)
+        return self[index]
 
     def __getitem__(self, index):
         assert len(index) == self.num_classes_per_task
