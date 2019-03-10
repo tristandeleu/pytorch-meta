@@ -83,6 +83,13 @@ class CombinationMetaDataset(MetaDataset):
         return self[index]
 
     def __getitem__(self, index):
+        if isinstance(index, int):
+            raise ValueError('The index of a `CombinationMetaDataset` must be '
+                'a tuple of integers, and not an integer. For example, call '
+                '`dataset[({0})]` to get a task with classes from 0 to {1} '
+                '(got `{2}`).'.format(', '.join([str(idx)
+                for idx in range(self.num_classes_per_task)]),
+                self.num_classes_per_task - 1, index))
         assert len(index) == self.num_classes_per_task
         datasets = [self.dataset[i] for i in index]
         task = ConcatTask(datasets, self.num_classes_per_task)
