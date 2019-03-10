@@ -1,7 +1,6 @@
 import os
 import json
 import h5py
-import pandas as pd
 import warnings
 
 from torchmeta.dataset import MetaDataset, Task
@@ -123,6 +122,7 @@ class TCGA(MetaDataset):
         return filepath
 
     def __getitem__(self, index):
+        import pandas as pd
         label, cancer = self.task_ids[index]
         filename = self.get_processed_filename(cancer)
         dataframe = pd.read_csv(filename, sep='\t', index_col=0, header=0)
@@ -148,6 +148,7 @@ class TCGA(MetaDataset):
         self.gene_expression_data = self.gene_expression_file['expression_data']
 
     def get_task_ids(self):
+        import pandas as pd
         clinical_matrices_folder = os.path.join(self.root, 'clinicalMatrices')
         processed_folder = os.path.join(clinical_matrices_folder, 'processed')
         if not os.path.exists(processed_folder):
@@ -184,6 +185,7 @@ class TCGA(MetaDataset):
     def download(self, chunksize=100):
         import gzip
         import shutil
+        import pandas as pd
         from six.moves import urllib
 
         clinical_matrices_folder = os.path.join(self.root, 'clinicalMatrices')
@@ -265,6 +267,7 @@ class TCGA(MetaDataset):
 class TCGATask(Task):
     @classmethod
     def from_id(cls, root, task_id, transform=None, target_transform=None):
+        import pandas as pd
         root = os.path.join(os.path.expanduser(root), TCGA.folder)
         gene_filepath = os.path.join(root, TCGA.gene_expression_filename)
         if not os.path.isfile(gene_filepath):
