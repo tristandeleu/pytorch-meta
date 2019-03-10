@@ -8,20 +8,27 @@ from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 class Omniglot(CombinationMetaDataset):
     def __init__(self, root, num_classes_per_task=None, meta_train=True,
                  transform=None, target_transform=None, dataset_transform=None,
-                 class_transforms=None, download=False):
+                 class_transforms=None, class_augmentations=None, download=False):
+        if class_transforms is not None:
+            import warnings
+            warnings.warn('The argument `class_transforms` is deprecated. '
+                'Please use the argument `class_augmentations` instead.',
+                DeprecationWarning, stacklevel=2)
+            if class_augmentations is None:
+                class_augmentations = class_transforms
         dataset = OmniglotClassDataset(root, meta_train=meta_train,
             transform=transform, target_transform=target_transform,
-            class_transforms=class_transforms, download=download)
+            class_augmentations=class_augmentations, download=download)
         super(Omniglot, self).__init__(dataset, num_classes_per_task,
             dataset_transform=dataset_transform)
 
 
 class OmniglotClassDataset(ClassDataset, TorchvisionOmniglot):
     def __init__(self, root, meta_train=True, transform=None,
-                 target_transform=None, class_transforms=None, download=False):
+                 target_transform=None, class_augmentations=None, download=False):
         TorchvisionOmniglot.__init__(self, root, background=meta_train,
             transform=transform, target_transform=None, download=download)
-        ClassDataset.__init__(self, class_transforms=class_transforms)
+        ClassDataset.__init__(self, class_augmentations=class_augmentations)
         self._num_classes = len(self._characters)
 
     @property

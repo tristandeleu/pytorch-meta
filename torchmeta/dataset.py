@@ -9,21 +9,21 @@ def fixed_category(index):
     return _fixed_category
 
 class ClassDataset(object):
-    def __init__(self, class_transforms=None):
-        if class_transforms is not None:
-            if not isinstance(class_transforms, list):
+    def __init__(self, class_augmentations=None):
+        if class_augmentations is not None:
+            if not isinstance(class_augmentations, list):
                 raise ValueError()
-            class_transforms = [transform for class_transform
-                in class_transforms for transform in class_transform]
+            class_augmentations = [transform for augmentations
+                in class_augmentations for transform in augmentations]
         else:
-            class_transforms = []
-        self.class_transforms = class_transforms
+            class_augmentations = []
+        self.class_augmentations = class_augmentations
 
     def get_transform(self, index, transform):
         transform_index = (index // self.num_classes) - 1
         if transform_index < 0:
             return transform
-        class_transform = self.class_transforms[transform_index]
+        class_transform = self.class_augmentations[transform_index]
         if transform is None:
             return class_transform
         return Compose([class_transform, transform])
@@ -42,7 +42,7 @@ class ClassDataset(object):
         raise NotImplementedError()
 
     def __len__(self):
-        return self.num_classes * (len(self.class_transforms) + 1)
+        return self.num_classes * (len(self.class_augmentations) + 1)
 
 
 class MetaDataset(object):
