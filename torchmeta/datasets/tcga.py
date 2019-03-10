@@ -243,8 +243,8 @@ class TCGA(MetaDataset):
             with open(all_sample_ids_file, 'w') as f:
                 json.dump(all_sample_ids, f)
 
-            # if os.path.isfile(csv_file):
-            #     os.remove(csv_file)
+            if os.path.isfile(csv_file):
+                os.remove(csv_file)
 
             print('Done')
 
