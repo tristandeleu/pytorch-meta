@@ -3,7 +3,8 @@ import json
 import h5py
 import warnings
 
-from torchmeta.dataset import MetaDataset, Task
+from torchmeta.dataset import MetaDataset
+from torchmeta.tasks import Task
 from torchmeta.datasets.utils import get_asset
 
 def classproperty(msg=''):

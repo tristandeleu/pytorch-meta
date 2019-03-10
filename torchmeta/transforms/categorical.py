@@ -1,5 +1,5 @@
 import torch
-from torchmeta.dataset import TaskWrapper
+from torchmeta.tasks import TaskWrapper
 from collections import defaultdict
 
 

@@ -1,7 +1,7 @@
 import torch
 
 from collections import OrderedDict, defaultdict
-from torchmeta.dataset import TaskWrapper, ConcatTask, SubsetTask
+from torchmeta.tasks import TaskWrapper, ConcatTask, SubsetTask
 
 
 class Splitter(object):
