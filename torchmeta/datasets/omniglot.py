@@ -1,4 +1,6 @@
 import os
+import json
+import glob
 from PIL import Image
 
 from torch.utils.data import Dataset
@@ -6,7 +8,8 @@ from torchvision.datasets import Omniglot as TorchvisionOmniglot
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 
 class Omniglot(CombinationMetaDataset):
-    def __init__(self, root, num_classes_per_task=None, meta_train=True,
+    def __init__(self, root, num_classes_per_task=None, meta_train=False,
+                 meta_val=False, meta_test=False, use_vinyals_split=True,
                  transform=None, target_transform=None, dataset_transform=None,
                  class_transforms=None, class_augmentations=None, download=False):
         if class_transforms is not None:
@@ -17,6 +20,8 @@ class Omniglot(CombinationMetaDataset):
             if class_augmentations is None:
                 class_augmentations = class_transforms
         dataset = OmniglotClassDataset(root, meta_train=meta_train,
+            meta_val=meta_val, meta_test=meta_test,
+            use_vinyals_split=use_vinyals_split,
             transform=transform, target_transform=target_transform,
             class_augmentations=class_augmentations, download=download)
         super(Omniglot, self).__init__(dataset, num_classes_per_task,
@@ -24,11 +29,27 @@ class Omniglot(CombinationMetaDataset):
 
 
 class OmniglotClassDataset(ClassDataset, TorchvisionOmniglot):
-    def __init__(self, root, meta_train=True, transform=None,
-                 target_transform=None, class_augmentations=None, download=False):
+    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
+                 use_vinyals_split=True, transform=None, target_transform=None,
+                 class_augmentations=None, download=False):
+        if (meta_train + meta_val + meta_test) != 1:
+            raise ValueError()
+        if meta_val and (not use_vinyals_split):
+            raise ValueError()
         TorchvisionOmniglot.__init__(self, root, background=meta_train,
             transform=transform, target_transform=None, download=download)
         ClassDataset.__init__(self, class_augmentations=class_augmentations)
+        if use_vinyals_split:
+            asset_path = os.path.join(os.path.dirname(__file__), 'assets', 'omniglot')
+            split = 'train' if meta_train else ('val' if meta_val else 'test')
+            with open(os.path.join(asset_path, '{0}.json'.format(split)), 'r') as f:
+                split_dict = json.load(f)
+                self._characters = ['{0}/{1}'.format(alphabet, character)
+                    for (alphabet, characters) in split_dict.item()
+                    for character in characters]
+                self._character_images = [[(image, idx) for image in glob.glob(
+                    os.path.join(self.target_folder, character, '*.png'))]
+                    for (idx, character) in enumerate(self._characters)]
         self._num_classes = len(self._characters)
 
     @property
