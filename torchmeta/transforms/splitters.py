@@ -1,8 +1,7 @@
 import torch
 
 from collections import OrderedDict, defaultdict
-from torchmeta.dataset import TaskWrapper, ConcatTask
-from torch.utils.data import Subset
+from torchmeta.dataset import TaskWrapper, ConcatTask, SubsetTask
 
 
 class Splitter(object):
@@ -14,7 +13,7 @@ class Splitter(object):
 
     def __call__(self, task):
         indices = self.get_indices(task)
-        return OrderedDict([(split, Subset(task, indices[split]))
+        return OrderedDict([(split, SubsetTask(task, indices[split]))
             for split in self.splits])
 
     def __len__(self):

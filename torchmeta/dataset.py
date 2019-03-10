@@ -1,6 +1,6 @@
 import torch
 from itertools import combinations
-from torch.utils.data import Dataset, ConcatDataset
+from torch.utils.data import Dataset, ConcatDataset, Subset
 from torchvision.transforms import Compose
 
 def fixed_category(index):
@@ -136,3 +136,14 @@ class ConcatTask(Task, ConcatDataset):
 
     def __getitem__(self, index):
         return ConcatDataset.__getitem__(self, index)
+
+
+class SubsetTask(Task, Subset):
+    def __init__(self, dataset, indices, num_classes=None):
+        if num_classes is None:
+            num_classes = dataset.num_classes
+        Task.__init__(self, num_classes)
+        Subset.__init__(self, dataset, indices)
+
+    def __getitem__(self, index):
+        return Subset.__getitem__(self, index)
