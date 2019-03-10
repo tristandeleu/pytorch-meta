@@ -2,14 +2,19 @@ import os
 import json
 import h5py
 import pandas as pd
+import warnings
 
 from torchmeta.dataset import MetaDataset, Task
 from torchmeta.datasets.utils import get_asset
 
-class classproperty(property):
-    """Subclass property to make classmethod properties possible"""
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()
+def classproperty(msg=''):
+    class _classproperty(property):
+        """Subclass property to make classmethod properties possible"""
+        def __get__(self, cls, owner):
+            if cls is None:
+                warnings.warn(msg, DeprecationWarning, stacklevel=2)
+            return self.fget.__get__(None, owner)()
+    return _classproperty
 
 def get_cancers():
     return get_asset(TCGA.folder, 'cancers.json', dtype='json')
@@ -62,32 +67,30 @@ class TCGA(MetaDataset):
             raise IOError()
         return filename
     
-    @classproperty
+    @classproperty('The property `assets_path` is deprecated, and will be '
+        'removed. To get the path to the assets, please use `torchmeta.'
+        'datasets.utils.get_asset_path("tcga")`.')
     @classmethod
     def assets_path(cls):
-        cls._assets_path = os.path.join(os.path.dirname(__file__), 'assets', cls.folder)
-        return cls._assets_path 
+        return os.path.join(os.path.dirname(__file__), 'assets', cls.folder)
 
-    @classproperty
+    @classproperty('Access to the property `cancers` with `TCGA.cancers` is '
+        'deprecated, and will be removed. To get a list of cancers from the '
+        'assets, please use `tuple(torchmeta.datasets.tcga.get_cancers())`.')
     @classmethod
     def cancers(cls):
         if cls._cancers is None:
-            filename = os.path.join(cls.assets_path, 'cancers.json')
-            if not os.path.isfile(filename):
-                raise IOError()
-            with open(filename, 'r') as f:
-                cls._cancers = json.load(f)
+            cls._cancers = get_cancers()
         return tuple(cls._cancers)
 
-    @classproperty
+    @classproperty('Access to the property `task_variables` with '
+        '`TCGA.task_variables` is deprecated, and will be removed. To get a '
+        'list of task variables from the assets, please use `tuple(torchmeta.'
+        'datasets.tcga.get_task_variables())`.')
     @classmethod
     def task_variables(cls):
         if cls._task_variables is None:
-            filename = os.path.join(cls.assets_path, 'task_variables.json')
-            if not os.path.isfile(filename):
-                raise IOError()
-            with open(filename, 'r') as f:
-                cls._task_variables = frozenset(json.load(f))
+            cls._task_variables = frozenset(get_task_variables())
         return tuple(cls._task_variables)
 
     @property
