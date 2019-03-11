@@ -1,5 +1,8 @@
 import torch
+import warnings
+
 from itertools import combinations
+from collections import OrderedDict
 from torchvision.transforms import Compose
 
 from torchmeta.tasks import ConcatTask
@@ -14,8 +17,17 @@ class ClassDataset(object):
         if class_augmentations is not None:
             if not isinstance(class_augmentations, list):
                 raise ValueError()
-            class_augmentations = [transform for augmentations
-                in class_augmentations for transform in augmentations]
+            unique_augmentations = OrderedDict()
+            for augmentations in class_augmentations:
+                for transform in augmentations:
+                    if transform in unique_augmentations:
+                        warnings.warn('The class augmentation `{0}` already '
+                            'exists in the list of class augmentations (`{1}`). '
+                            'To avoid any duplicate, this transformation is '
+                            'ignored.'.format(transform, repr(transform)),
+                            UserWarning, stacklevel=2)
+                    unique_augmentations[transform] = None
+            class_augmentations = list(unique_augmentations)
         else:
             class_augmentations = []
         self.class_augmentations = class_augmentations

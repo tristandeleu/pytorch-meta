@@ -7,14 +7,13 @@ class Rotation(object):
             self._angles = angle
             self.angle = None
         else:
-            if angle % 360 == 0:
-                import warnings
-                warnings.warn('Applying a rotation of {0} degrees as a class '
-                    'augmentation on a dataset is equivalent to the original '
-                    'dataset. Ignoring this class augmentation.'.format(angle),
-                    UserWarning, stacklevel=2)
             self._angles = [angle]
             self.angle = angle
+            if angle % 360 == 0:
+                import warnings
+                warnings.warn('Applying a rotation of {0} degrees (`{1}`) as a '
+                    'class augmentation on a dataset is equivalent to the original '
+                    'dataset.'.format(angle, self), UserWarning, stacklevel=2)
 
         self.resample = resample
         self.expand = expand
@@ -27,14 +26,28 @@ class Rotation(object):
     def __call__(self, image):
         if self.angle is None:
             raise ValueError()
-        return F.rotate(image, self.angle, self.resample,
+        return F.rotate(image, self.angle % 360, self.resample,
                         self.expand, self.center)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        if (self.angle is None) or (other.angle is None):
+            return self._angles == other._angles
+        return (self.angle % 360) == (other.angle % 360)
 
     def __repr__(self):
         if self.angle is None:
             return 'Rotation({0})'.format(', '.join(map(str, self._angles)))
         else:
             return 'Rotation({0})'.format(self.angle % 360)
+
+    def __str__(self):
+        if self.angle is None:
+            return 'Rotation({0})'.format(', '.join(map(str, self._angles)))
+        else:
+            return 'Rotation({0})'.format(self.angle)
 
 class HorizontalFlip(object):
     def __iter__(self):
