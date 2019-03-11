@@ -6,11 +6,7 @@ from collections import OrderedDict
 from torchvision.transforms import Compose
 
 from torchmeta.tasks import ConcatTask
-
-def fixed_category(index):
-    def _fixed_category(i):
-        return index
-    return _fixed_category
+from torchmeta.transforms import FixedCategory
 
 class ClassDataset(object):
     def __init__(self, class_augmentations=None):
@@ -42,7 +38,7 @@ class ClassDataset(object):
         return Compose([class_transform, transform])
 
     def get_target_transform(self, index, transform):
-        categorical_transform = fixed_category(index)
+        categorical_transform = FixedCategory(index)
         if transform is None:
             return categorical_transform
         return Compose([transform, categorical_transform])

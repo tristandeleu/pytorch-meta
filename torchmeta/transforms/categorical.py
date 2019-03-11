@@ -32,3 +32,14 @@ class CategoricalTaskTarget(object):
 
     def __repr__(self):
         return '{0}()'.format(self.__class__.__name__)
+
+
+class FixedCategory(object):
+    def __init__(self, index):
+        self.index = index
+
+    def __call__(self, index):
+        return self.index
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__class__.__name__, self.index)
