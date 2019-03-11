@@ -22,14 +22,19 @@ class Splitter(object):
 
 class ClassSplitter(Splitter):
     def __init__(self, shuffle=False, num_samples_per_class=None,
-                 num_train_per_class=None, num_test_per_class=None):
+                 num_train_per_class=None, num_test_per_class=None,
+                 num_support_per_class=None, num_query_per_class=None):
         self.shuffle = shuffle
         if num_samples_per_class is None:
             num_samples_per_class = OrderedDict()
             if num_train_per_class is not None:
                 num_samples_per_class['train'] = num_train_per_class
+            elif num_support_per_class is not None:
+                num_samples_per_class['support'] = num_support_per_class
             if num_test_per_class is not None:
                 num_samples_per_class['test'] = num_test_per_class
+            elif num_query_per_class is not None:
+                num_samples_per_class['query'] = num_query_per_class
         assert len(num_samples_per_class) > 0
         self._min_samples_per_class = min(num_samples_per_class.values())
         super(ClassSplitter, self).__init__(num_samples_per_class)
@@ -80,8 +85,13 @@ class ClassSplitter(Splitter):
     def get_indices(self, task):
         if isinstance(task.unwrapped, ConcatTask):
             if len(task) != len(task.unwrapped):
-                # TODO: raise a warning that we might have already taken a
-                # subset of the original task. Roll back to get_indices_task
+                import warnings
+                warnings.warn('The length of the transformed task is different '
+                    'from the length of the original task. Maybe one of the '
+                    'dataset transformations applied is already taking a subset '
+                    'of the task (eg. calling two splitters in '
+                    '`dataset_transform`). `ClassSplitter` will roll back to a '
+                    'simple stategy for dataset splitting.', UserWarning, stacklevel=2)
                 return self.get_indices_task(task)
             indices = self.get_indices_concattask(task)
         elif isinstance(task, Task):
