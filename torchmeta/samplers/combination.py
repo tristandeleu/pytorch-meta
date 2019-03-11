@@ -21,11 +21,10 @@ class CombinationRandomSampler(RandomSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
             raise ValueError()
-        super(CombinationRandomSampler, self).__init__(data_source,
-            replacement=False, num_samples=None)
+        self.data_source = data_source
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)
         num_classes_per_task = self.data_source.num_classes_per_task
-        for _ in range(len(self)):
+        for _ in combinations(range(num_classes), num_classes_per_task):
             yield tuple(random.sample(range(num_classes), num_classes_per_task))
