@@ -110,9 +110,10 @@ class ClassSplitter(Splitter):
 class WeightedClassSplitter(Splitter):
     def __init__(self, shuffle=False, min_num_samples=1, weights=None,
                  train_weights=None, test_weights=None, support_weights=None,
-                 query_weights=None):
+                 query_weights=None, force_equal_per_class=False):
         self.shuffle = True
         self.min_num_samples = min_num_samples
+        self.force_equal_per_class = force_equal_per_class
         if weights is None:
             weights = OrderedDict()
             if train_weights is not None:
@@ -131,10 +132,13 @@ class WeightedClassSplitter(Splitter):
     def get_indices_task(self, task):
         all_class_indices = self._get_class_indices(task)
         indices = OrderedDict([(split, []) for split in self.splits])
+        min_samples = min([len(class_indices) for class_indices
+            in all_class_indices.values()])
+        if min_samples < self._min_samples_per_class:
+            raise ValueError()
         for class_indices in all_class_indices.values():
-            num_samples = len(class_indices)
-            if num_samples < self._min_samples_per_class:
-                raise ValueError()
+            num_samples = (min_samples if self.force_equal_per_class
+                else len(class_indices))
             if self.shuffle:
                 dataset_indices = torch.randperm(num_samples).tolist()
             ptr = 0
@@ -149,8 +153,12 @@ class WeightedClassSplitter(Splitter):
     def get_indices_concattask(self, task):
         indices = OrderedDict([(split, []) for split in self.splits])
         cum_size = 0
+        min_samples = min([len(dataset) for dataset in task.unwrapped.datasets])
+        if min_samples < self._min_samples_per_class:
+            raise ValueError()
         for dataset in task.unwrapped.datasets:
-            num_samples = len(dataset)
+            num_samples = (min_samples if self.force_equal_per_class
+                else len(dataset))
             if num_samples < self._min_samples_per_class:
                 raise ValueError()
             if self.shuffle:

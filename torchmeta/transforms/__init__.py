@@ -1,3 +1,3 @@
 from torchmeta.transforms.categorical import CategoricalTaskTarget
 from torchmeta.transforms.augmentations import Rotation, HorizontalFlip, VerticalFlip
-from torchmeta.transforms.splitters import ClassSplitter
+from torchmeta.transforms.splitters import ClassSplitter, WeightedClassSplitter
