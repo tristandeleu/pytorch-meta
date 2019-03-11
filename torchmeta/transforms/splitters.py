@@ -36,7 +36,7 @@ class ClassSplitter(Splitter):
             elif num_query_per_class is not None:
                 num_samples_per_class['query'] = num_query_per_class
         assert len(num_samples_per_class) > 0
-        self._min_samples_per_class = min(num_samples_per_class.values())
+        self._min_samples_per_class = sum(num_samples_per_class.values())
         super(ClassSplitter, self).__init__(num_samples_per_class)
 
     def get_indices_task(self, task):
