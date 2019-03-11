@@ -9,7 +9,39 @@ class Splitter(object):
         self.splits = splits
 
     def get_indices(self, task):
+        if isinstance(task.unwrapped, ConcatTask):
+            if len(task) != len(task.unwrapped):
+                import warnings
+                warnings.warn('The length of the transformed task is different '
+                    'from the length of the original task. Maybe one of the '
+                    'dataset transformations applied is already taking a subset '
+                    'of the task (eg. calling two splitters in '
+                    '`dataset_transform`). `ClassSplitter` will roll back to a '
+                    'simple stategy for dataset splitting.', UserWarning, stacklevel=2)
+                return self.get_indices_task(task)
+            indices = self.get_indices_concattask(task)
+        elif isinstance(task, Task):
+            indices = self.get_indices_task(task)
+        else:
+            raise ValueError()
+        return indices
+
+    def get_indices_task(self, task):
         raise NotImplementedError()
+
+    def get_indices_concattask(self, task):
+        raise NotImplementedError()
+
+    def _get_class_indices(self, task):
+        class_indices = defaultdict(list)
+        for index in range(len(task)):
+            sample = task[index]
+            if (not isinstance(sample, tuple)) or (len(sample) < 2):
+                raise ValueError()
+            class_indices[sample[-1]].append(index)
+        if len(class_indices) != task.num_classes:
+            raise ValueError()
+        return class_indices
 
     def __call__(self, task):
         indices = self.get_indices(task)
@@ -40,15 +72,7 @@ class ClassSplitter(Splitter):
         super(ClassSplitter, self).__init__(num_samples_per_class)
 
     def get_indices_task(self, task):
-        all_class_indices = defaultdict(list)
-        for index in range(len(task)):
-            sample = task[index]
-            if (not isinstance(sample, tuple)) or (len(sample) < 2):
-                raise ValueError()
-            all_class_indices[sample[-1]].append(index)
-        if len(all_class_indices) != task.num_classes:
-            raise ValueError()
-
+        all_class_indices = self._get_class_indices(task)
         indices = OrderedDict([(split, []) for split in self.splits])
         for class_indices in all_class_indices.values():
             num_samples = len(class_indices)
@@ -82,20 +106,60 @@ class ClassSplitter(Splitter):
             cum_size += num_samples
         return indices
 
-    def get_indices(self, task):
-        if isinstance(task.unwrapped, ConcatTask):
-            if len(task) != len(task.unwrapped):
-                import warnings
-                warnings.warn('The length of the transformed task is different '
-                    'from the length of the original task. Maybe one of the '
-                    'dataset transformations applied is already taking a subset '
-                    'of the task (eg. calling two splitters in '
-                    '`dataset_transform`). `ClassSplitter` will roll back to a '
-                    'simple stategy for dataset splitting.', UserWarning, stacklevel=2)
-                return self.get_indices_task(task)
-            indices = self.get_indices_concattask(task)
-        elif isinstance(task, Task):
-            indices = self.get_indices_task(task)
-        else:
-            raise ValueError()
+
+class WeightedClassSplitter(Splitter):
+    def __init__(self, shuffle=False, min_num_samples=1, weights=None,
+                 train_weights=None, test_weights=None, support_weights=None,
+                 query_weights=None):
+        self.shuffle = True
+        self.min_num_samples = min_num_samples
+        if weights is None:
+            weights = OrderedDict()
+            if train_weights is not None:
+                weights['train'] = train_weights
+            elif support_weights is not None:
+                weights['support'] = support_weights
+            if test_weights is not None:
+                weights['test'] = test_weights
+            elif query_weights is not None:
+                weights['query'] = query_weights
+        assert len(weights) > 0
+        assert sum(weights.values()) <= 1.
+        self._min_samples_per_class = len(weights) * min_num_samples
+        super(WeightedClassSplitter, self).__init__(weights)
+
+    def get_indices_task(self, task):
+        all_class_indices = self._get_class_indices(task)
+        indices = OrderedDict([(split, []) for split in self.splits])
+        for class_indices in all_class_indices.values():
+            num_samples = len(class_indices)
+            if num_samples < self._min_samples_per_class:
+                raise ValueError()
+            if self.shuffle:
+                dataset_indices = torch.randperm(num_samples).tolist()
+            ptr = 0
+            for split, weight in self.splits.items():
+                num_split = max(self.min_num_samples, int(weight * num_samples))
+                split_indices = (dataset_indices[ptr:ptr + num_split]
+                    if self.shuffle else range(ptr, ptr + num_split))
+                indices[split].extend([class_indices[idx] for idx in split_indices])
+                ptr += num_split
+        return indices
+
+    def get_indices_concattask(self, task):
+        indices = OrderedDict([(split, []) for split in self.splits])
+        cum_size = 0
+        for dataset in task.unwrapped.datasets:
+            num_samples = len(dataset)
+            if num_samples < self._min_samples_per_class:
+                raise ValueError()
+            if self.shuffle:
+                dataset_indices = torch.randperm(num_samples).tolist()
+            ptr = 0
+            for split, weight in self.splits.items():
+                num_split = max(self.min_num_samples, int(weight * num_samples))
+                split_indices = (dataset_indices[ptr:ptr + num_split]
+                    if self.shuffle else range(ptr, ptr + num_split))
+                indices[split].extend([idx + cum_size for idx in split_indices])
+            cum_size += num_samples
         return indices
