@@ -9,7 +9,21 @@ from torchmeta.tasks import ConcatTask
 from torchmeta.transforms import FixedCategory
 
 class ClassDataset(object):
-    def __init__(self, class_augmentations=None):
+    def __init__(self, meta_train=False, meta_val=False, meta_test=False,
+                 meta_split=None, class_augmentations=None):
+        if meta_train + meta_val + meta_test == 0:
+            if (meta_split is None) or (meta_split not in ['train', 'val', 'test']):
+                raise ValueError()
+            meta_train = (meta_split == 'train')
+            meta_val = (meta_split == 'val')
+            meta_test = (meta_split == 'test')
+        elif meta_train + meta_val + meta_test > 1:
+            raise ValueError()
+        self.meta_train = meta_train
+        self.meta_val = meta_val
+        self.meta_test = meta_test
+        self._meta_split = meta_split
+
         if class_augmentations is not None:
             if not isinstance(class_augmentations, list):
                 raise ValueError()
@@ -42,6 +56,19 @@ class ClassDataset(object):
         if transform is None:
             return categorical_transform
         return Compose([transform, categorical_transform])
+
+    @property
+    def meta_split(self):
+        if self._meta_split is None:
+            if self.meta_train:
+                self._meta_split = 'train'
+            elif self.meta_val:
+                self._meta_split = 'val'
+            elif self.meta_test:
+                self._meta_split = 'test'
+            else:
+                raise NotImplementedError()
+        return self._meta_split
 
     def __getitem__(self, index):
         raise NotImplementedError()

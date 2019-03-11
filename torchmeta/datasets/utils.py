@@ -12,6 +12,7 @@ def get_asset(*args, dtype=None):
 
     if dtype is None:
         _, dtype = os.path.splitext(filename)
+        dtype = dtype[1:]
 
     if dtype == 'json':
         with open(filename, 'r') as f:
