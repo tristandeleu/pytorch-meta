@@ -108,12 +108,14 @@ class ClassSplitter(Splitter):
 
 
 class WeightedClassSplitter(Splitter):
-    def __init__(self, shuffle=False, min_num_samples=1, weights=None,
-                 train_weights=None, test_weights=None, support_weights=None,
-                 query_weights=None, force_equal_per_class=False):
+    def __init__(self, shuffle=False, min_num_samples=1, max_num_samples=None,
+                 weights=None, train_weights=None, test_weights=None,
+                 support_weights=None, query_weights=None,
+                 force_equal_per_class=False):
         self.shuffle = True
         self.min_num_samples = min_num_samples
         self.force_equal_per_class = force_equal_per_class
+
         if weights is None:
             weights = OrderedDict()
             if train_weights is not None:
@@ -126,7 +128,28 @@ class WeightedClassSplitter(Splitter):
                 weights['query'] = query_weights
         assert len(weights) > 0
         assert sum(weights.values()) <= 1.
-        self._min_samples_per_class = len(weights) * min_num_samples
+
+        if (min_num_samples is None) or isinstance(min_num_samples, int):
+            if min_num_samples is None:
+                min_num_samples = 0
+            self.min_num_samples = OrderedDict([(split, min_num_samples)
+                for split in weights])
+        elif isinstance(min_num_samples, dict):
+            self.min_num_samples = OrderedDict(min_num_samples)
+        else:
+            raise NotImplementedError()
+
+        if max_num_samples is None:
+            self.max_num_samples = None
+        elif isinstance(max_num_samples, int):
+            self.max_num_samples = OrderedDict([(split, max_num_samples)
+                for split in weights])
+        elif isinstance(max_num_samples, dict):
+            self.max_num_samples = OrderedDict(max_num_samples)
+        else:
+            raise NotImplementedError()
+
+        self._min_samples_per_class = sum(self.min_num_samples.values())
         super(WeightedClassSplitter, self).__init__(weights)
 
     def get_indices_task(self, task):
@@ -143,7 +166,9 @@ class WeightedClassSplitter(Splitter):
                 dataset_indices = torch.randperm(num_samples).tolist()
             ptr = 0
             for split, weight in self.splits.items():
-                num_split = max(self.min_num_samples, int(weight * num_samples))
+                num_split = max(self.min_num_samples[split], int(weight * num_samples))
+                if self.max_num_samples is not None:
+                    num_split = min(self.max_num_samples[split], num_split)
                 split_indices = (dataset_indices[ptr:ptr + num_split]
                     if self.shuffle else range(ptr, ptr + num_split))
                 indices[split].extend([class_indices[idx] for idx in split_indices])
