@@ -1,5 +1,6 @@
 import os
 import json
+from torchvision.datasets.utils import makedir_exist_ok, check_integrity
 
 def get_asset_path(*args):
     basedir = os.path.dirname(__file__)
@@ -21,9 +22,10 @@ def get_asset(*args, dtype=None):
         raise NotImplementedError()
     return data
 
-def download_google_drive(id, filepath):
+def download_google_drive(id, root, filename, md5=None):
     import requests
     from tqdm import tqdm
+    filepath = os.path.join(root, filename)
     url = 'https://docs.google.com/uc?export=download'
 
     def get_confirm_token(response):
@@ -33,12 +35,16 @@ def download_google_drive(id, filepath):
         return None
 
     def save_response_content(response, destination, chunksize=32768):
-        with open(destination, "wb") as f:
+        with open(destination, 'wb') as f:
             with tqdm(desc=filename, unit_scale=True, unit_divisor=1024, unit='b') as pbar:
                 for chunk in response.iter_content(chunksize):
                     if chunk:
                         f.write(chunk)
                         pbar.update(len(chunk))
+
+    if os.path.isfile(filepath) and check_integrity(filepath, md5):
+        print('Using downloaded and verified file: {0}'.format(filepath))
+        return True
 
     session = requests.Session()
     params = {'id': id}
@@ -49,4 +55,7 @@ def download_google_drive(id, filepath):
         params.update({'confirm': token})
         response = session.get(url, params=params, stream=True)
 
+    makedir_exist_ok(root)
     save_response_content(response, filepath)
+
+    return check_integrity(filepath, md5=md5)

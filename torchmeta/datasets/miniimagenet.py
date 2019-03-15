@@ -24,6 +24,7 @@ class MiniImagenetClassDataset(ClassDataset):
     # Google Drive ID from https://github.com/renmengye/few-shot-ssl-public
     gdrive_id = '16V_ZlkW4SsnNDtnGmaBRq2OoPmUOc5mY'
     gz_filename = 'mini-imagenet.tar.gz'
+    gz_md5 = 'b38f1eb4251fb9459ecc8e7febf9b2eb'
     filename = 'mini-imagenet-cache-{0}.pkl'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
@@ -75,10 +76,11 @@ class MiniImagenetClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        filename = os.path.join(self.root, self.gz_filename)
-        if not os.path.isfile(filename):
-            download_google_drive(self.gdrive_id, filename)
+        if not download_google_drive(self.gdrive_id, self.root,
+                self.gz_filename, md5=self.gz_md5):
+            raise RuntimeError('')
 
+        filename = os.path.join(self.root, self.gz_filename)
         with tarfile.open(filename, 'r') as f:
             f.extractall(self.root)
 
