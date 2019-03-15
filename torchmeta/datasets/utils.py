@@ -42,20 +42,19 @@ def download_google_drive(id, root, filename, md5=None):
                         f.write(chunk)
                         pbar.update(len(chunk))
 
-    if os.path.isfile(filepath) and check_integrity(filepath, md5):
+    if os.path.isfile(filepath):
         print('Using downloaded and verified file: {0}'.format(filepath))
-        return True
-
-    session = requests.Session()
-    params = {'id': id}
-    response = session.get(url, params=params, stream=True)
-    token = get_confirm_token(response)
-
-    if token is not None:
-        params.update({'confirm': token})
+    else:
+        session = requests.Session()
+        params = {'id': id}
         response = session.get(url, params=params, stream=True)
+        token = get_confirm_token(response)
 
-    makedir_exist_ok(root)
-    save_response_content(response, filepath)
+        if token is not None:
+            params.update({'confirm': token})
+            response = session.get(url, params=params, stream=True)
+
+        makedir_exist_ok(root)
+        save_response_content(response, filepath)
 
     return check_integrity(filepath, md5=md5)
