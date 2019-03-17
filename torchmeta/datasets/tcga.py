@@ -1,20 +1,10 @@
 import os
 import json
 import h5py
-import warnings
 
 from torchmeta.dataset import MetaDataset
 from torchmeta.tasks import Task
 from torchmeta.datasets.utils import get_asset
-
-def classproperty(msg=''):
-    class _classproperty(property):
-        """Subclass property to make classmethod properties possible"""
-        def __get__(self, cls, owner):
-            if cls is None:
-                warnings.warn(msg, DeprecationWarning, stacklevel=2)
-            return self.fget.__get__(None, owner)()
-    return _classproperty
 
 def get_cancers():
     return get_asset(TCGA.folder, 'cancers.json', dtype='json')
@@ -66,32 +56,18 @@ class TCGA(MetaDataset):
         if not os.path.isfile(filename):
             raise IOError()
         return filename
-    
-    @classproperty('The property `assets_path` is deprecated, and will be '
-        'removed. To get the path to the assets, please use `torchmeta.'
-        'datasets.utils.get_asset_path("tcga")`.')
-    @classmethod
-    def assets_path(cls):
-        return os.path.join(os.path.dirname(__file__), 'assets', cls.folder)
 
-    @classproperty('Access to the property `cancers` with `TCGA.cancers` is '
-        'deprecated, and will be removed. To get a list of cancers from the '
-        'assets, please use `tuple(torchmeta.datasets.tcga.get_cancers())`.')
-    @classmethod
-    def cancers(cls):
-        if cls._cancers is None:
-            cls._cancers = get_cancers()
-        return tuple(cls._cancers)
+    @property
+    def cancers(self):
+        if self._cancers is None:
+            self._cancers = get_cancers()
+        return self._cancers
 
-    @classproperty('Access to the property `task_variables` with '
-        '`TCGA.task_variables` is deprecated, and will be removed. To get a '
-        'list of task variables from the assets, please use `tuple(torchmeta.'
-        'datasets.tcga.get_task_variables())`.')
-    @classmethod
-    def task_variables(cls):
-        if cls._task_variables is None:
-            cls._task_variables = frozenset(get_task_variables())
-        return tuple(cls._task_variables)
+    @property
+    def task_variables(self):
+        if self._task_variables is None:
+            self._task_variables = frozenset(get_task_variables())
+        return self._task_variables
 
     @property
     def gene_ids(self):

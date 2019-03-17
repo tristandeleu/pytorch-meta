@@ -13,15 +13,7 @@ class Omniglot(CombinationMetaDataset):
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, use_vinyals_split=True,
                  transform=None, target_transform=None, dataset_transform=None,
-                 class_transforms=None, meta_split=None,
-                 class_augmentations=None, download=False):
-        if class_transforms is not None:
-            import warnings
-            warnings.warn('The argument `class_transforms` is deprecated. '
-                'Please use the argument `class_augmentations` instead.',
-                DeprecationWarning, stacklevel=2)
-            if class_augmentations is None:
-                class_augmentations = class_transforms
+                 meta_split=None, class_augmentations=None, download=False):
         dataset = OmniglotClassDataset(root, meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test,
             use_vinyals_split=use_vinyals_split, transform=transform,
