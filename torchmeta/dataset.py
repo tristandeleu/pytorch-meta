@@ -42,20 +42,26 @@ class ClassDataset(object):
             class_augmentations = []
         self.class_augmentations = class_augmentations
 
-    def get_transform(self, index, transform):
+    def get_class_augmentation(self, index):
         transform_index = (index // self.num_classes) - 1
         if transform_index < 0:
+            return None
+        return self.class_augmentations[transform_index]
+
+    def get_transform(self, index, transform=None):
+        class_transform = self.get_class_augmentation(index)
+        if class_transform is None:
             return transform
-        class_transform = self.class_augmentations[transform_index]
         if transform is None:
             return class_transform
         return Compose([class_transform, transform])
 
-    def get_target_transform(self, index, transform):
-        categorical_transform = FixedCategory(index)
+    def get_target_transform(self, index, transform=None):
+        class_transform = self.get_class_augmentation(index)
+        categorical_transform = FixedCategory(class_transform)
         if transform is None:
             return categorical_transform
-        return Compose([transform, categorical_transform])
+        return Compose([categorical_transform, transform])
 
     @property
     def meta_split(self):
@@ -115,7 +121,7 @@ class CombinationMetaDataset(MetaDataset):
 
     def sample_task(self):
         import random
-        index = random.sample(range(self.dataset.num_classes), self.num_classes_per_task)
+        index = random.sample(range(len(self.dataset)), self.num_classes_per_task)
         return self[index]
 
     def __getitem__(self, index):
