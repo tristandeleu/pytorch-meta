@@ -1,9 +1,10 @@
 import os
 import pickle
 from PIL import Image
+import numpy as np
 
+from torch.utils.data import Dataset
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
-from torchmeta.datasets.miniimagenet import ImagenetDataset
 from torchmeta.datasets.utils import download_google_drive
 
 class TieredImagenet(CombinationMetaDataset):
@@ -49,18 +50,30 @@ class TieredImagenetClassDataset(ClassDataset):
         if not self._check_integrity():
             raise RuntimeError()
 
+        with open(self.images_filename, 'rb') as f:
+            self._images = pickle.load(f, encoding='bytes')
+
+        with open(self.labels_filename, 'rb') as f:
+            data = pickle.load(f, encoding='latin1')
+            self._labels_general = data['label_general']
+            self._labels_specific = data['label_specific']
+            self._labels_general_str = data['label_general_str']
+            self._labels_specific_str = data['label_specific_str']
+        self._num_classes = np.unique(self._labels_specific).size
+
     def __getitem__(self, index):
-        class_name = None
-        data = None
+        indices, = np.where(self._labels_specific == index)
+        specific_class_name = self._labels_specific_str[index]
+        data = [self._images[idx] for idx in indices]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)
 
-        return ImagenetDataset(data, class_name, transform=transform,
-            target_transform=target_transform)
+        return TieredImagenetDataset(data, specific_class_name,
+            transform=transform, target_transform=target_transform)
 
     @property
     def num_classes(self):
-        raise NotImplementedError()
+        return self._num_classes
 
     def _check_integrity(self):
         return (os.path.isfile(os.path.join(self.root, 'class_names.txt'))
@@ -81,6 +94,28 @@ class TieredImagenetClassDataset(ClassDataset):
         with tarfile.open(filename, 'r') as f:
             f.extractall(self.root)
 
-if __name__ == '__main__':
-    dataset = TieredImagenet('data', num_classes_per_task=5,
-        meta_val=True, download=True)
+
+class TieredImagenetDataset(Dataset):
+    def __init__(self, data, specific_class_name, transform=None, target_transform=None):
+        super(TieredImagenetDataset, self).__init__()
+        self.data = data
+        self.specific_class_name = specific_class_name
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        import cv2
+        array = cv2.imdecode(self.data[index], 1)
+        image = Image.fromarray(array)
+        target = self.specific_class_name
+
+        if self.transform is not None:
+            image = self.transform(image)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return (image, target)

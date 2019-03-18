@@ -60,7 +60,7 @@ class MiniImagenetClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)
 
-        return ImagenetDataset(data, class_name, transform=transform,
+        return MiniImagenetDataset(data, class_name, transform=transform,
             target_transform=target_transform)
 
     @property
@@ -85,9 +85,9 @@ class MiniImagenetClassDataset(ClassDataset):
             f.extractall(self.root)
 
 
-class ImagenetDataset(Dataset):
+class MiniImagenetDataset(Dataset):
     def __init__(self, data, class_name, transform=None, target_transform=None):
-        super(ImagenetDataset, self).__init__()
+        super(MiniImagenetDataset, self).__init__()
         self.data = data
         self.class_name = class_name
         self.transform = transform
