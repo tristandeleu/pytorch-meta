@@ -1,7 +1,9 @@
+import numpy as np
+from PIL import Image
+import h5py
+import json
 import os
 import pickle
-from PIL import Image
-import numpy as np
 
 from torch.utils.data import Dataset
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
@@ -26,8 +28,9 @@ class TieredImagenetClassDataset(ClassDataset):
     gdrive_id = '1hqVbS2nhHXa51R9_aB6QDXeC0P2LQG_u'
     tar_filename = 'tiered-imagenet.tar'
     tar_md5 = '3e71dfb6cf5acecb60a29d782257da3b'
-    filename_images = '{0}_images_png.pkl'
-    filename_labels = '{0}_labels.pkl'
+
+    filename = '{0}_data.hdf5'
+    filename_labels = '{0}_labels.json'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, target_transform=None,
@@ -39,9 +42,14 @@ class TieredImagenetClassDataset(ClassDataset):
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.transform = transform
         self.target_transform = target_transform
-        self.images_filename = os.path.join(self.root,
-            self.filename_images.format(self.meta_split))
-        self.labels_filename = os.path.join(self.root,
+
+        self._data_file = None
+        self._data = None
+        self._labels_specific = None
+
+        self.split_filename = os.path.join(self.root,
+            self.filename.format(self.meta_split))
+        self.split_filename_labels = os.path.join(self.root,
             self.filename_labels.format(self.meta_split))
 
         if download:
@@ -49,40 +57,48 @@ class TieredImagenetClassDataset(ClassDataset):
 
         if not self._check_integrity():
             raise RuntimeError()
+        self._num_classes = len(self.labels_specific)
 
-        with open(self.images_filename, 'rb') as f:
-            self._images = pickle.load(f, encoding='bytes')
+    @property
+    def data(self):
+        if self._data is None:
+            self._data_file = h5py.File(self.split_filename, 'r')
+            self._data = self._data_file['datasets']
+        return self._data
 
-        with open(self.labels_filename, 'rb') as f:
-            data = pickle.load(f, encoding='latin1')
-            self._labels_general = data['label_general']
-            self._labels_specific = data['label_specific']
-            self._labels_general_str = data['label_general_str']
-            self._labels_specific_str = data['label_specific_str']
-        self._num_classes = np.unique(self._labels_specific).size
+    @property
+    def labels_specific(self):
+        if self._labels_specific is None:
+            with open(self.split_filename_labels, 'r') as f:
+                self._labels_specific = json.load(f)
+        return self._labels_specific
 
     def __getitem__(self, index):
-        indices, = np.where(self._labels_specific == index)
-        specific_class_name = self._labels_specific_str[index]
-        data = [self._images[idx] for idx in indices]
+        specific_class_name = self.labels_specific[index]
+        data = self.data[specific_class_name]
+        general_class_name = data.attrs['label_general']
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)
 
-        return TieredImagenetDataset(data, specific_class_name,
+        return TieredImagenetDataset(data, general_class_name, specific_class_name,
             transform=transform, target_transform=target_transform)
 
     @property
     def num_classes(self):
         return self._num_classes
 
+    def close(self):
+        if self._data_file is not None:
+            self._data_file.close()
+
     def _check_integrity(self):
-        return (os.path.isfile(os.path.join(self.root, 'class_names.txt'))
-            and os.path.isfile(os.path.join(self.root, 'synsets.txt'))
-            and os.path.isfile(self.images_filename)
-            and os.path.isfile(self.labels_filename))
+        return (os.path.isfile(self.split_filename)
+            and os.path.isfile(self.split_filename_labels))
 
     def download(self):
         import tarfile
+        import cv2
+        from tqdm import tqdm
 
         if self._check_integrity():
             return
@@ -94,11 +110,55 @@ class TieredImagenetClassDataset(ClassDataset):
         with tarfile.open(filename, 'r') as f:
             f.extractall(self.root)
 
+        for split in ['train', 'val', 'test']:
+            filename = os.path.join(self.root, self.filename.format(split))
+            if os.path.isfile(filename):
+                continue
+
+            images_filename = os.path.join(self.root, '{0}_images_png.pkl'.format(split))
+            if not os.path.isfile(images_filename):
+                raise IOError()
+            with open(images_filename, 'rb') as f:
+                images = pickle.load(f, encoding='bytes')
+
+            labels_filename = os.path.join(self.root, '{0}_labels.pkl'.format(split))
+            if not os.path.isfile(labels_filename):
+                raise IOError()
+            with open(labels_filename, 'rb') as f:
+                labels = pickle.load(f, encoding='latin1')
+
+            labels_str = labels['label_specific_str']
+            general_labels_str = labels['label_general_str']
+            general_labels = labels['label_general']
+            with open(os.path.join(self.root, self.filename_labels.format(split)), 'w') as f:
+                json.dump(labels_str, f)
+
+            with h5py.File(filename, 'w') as f:
+                group = f.create_group('datasets')
+                for i, label in enumerate(tqdm(labels_str, desc=filename)):
+                    indices, = np.where(labels['label_specific'] == i)
+                    num_samples = len(indices)
+                    dataset = group.create_dataset(label, (num_samples, 84, 84, 3), dtype=np.uint8)
+                    general_idx = general_labels[indices[0]]
+                    dataset.attrs['label_general'] = (general_labels_str[general_idx]
+                        if general_idx < len(general_labels_str) else '')
+                    dataset.attrs['label_specific'] = label
+                    for j, k in enumerate(indices):
+                        image = cv2.imdecode(images[k], 1)
+                        dataset[j] = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            if os.path.isfile(images_filename):
+                os.remove(images_filename)
+
+            if os.path.isfile(labels_filename):
+                os.remove(labels_filename)
 
 class TieredImagenetDataset(Dataset):
-    def __init__(self, data, specific_class_name, transform=None, target_transform=None):
+    def __init__(self, data, general_class_name, specific_class_name,
+                 transform=None, target_transform=None):
         super(TieredImagenetDataset, self).__init__()
         self.data = data
+        self.general_class_name = general_class_name
         self.specific_class_name = specific_class_name
         self.transform = transform
         self.target_transform = target_transform
@@ -107,10 +167,8 @@ class TieredImagenetDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        import cv2
-        array = cv2.imdecode(self.data[index], 1)
-        image = Image.fromarray(array)
-        target = self.specific_class_name
+        image = Image.fromarray(self.data[index])
+        target = (self.general_class_name, self.specific_class_name)
 
         if self.transform is not None:
             image = self.transform(image)
