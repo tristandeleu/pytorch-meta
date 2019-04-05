@@ -103,10 +103,11 @@ class TieredImagenetClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        filename = os.path.join(self.root, self.tar_filename)
-        if not os.path.isfile(filename):
-            download_google_drive(self.gdrive_id, self.root, self.tar_filename)
+        if not download_google_drive(self.gdrive_id, self.root,
+                self.tar_filename, md5=self.tar_md5):
+            raise RuntimeError('')
 
+        filename = os.path.join(self.root, self.tar_filename)
         with tarfile.open(filename, 'r') as f:
             f.extractall(self.root)
 
