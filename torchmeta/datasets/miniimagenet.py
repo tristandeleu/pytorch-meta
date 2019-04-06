@@ -59,13 +59,12 @@ class MiniImagenetClassDataset(ClassDataset):
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
-        label = self.labels[index]
-        indices = self.data['indices'][label]
-        data = self.data['images'][indices]
+        class_name = self.labels[index]
+        data = self.data[class_name]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)
 
-        return MiniImagenetDataset(data, label, transform=transform,
+        return MiniImagenetDataset(data, class_name, transform=transform,
             target_transform=target_transform)
 
     @property
@@ -75,7 +74,8 @@ class MiniImagenetClassDataset(ClassDataset):
     @property
     def data(self):
         if self._data is None:
-            self._data = h5py.File(self.split_filename, 'r')
+            self._data_file = h5py.File(self.split_filename, 'r')
+            self._data = self._data_file['datasets']
         return self._data
 
     @property
@@ -88,6 +88,11 @@ class MiniImagenetClassDataset(ClassDataset):
     def _check_integrity(self):
         return (os.path.isfile(self.split_filename)
             and os.path.isfile(self.split_filename_labels))
+
+    def close(self):
+        if self._data_file is not None:
+            self._data_file.close()
+            self._data_file = None
 
     def download(self):
         import tarfile
@@ -116,10 +121,9 @@ class MiniImagenetClassDataset(ClassDataset):
                 images, classes = data['image_data'], data['class_dict']
 
             with h5py.File(filename, 'w') as f:
-                f.create_dataset('images', data=images)
-                group = f.create_group('indices')
+                group = f.create_group('datasets')
                 for name, indices in classes.items():
-                    group.create_dataset(name, data=indices)
+                    group.create_dataset(name, data=images[indices])
 
             labels_filename = os.path.join(self.root, self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:

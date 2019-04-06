@@ -90,6 +90,7 @@ class TieredImagenetClassDataset(ClassDataset):
     def close(self):
         if self._data_file is not None:
             self._data_file.close()
+            self._data_file = None
 
     def _check_integrity(self):
         return (os.path.isfile(self.split_filename)
