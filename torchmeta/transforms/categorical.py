@@ -1,11 +1,12 @@
 import torch
-from torchmeta.tasks import TaskWrapper
+from torchmeta.tasks import TaskWrapper, Task
+from torchvision.transforms import Compose
 from collections import defaultdict
 
 
-class CategoricalWrapper(TaskWrapper):
+class CategoricalWrapper_(TaskWrapper):
     def __init__(self, task):
-        super(CategoricalWrapper, self).__init__(task)
+        super(CategoricalWrapper_, self).__init__(task)
         self._classes = None
         self._labels = torch.randperm(self.num_classes).tolist()
 
@@ -26,12 +27,30 @@ class CategoricalWrapper(TaskWrapper):
         return sample[:-1] + (self.classes[sample[-1]],)
 
 
-class CategoricalTaskTarget(object):
-    def __call__(self, task):
-        return CategoricalWrapper(task)
+def CategoricalWrapper(task=None):
+    class Categorical(object):
+        def __call__(self, task):
+            return CategoricalWrapper_(task)
 
-    def __repr__(self):
-        return '{0}()'.format(self.__class__.__name__)
+        def __repr__(self):
+            return '{0}()'.format(self.__class__.__name__)
+
+    if task is None:
+        return Categorical()
+
+    from torchmeta.dataset import CombinationMetaDataset
+    if isinstance(task, Task):
+        wrapper = Categorical()
+        return wrapper(task)
+    elif isinstance(task, CombinationMetaDataset):
+        if task.dataset_transform is None:
+            dataset_transform = Categorical()
+        else:
+            dataset_transform = Compose([Categorical(), task.dataset_transform])
+        task.dataset_transform = dataset_transform
+        return task
+    else:
+        raise NotImplementedError()
 
 
 class FixedCategory(object):
