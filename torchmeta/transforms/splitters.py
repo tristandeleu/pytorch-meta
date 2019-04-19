@@ -200,7 +200,7 @@ class WeightedClassSplitter_(Splitter):
 
 
 def ClassSplitter(task=None, *args, **kwargs):
-    return apply_wrapper(ClassSplitter_, task, *args, **kwargs)
+    return apply_wrapper(ClassSplitter_(*args, **kwargs), task)
 
 def WeightedClassSplitter(task=None, *args, **kwargs):
-    return apply_wrapper(WeightedClassSplitter_, task, *args, **kwargs)
+    return apply_wrapper(WeightedClassSplitter_(*args, **kwargs), task)

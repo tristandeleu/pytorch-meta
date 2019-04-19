@@ -35,7 +35,7 @@ def CategoricalWrapper(task=None):
 
         def __repr__(self):
             return '{0}()'.format(self.__class__.__name__)
-    return apply_wrapper(Categorical, task)
+    return apply_wrapper(Categorical(), task)
 
 
 class FixedCategory(object):
