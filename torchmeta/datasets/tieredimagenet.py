@@ -155,6 +155,7 @@ class TieredImagenetClassDataset(ClassDataset):
             if os.path.isfile(labels_filename):
                 os.remove(labels_filename)
 
+
 class TieredImagenetDataset(Dataset):
     def __init__(self, data, general_class_name, specific_class_name,
                  transform=None, target_transform=None):

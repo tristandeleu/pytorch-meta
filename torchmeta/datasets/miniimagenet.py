@@ -133,6 +133,7 @@ class MiniImagenetClassDataset(ClassDataset):
             if os.path.isfile(pkl_filename):
                 os.remove(pkl_filename)
 
+
 class MiniImagenetDataset(Dataset):
     def __init__(self, data, class_name, transform=None, target_transform=None):
         super(MiniImagenetDataset, self).__init__()
