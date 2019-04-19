@@ -74,7 +74,7 @@ class TieredImagenetClassDataset(ClassDataset):
         return self._labels_specific
 
     def __getitem__(self, index):
-        specific_class_name = self.labels_specific[index]
+        specific_class_name = self.labels_specific[index % self.num_classes]
         data = self.data[specific_class_name]
         general_class_name = data.attrs['label_general']
         transform = self.get_transform(index, self.transform)

@@ -59,7 +59,7 @@ class MiniImagenetClassDataset(ClassDataset):
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
-        class_name = self.labels[index]
+        class_name = self.labels[index % self.num_classes]
         data = self.data[class_name]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)

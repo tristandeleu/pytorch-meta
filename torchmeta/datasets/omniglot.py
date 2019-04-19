@@ -65,7 +65,7 @@ class OmniglotClassDataset(ClassDataset):
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
-        character_name = '/'.join(self.labels[index])
+        character_name = '/'.join(self.labels[index % self.num_classes])
         data = self.data[character_name]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index, self.target_transform)
