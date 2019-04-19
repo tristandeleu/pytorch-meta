@@ -102,6 +102,7 @@ class OmniglotClassDataset(ClassDataset):
 
     def download(self):
         import zipfile
+        import shutil
 
         if self._check_integrity():
             return
@@ -122,7 +123,6 @@ class OmniglotClassDataset(ClassDataset):
         with h5py.File(filename, 'w') as f:
             for name in self.zips_md5:
                 group = f.create_group(name)
-                folder = os.path.join(self.root, name)
 
                 alphabets = list_dir(os.path.join(self.root, name))
                 characters = [(name, alphabet, character) for alphabet in alphabets
@@ -141,6 +141,8 @@ class OmniglotClassDataset(ClassDataset):
                     for i, char_filename in enumerate(filenames):
                         image = Image.open(char_filename, mode='r').convert('L')
                         dataset[i] = ImageOps.invert(image)
+
+                shutil.rmtree(os.path.join(self.root, name))
 
         for split in ['train', 'val', 'test']:
             filename = os.path.join(self.root, self.filename_labels.format('vinyals_', split))
