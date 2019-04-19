@@ -1,5 +1,6 @@
 import torch
 from torchmeta.tasks import TaskWrapper, Task
+from torchmeta.transforms.utils import apply_wrapper
 from torchvision.transforms import Compose
 from collections import defaultdict
 
@@ -34,23 +35,7 @@ def CategoricalWrapper(task=None):
 
         def __repr__(self):
             return '{0}()'.format(self.__class__.__name__)
-
-    if task is None:
-        return Categorical()
-
-    from torchmeta.dataset import CombinationMetaDataset
-    if isinstance(task, Task):
-        wrapper = Categorical()
-        return wrapper(task)
-    elif isinstance(task, CombinationMetaDataset):
-        if task.dataset_transform is None:
-            dataset_transform = Categorical()
-        else:
-            dataset_transform = Compose([Categorical(), task.dataset_transform])
-        task.dataset_transform = dataset_transform
-        return task
-    else:
-        raise NotImplementedError()
+    return apply_wrapper(Categorical, task)
 
 
 class FixedCategory(object):

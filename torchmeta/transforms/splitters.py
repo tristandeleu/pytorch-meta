@@ -2,6 +2,7 @@ import torch
 
 from collections import OrderedDict, defaultdict
 from torchmeta.tasks import TaskWrapper, Task, ConcatTask, SubsetTask
+from torchmeta.transforms.utils import apply_wrapper
 
 
 class Splitter(object):
@@ -52,7 +53,7 @@ class Splitter(object):
         return len(self.splits)
 
 
-class ClassSplitter(Splitter):
+class ClassSplitter_(Splitter):
     def __init__(self, shuffle=False, num_samples_per_class=None,
                  num_train_per_class=None, num_test_per_class=None,
                  num_support_per_class=None, num_query_per_class=None):
@@ -69,7 +70,7 @@ class ClassSplitter(Splitter):
                 num_samples_per_class['query'] = num_query_per_class
         assert len(num_samples_per_class) > 0
         self._min_samples_per_class = sum(num_samples_per_class.values())
-        super(ClassSplitter, self).__init__(num_samples_per_class)
+        super(ClassSplitter_, self).__init__(num_samples_per_class)
 
     def get_indices_task(self, task):
         all_class_indices = self._get_class_indices(task)
@@ -107,7 +108,7 @@ class ClassSplitter(Splitter):
         return indices
 
 
-class WeightedClassSplitter(Splitter):
+class WeightedClassSplitter_(Splitter):
     def __init__(self, shuffle=False, min_num_samples=1, max_num_samples=None,
                  weights=None, train_weights=None, test_weights=None,
                  support_weights=None, query_weights=None,
@@ -150,7 +151,7 @@ class WeightedClassSplitter(Splitter):
             raise NotImplementedError()
 
         self._min_samples_per_class = sum(self.min_num_samples.values())
-        super(WeightedClassSplitter, self).__init__(weights)
+        super(WeightedClassSplitter_, self).__init__(weights)
 
     def get_indices_task(self, task):
         all_class_indices = self._get_class_indices(task)
@@ -196,3 +197,10 @@ class WeightedClassSplitter(Splitter):
                 indices[split].extend([idx + cum_size for idx in split_indices])
             cum_size += num_samples
         return indices
+
+
+def ClassSplitter(task=None, *args, **kwargs):
+    return apply_wrapper(ClassSplitter_, task, *args, **kwargs)
+
+def WeightedClassSplitter(task=None, *args, **kwargs):
+    return apply_wrapper(WeightedClassSplitter_, task, *args, **kwargs)
