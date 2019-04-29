@@ -3,6 +3,7 @@ from PIL import Image
 import h5py
 import json
 import os
+import io
 import pickle
 
 from torch.utils.data import Dataset
@@ -28,6 +29,7 @@ class TieredImagenetClassDataset(ClassDataset):
     gdrive_id = '1g1aIDy2Ar_MViF2gDXFYDBTR-HYecV07'
     tar_filename = 'tiered-imagenet.tar'
     tar_md5 = 'e07e811b9f29362d159a9edd0d838c62'
+    tar_folder = 'tiered-imagenet'
 
     filename = '{0}_data.hdf5'
     filename_labels = '{0}_labels.json'
@@ -98,7 +100,7 @@ class TieredImagenetClassDataset(ClassDataset):
 
     def download(self):
         import tarfile
-        import cv2
+        import shutil
         from tqdm import tqdm
 
         if self._check_integrity():
@@ -111,19 +113,20 @@ class TieredImagenetClassDataset(ClassDataset):
         filename = os.path.join(self.root, self.tar_filename)
         with tarfile.open(filename, 'r') as f:
             f.extractall(self.root)
+        tar_folder = os.path.join(self.root, self.tar_folder)
 
         for split in ['train', 'val', 'test']:
             filename = os.path.join(self.root, self.filename.format(split))
             if os.path.isfile(filename):
                 continue
 
-            images_filename = os.path.join(self.root, '{0}_images_png.pkl'.format(split))
+            images_filename = os.path.join(tar_folder, '{0}_images_png.pkl'.format(split))
             if not os.path.isfile(images_filename):
-                raise IOError()
+                raise IOError(images_filename)
             with open(images_filename, 'rb') as f:
                 images = pickle.load(f, encoding='bytes')
 
-            labels_filename = os.path.join(self.root, '{0}_labels.pkl'.format(split))
+            labels_filename = os.path.join(tar_folder, '{0}_labels.pkl'.format(split))
             if not os.path.isfile(labels_filename):
                 raise IOError()
             with open(labels_filename, 'rb') as f:
@@ -137,23 +140,19 @@ class TieredImagenetClassDataset(ClassDataset):
 
             with h5py.File(filename, 'w') as f:
                 group = f.create_group('datasets')
+                dtype = h5py.special_dtype(vlen=np.uint8)
                 for i, label in enumerate(tqdm(labels_str, desc=filename)):
                     indices, = np.where(labels['label_specific'] == i)
-                    num_samples = len(indices)
-                    dataset = group.create_dataset(label, (num_samples, 84, 84, 3), dtype=np.uint8)
+                    dataset = group.create_dataset(label, (len(indices),), dtype=dtype)
                     general_idx = general_labels[indices[0]]
                     dataset.attrs['label_general'] = (general_labels_str[general_idx]
                         if general_idx < len(general_labels_str) else '')
                     dataset.attrs['label_specific'] = label
                     for j, k in enumerate(indices):
-                        image = cv2.imdecode(images[k], 1)
-                        dataset[j] = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                        dataset[j] = np.squeeze(images[k])
 
-            if os.path.isfile(images_filename):
-                os.remove(images_filename)
-
-            if os.path.isfile(labels_filename):
-                os.remove(labels_filename)
+        if os.path.isdir(tar_folder):
+            shutil.rmtree(tar_folder)
 
 
 class TieredImagenetDataset(Dataset):
@@ -170,7 +169,7 @@ class TieredImagenetDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        image = Image.fromarray(self.data[index])
+        image = Image.open(io.BytesIO(self.data[index]))
         target = (self.general_class_name, self.specific_class_name)
 
         if self.transform is not None:
