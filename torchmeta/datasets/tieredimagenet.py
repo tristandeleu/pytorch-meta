@@ -25,9 +25,9 @@ class TieredImagenet(CombinationMetaDataset):
 class TieredImagenetClassDataset(ClassDataset):
     folder = 'tieredimagenet'
     # Google Drive ID from https://github.com/renmengye/few-shot-ssl-public
-    gdrive_id = '1hqVbS2nhHXa51R9_aB6QDXeC0P2LQG_u'
+    gdrive_id = '1g1aIDy2Ar_MViF2gDXFYDBTR-HYecV07'
     tar_filename = 'tiered-imagenet.tar'
-    tar_md5 = '3e71dfb6cf5acecb60a29d782257da3b'
+    tar_md5 = 'e07e811b9f29362d159a9edd0d838c62'
 
     filename = '{0}_data.hdf5'
     filename_labels = '{0}_labels.json'
