@@ -9,6 +9,63 @@ from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import download_google_drive
 
 class MiniImagenet(CombinationMetaDataset):
+    """The Mini-Imagenet dataset, introduced in [1]_. This dataset contains images 
+    of 100 different classes from the ILSVRC-12 dataset (Imagenet challenge). 
+    The meta train/validation/test splits are taken from [2]_ for reproducibility.
+
+    Parameters
+    ----------
+    root : string
+        Root directory where the dataset folder `miniimagenet` exists.
+    num_classes_per_task : int
+        Number of classes per tasks. This corresponds to `N` in `N-way` 
+        classification.
+    meta_train : bool (default: `False`)
+        Use the meta-train split of the dataset. If set to `True`, then the
+        arguments `meta_val` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_val : bool (default: `False`)
+        Use the meta-validation split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_test : bool (default: `False`)
+        Use the meta-test split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_split : string in {'train', 'val', 'test'}, optional
+        Name of the split to use. This overrides the arguments `meta_train`, 
+        `meta_val` and `meta_test`.
+    transform : callable, optional
+        A function/transform that takes a `PIL` image, and returns a transformed 
+        version. See also `torchvision.transforms`.
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed 
+        version. See also `torchvision.transforms`.
+    dataset_transform : callable, optional
+        A function/transform that takes a dataset (ie. a task), and returns a 
+        transformed version of it. E.g. `transforms.ClassSplitter()`.
+    class_augmentations : list of callable, optional
+        A list of functions that augment the dataset with new classes. These classes  
+        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+    download : bool (default: `False`)
+        If `True`, downloads the pickle files and processes the dataset in the root 
+        directory (under the `miniimagenet` folder). If the dataset is already 
+        available, this does not download/process the dataset again.
+
+    Notes
+    -----
+    The dataset is downloaded from `this repository 
+    <https://github.com/renmengye/few-shot-ssl-public/>`__. The meta train/
+    validation/test splits are over 64/16/20 classes.
+
+    References
+    ----------
+    .. [1] Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). 
+           Matching Networks for One Shot Learning. In Advances in Neural 
+           Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
+    .. [2] Ravi, S. and Larochelle, H. (2016). Optimization as a Model for 
+           Few-Shot Learning. (https://openreview.net/forum?id=rJY0-Kcll)
+    """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, meta_split=None,
                  transform=None, target_transform=None, dataset_transform=None,

@@ -10,8 +10,8 @@ from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
 
 class Omniglot(CombinationMetaDataset):
-    """Omniglot dataset [1]_. A dataset of 1623 handwritten characters from 50 
-    different alphabets. 
+    """The Omniglot dataset [1]_. A dataset of 1623 handwritten characters from 
+    50 different alphabets. 
 
     Parameters
     ----------
@@ -32,6 +32,9 @@ class Omniglot(CombinationMetaDataset):
         Use the meta-test split of the dataset. If set to `True`, then the 
         arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
         of these three arguments must be set to `True`.
+    meta_split : string in {'train', 'val', 'test'}, optional
+        Name of the split to use. This overrides the arguments `meta_train`, 
+        `meta_val` and `meta_test`.
     use_vinyals_split : bool (default: `True`)
         If set to `True`, the dataset uses the splits defined in [3]_. If `False`, 
         then the meta-train split corresponds to `images_background`, and the 
@@ -46,9 +49,6 @@ class Omniglot(CombinationMetaDataset):
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
-    meta_split : string in {'train', 'val', 'test'}, optional
-        Name of the split to use. This overrides the arguments `meta_train`, 
-        `meta_val` and `meta_test`.
     class_augmentations : list of callable, optional
         A list of functions that augment the dataset with new classes. These classes  
         are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
@@ -73,13 +73,13 @@ class Omniglot(CombinationMetaDataset):
     .. [2] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2019). The Omniglot 
            Challenge: A 3-Year Progress Report (https://arxiv.org/abs/1902.03477)
     .. [3] Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). 
-           Matching networks for one shot learning. In Advances in Neural 
+           Matching Networks for One Shot Learning. In Advances in Neural 
            Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
     """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
-                 meta_val=False, meta_test=False, use_vinyals_split=True,
-                 transform=None, target_transform=None, dataset_transform=None,
-                 meta_split=None, class_augmentations=None, download=False):
+                 meta_val=False, meta_test=False, meta_split=None,
+                 use_vinyals_split=True, transform=None, target_transform=None,
+                 dataset_transform=None, class_augmentations=None, download=False):
         dataset = OmniglotClassDataset(root, meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test,
             use_vinyals_split=use_vinyals_split, transform=transform,

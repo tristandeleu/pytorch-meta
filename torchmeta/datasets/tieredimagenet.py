@@ -11,6 +11,64 @@ from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import download_google_drive
 
 class TieredImagenet(CombinationMetaDataset):
+    """The Tiered-Imagenet dataset, introduced in [1]_. This dataset contains images 
+    of 608 different classes from the ILSVRC-12 dataset (Imagenet challenge).
+
+    Parameters
+    ----------
+    root : string
+        Root directory where the dataset folder `tieredimagenet` exists.
+    num_classes_per_task : int
+        Number of classes per tasks. This corresponds to `N` in `N-way` 
+        classification.
+    meta_train : bool (default: `False`)
+        Use the meta-train split of the dataset. If set to `True`, then the
+        arguments `meta_val` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_val : bool (default: `False`)
+        Use the meta-validation split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_test : bool (default: `False`)
+        Use the meta-test split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_split : string in {'train', 'val', 'test'}, optional
+        Name of the split to use. This overrides the arguments `meta_train`, 
+        `meta_val` and `meta_test`.
+    transform : callable, optional
+        A function/transform that takes a `PIL` image, and returns a transformed 
+        version. See also `torchvision.transforms`.
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed 
+        version. See also `torchvision.transforms`.
+    dataset_transform : callable, optional
+        A function/transform that takes a dataset (ie. a task), and returns a 
+        transformed version of it. E.g. `transforms.ClassSplitter()`.
+    class_augmentations : list of callable, optional
+        A list of functions that augment the dataset with new classes. These classes  
+        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+    download : bool (default: `False`)
+        If `True`, downloads the pickle files and processes the dataset in the root 
+        directory (under the `tieredimagenet` folder). If the dataset is already 
+        available, this does not download/process the dataset again.
+
+    Notes
+    -----
+    The dataset is downloaded from `this repository 
+    <https://github.com/renmengye/few-shot-ssl-public/>`__. The dataset contains 
+    images from 34 categories. The meta train/validation/test splits are over 
+    20/6/8 categories. Each category contains between 10 and 30 classes. The 
+    splits over categories (instead of over classes) ensures that all the training 
+    classes are sufficiently distinct from the test classes (unlike Mini-Imagenet).
+
+    References
+    ----------
+    .. [1] Ren, M., Triantafillou, E., Ravi, S., Snell, J., Swersky, K., 
+           Tenenbaum, J.B., Larochelle, H. and Zemel, R.S. (2018). Meta-learning 
+           for semi-supervised few-shot classification. International Conference 
+           on Learning Representations. (https://arxiv.org/abs/1803.00676)
+    """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, meta_split=None,
                  transform=None, target_transform=None, dataset_transform=None,
