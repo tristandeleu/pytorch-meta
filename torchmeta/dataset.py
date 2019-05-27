@@ -2,7 +2,6 @@ import torch
 import warnings
 
 from itertools import combinations
-from collections import OrderedDict
 from torchvision.transforms import Compose
 
 from torchmeta.tasks import ConcatTask
@@ -51,7 +50,7 @@ class ClassDataset(object):
         if class_augmentations is not None:
             if not isinstance(class_augmentations, list):
                 raise ValueError()
-            unique_augmentations = OrderedDict()
+            unique_augmentations = set()
             for augmentations in class_augmentations:
                 for transform in augmentations:
                     if transform in unique_augmentations:
@@ -60,7 +59,7 @@ class ClassDataset(object):
                             'To avoid any duplicate, this transformation is '
                             'ignored.'.format(transform, repr(transform)),
                             UserWarning, stacklevel=2)
-                    unique_augmentations[transform] = None
+                    unique_augmentations.add(transform)
             class_augmentations = list(unique_augmentations)
         else:
             class_augmentations = []
