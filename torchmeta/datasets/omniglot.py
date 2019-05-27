@@ -10,6 +10,72 @@ from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
 
 class Omniglot(CombinationMetaDataset):
+    """Omniglot dataset [1]_. A dataset of 1623 handwritten characters from 50 
+    different alphabets. 
+
+    Parameters
+    ----------
+    root : string
+        Root directory where the dataset folder `omniglot` exists.
+    num_classes_per_task : int
+        Number of classes per tasks. This corresponds to `N` in `N-way` 
+        classification.
+    meta_train : bool (default: `False`)
+        Use the meta-train split of the dataset. If set to `True`, then the
+        arguments `meta_val` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_val : bool (default: `False`)
+        Use the meta-validation split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    meta_test : bool (default: `False`)
+        Use the meta-test split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+    use_vinyals_split : bool (default: `True`)
+        If set to `True`, the dataset uses the splits defined in [3]_. If `False`, 
+        then the meta-train split corresponds to `images_background`, and the 
+        meta-test split corresponds to `images_evaluation` (raises an error when 
+        calling the meta-validation split).
+    transform : callable, optional
+        A function/transform that takes a `PIL` image, and returns a transformed 
+        version. See also `torchvision.transforms`.
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed 
+        version. See also `torchvision.transforms`.
+    dataset_transform : callable, optional
+        A function/transform that takes a dataset (ie. a task), and returns a 
+        transformed version of it. E.g. `transforms.ClassSplitter()`.
+    meta_split : string in {'train', 'val', 'test'}, optional
+        Name of the split to use. This overrides the arguments `meta_train`, 
+        `meta_val` and `meta_test`.
+    class_augmentations : list of callable, optional
+        A list of functions that augment the dataset with new classes. These classes  
+        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+    download : bool (default: `False`)
+        If `True`, downloads the zip files and processes the dataset in the root 
+        directory (under the `omniglot` folder). If the dataset is already 
+        available, this does not download/process the dataset again.
+
+    Notes
+    -----
+    The dataset is downloaded from the original `Omniglot repository 
+    <https://github.com/brendenlake/omniglot>`__. The meta train/validation/test 
+    splits used in [3]_ are taken from `this repository 
+    <https://github.com/jakesnell/prototypical-networks>`__. These splits are 
+    over 1028/172/423 classes (characters).
+
+    References
+    ----------
+    .. [1] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2015). Human-level 
+           concept learning through probabilistic program induction. Science, 350(6266), 
+           1332-1338 (http://www.sciencemag.org/content/350/6266/1332.short)
+    .. [2] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2019). The Omniglot 
+           Challenge: A 3-Year Progress Report (https://arxiv.org/abs/1902.03477)
+    .. [3] Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). 
+           Matching networks for one shot learning. In Advances in Neural 
+           Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
+    """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, use_vinyals_split=True,
                  transform=None, target_transform=None, dataset_transform=None,
@@ -128,14 +194,17 @@ class OmniglotClassDataset(ClassDataset):
                     for character in list_dir(os.path.join(self.root, name, alphabet))]
 
                 split = 'train' if name == 'images_background' else 'test'
-                labels_filename = os.path.join(self.root, self.filename_labels.format('', split))
+                labels_filename = os.path.join(self.root,
+                    self.filename_labels.format('', split))
                 with open(labels_filename, 'w') as f_labels:
                     labels = sorted(characters)
                     json.dump(labels, f_labels)
 
                 for _, alphabet, character in characters:
-                    filenames = glob.glob(os.path.join(self.root, name, alphabet, character, '*.png'))
-                    dataset = group.create_dataset('{0}/{1}'.format(alphabet, character), (len(filenames), 105, 105), dtype='uint8')
+                    filenames = glob.glob(os.path.join(self.root, name,
+                        alphabet, character, '*.png'))
+                    dataset = group.create_dataset('{0}/{1}'.format(alphabet,
+                        character), (len(filenames), 105, 105), dtype='uint8')
 
                     for i, char_filename in enumerate(filenames):
                         image = Image.open(char_filename, mode='r').convert('L')
@@ -144,12 +213,14 @@ class OmniglotClassDataset(ClassDataset):
                 shutil.rmtree(os.path.join(self.root, name))
 
         for split in ['train', 'val', 'test']:
-            filename = os.path.join(self.root, self.filename_labels.format('vinyals_', split))
+            filename = os.path.join(self.root, self.filename_labels.format(
+                'vinyals_', split))
             data = get_asset(self.folder, '{0}.json'.format(split), dtype='json')
 
             with open(filename, 'w') as f:
-                labels = sorted([('images_{0}'.format(name), alphabet, character) for (name, alphabets)
-                    in data.items() for (alphabet, characters) in alphabets.items()
+                labels = sorted([('images_{0}'.format(name), alphabet, character)
+                    for (name, alphabets) in data.items()
+                    for (alphabet, characters) in alphabets.items()
                     for character in characters])
                 json.dump(labels, f)
 
