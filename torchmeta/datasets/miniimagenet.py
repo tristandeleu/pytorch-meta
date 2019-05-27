@@ -45,7 +45,7 @@ class MiniImagenet(CombinationMetaDataset):
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
     class_augmentations : list of callable, optional
-        A list of functions that augment the dataset with new classes. These classes  
+        A list of functions that augment the dataset with new classes. These classes 
         are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
     download : bool (default: `False`)
         If `True`, downloads the pickle files and processes the dataset in the root 

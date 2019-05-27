@@ -1,6 +1,13 @@
 from torch.utils.data import Dataset, ConcatDataset, Subset
 
 class Task(Dataset):
+    """Base class for a classification task.
+
+    Parameters
+    ----------
+    num_classes : int
+        Number of classes for the classification task.
+    """
     def __init__(self, num_classes):
         self.num_classes = num_classes
 
@@ -10,6 +17,13 @@ class Task(Dataset):
 
 
 class TaskWrapper(Task):
+    """Base class for a wrapper around a classification task.
+
+    Parameters
+    ----------
+    task : `Task` instance
+        Task to be wrapped over.
+    """
     def __init__(self, task):
         assert isinstance(task, Task)
         super(TaskWrapper, self).__init__(task.num_classes)
