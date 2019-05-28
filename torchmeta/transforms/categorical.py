@@ -1,7 +1,6 @@
 import torch
-from torchmeta.tasks import TaskWrapper, Task
+from torchmeta.tasks import TaskWrapper
 from torchmeta.transforms.utils import apply_wrapper
-from torchvision.transforms import Compose
 from collections import defaultdict
 
 
@@ -29,6 +28,37 @@ class CategoricalWrapper_(TaskWrapper):
 
 
 def CategoricalWrapper(task=None):
+    """Wraps a task, or a meta-dataset, so that the examples from the task(s) 
+    have a target in [0, num_classes) (instead of the raw target from the 
+    dataset).
+
+    Parameters
+    ----------
+    task : `Task` instance or `MetaDataset` instance, optional
+        If `task` is a `Task` instance, then wraps the task. If `task` is a 
+        `MetaDataset` instance, then adds it to its `dataset_transform`. If 
+        `None`, returns a function to be used as a `dataset_transform`.
+
+    Examples
+    --------
+    >>> dataset = Omniglot('data', num_classes_per_task=5, meta_train=True)
+    >>> task = dataset.sample_task()
+    >>> task[0]
+    (<PIL.Image.Image image mode=L size=105x105 at 0x11EC797F0>,
+    ('images_evaluation/Glagolitic/character12', None))
+
+    >>> dataset = Omniglot('data', num_classes_per_task=5, meta_train=True)
+    >>> task = dataset.sample_task()
+    >>> task = CategoricalWrapper(task)
+    >>> task[0]
+    (<PIL.Image.Image image mode=L size=105x105 at 0x11ED3F668>, 2)
+
+    >>> dataset = Omniglot('data', num_classes_per_task=5, meta_train=True)
+    >>> dataset = CategoricalWrapper(dataset)
+    >>> task = dataset.sample_task()
+    >>> task[0]
+    (<PIL.Image.Image image mode=L size=105x105 at 0x11EA55E10>, 4)
+    """
     class Categorical(object):
         def __call__(self, task):
             return CategoricalWrapper_(task)

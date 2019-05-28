@@ -34,7 +34,7 @@ class Omniglot(CombinationMetaDataset):
         of these three arguments must be set to `True`.
     meta_split : string in {'train', 'val', 'test'}, optional
         Name of the split to use. This overrides the arguments `meta_train`, 
-        `meta_val` and `meta_test`.
+        `meta_val` and `meta_test` if all three are set to `False`.
     use_vinyals_split : bool (default: `True`)
         If set to `True`, the dataset uses the splits defined in [3]_. If `False`, 
         then the meta-train split corresponds to `images_background`, and the 
@@ -108,7 +108,9 @@ class OmniglotClassDataset(ClassDataset):
             class_augmentations=class_augmentations)
 
         if self.meta_val and (not use_vinyals_split):
-            raise ValueError()
+            raise ValueError('Trying to use the meta-validation without the '
+                'Vinyals split. You must set `use_vinyals_split=True` to use '
+                'the meta-validation split.')
 
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.use_vinyals_split = use_vinyals_split

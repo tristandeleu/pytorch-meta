@@ -35,13 +35,20 @@ class ClassDataset(object):
     def __init__(self, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, class_augmentations=None):
         if meta_train + meta_val + meta_test == 0:
-            if (meta_split is None) or (meta_split not in ['train', 'val', 'test']):
-                raise ValueError()
+            if meta_split is None:
+                raise ValueError('The meta-split is undefined. Use either the '
+                    'argument `meta_train=True` (or `meta_val`/`meta_test`), or '
+                    'the argument `meta_split="train"` (or "val"/"test").')
+            elif meta_split not in ['train', 'val', 'test']:
+                raise ValueError('Unknown meta-split name `{0}`. The meta-split '
+                    'must be in [`train`, `val`, `test`].'.format(meta_split))
             meta_train = (meta_split == 'train')
             meta_val = (meta_split == 'val')
             meta_test = (meta_split == 'test')
         elif meta_train + meta_val + meta_test > 1:
-            raise ValueError()
+            raise ValueError('Multiple arguments among `meta_train`, `meta_val` '
+                'and `meta_test` are set to `True`. Exactly one must be set to '
+                '`True`.')
         self.meta_train = meta_train
         self.meta_val = meta_val
         self.meta_test = meta_test
@@ -49,7 +56,8 @@ class ClassDataset(object):
 
         if class_augmentations is not None:
             if not isinstance(class_augmentations, list):
-                raise ValueError()
+                raise TypeError('Unknown type for `class_augmentations`. '
+                    'Expected `list`, got `{0}`.'.format(type(class_augmentations)))
             unique_augmentations = set()
             for augmentations in class_augmentations:
                 for transform in augmentations:
@@ -156,7 +164,8 @@ class CombinationMetaDataset(MetaDataset):
     def __init__(self, dataset, num_classes_per_task, dataset_transform=None):
         super(CombinationMetaDataset, self).__init__(dataset_transform=dataset_transform)
         if not isinstance(num_classes_per_task, int):
-            raise ValueError()
+            raise TypeError('Unknown type for `num_classes_per_task`. Expected '
+                '`int`, got `{0}`.'.format(type(num_classes_per_task)))
         self.dataset = dataset
         self.num_classes_per_task = num_classes_per_task
 

@@ -35,7 +35,7 @@ class TieredImagenet(CombinationMetaDataset):
         of these three arguments must be set to `True`.
     meta_split : string in {'train', 'val', 'test'}, optional
         Name of the split to use. This overrides the arguments `meta_train`, 
-        `meta_val` and `meta_test`.
+        `meta_val` and `meta_test` if all three are set to `False`.
     transform : callable, optional
         A function/transform that takes a `PIL` image, and returns a transformed 
         version. See also `torchvision.transforms`.
@@ -151,6 +151,7 @@ class TieredImagenetClassDataset(ClassDataset):
         if self._data_file is not None:
             self._data_file.close()
             self._data_file = None
+            self._data = None
 
     def _check_integrity(self):
         return (os.path.isfile(self.split_filename)
