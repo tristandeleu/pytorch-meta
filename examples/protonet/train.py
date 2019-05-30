@@ -22,8 +22,6 @@ def train(args):
     # Training loop
     with tqdm(dataloader, total=args.num_batches) as pbar:
         for batch_idx, batch in enumerate(pbar):
-            if batch_idx > args.num_batches:
-                break
             model.zero_grad()
 
             train_inputs, train_targets = batch['train']
@@ -46,6 +44,9 @@ def train(args):
             with torch.no_grad():
                 accuracy = get_accuracy(prototypes, test_embeddings, test_targets)
                 pbar.set_postfix(accuracy='{0:.4f}'.format(accuracy.item()))
+
+            if batch_idx >= (args.num_batches - 1):
+                break
 
     # Save model
     if args.output_folder is not None:
