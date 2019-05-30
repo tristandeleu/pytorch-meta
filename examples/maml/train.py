@@ -17,6 +17,7 @@ def train(args):
 
     model = ConvolutionalNeuralNetwork(1, args.num_ways,
         hidden_size=args.hidden_size)
+    model.to(device=args.device)
     model.train()
     meta_optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
@@ -58,7 +59,7 @@ def train(args):
             meta_optimizer.step()
 
             pbar.set_postfix(accuracy='{0:.4f}'.format(accuracy.item()))
-            if batch_idx >= (args.num_batches - 1):
+            if batch_idx >= args.num_batches:
                 break
 
     # Save model

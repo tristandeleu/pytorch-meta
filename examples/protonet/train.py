@@ -16,6 +16,7 @@ def train(args):
 
     model = PrototypicalNetwork(1, args.embedding_size,
         hidden_size=args.hidden_size)
+    model.to(device=args.device)
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
@@ -45,7 +46,7 @@ def train(args):
                 accuracy = get_accuracy(prototypes, test_embeddings, test_targets)
                 pbar.set_postfix(accuracy='{0:.4f}'.format(accuracy.item()))
 
-            if batch_idx >= (args.num_batches - 1):
+            if batch_idx >= args.num_batches:
                 break
 
     # Save model
