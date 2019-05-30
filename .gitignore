@@ -108,3 +108,6 @@ data/
 
 # Pycharm configuration files
 .idea/
+
+# Model folders
+examples/**/models/
