@@ -2,14 +2,16 @@ import os
 import json
 from torchvision.datasets.utils import makedir_exist_ok, check_integrity
 
+
 def get_asset_path(*args):
     basedir = os.path.dirname(__file__)
     return os.path.join(basedir, 'assets', *args)
 
+
 def get_asset(*args, dtype=None):
     filename = get_asset_path(*args)
     if not os.path.isfile(filename):
-        raise IOError()
+        raise IOError('{} not found'.format(filename))
 
     if dtype is None:
         _, dtype = os.path.splitext(filename)
@@ -21,6 +23,7 @@ def get_asset(*args, dtype=None):
     else:
         raise NotImplementedError()
     return data
+
 
 def download_google_drive(id, root, filename, md5=None):
     import requests
