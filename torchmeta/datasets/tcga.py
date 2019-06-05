@@ -138,10 +138,10 @@ class TCGA(MetaDataset):
     _task_variables = None
     _cancers = None
 
-    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
+    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False, meta_split=None,
                  min_samples_per_class=5, transform=None, target_transform=None,
                  dataset_transform=None, download=False, chunksize=100, preload=True):
-        super(TCGA, self).__init__(meta_train, meta_val, meta_test, dataset_transform=dataset_transform)
+        super(TCGA, self).__init__(meta_train, meta_val, meta_test, meta_split, dataset_transform=dataset_transform)
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         
         self.min_samples_per_class = min_samples_per_class
@@ -162,18 +162,13 @@ class TCGA(MetaDataset):
             self._preload_gene_expression_data()
             self.preloaded = True
 
-        self.task_ids = self.get_task_ids()
+        task_info = self.get_task_info()
 
-        updated_task_ids = []
-        for index, task_id in enumerate(self.task_ids):
-            dataset = self.__getitem__(index)
-            counts = Counter(dataset.labels)
-            enough_samples = all([count > self.min_samples_per_class for count in counts.values()])
-
+        self.task_ids = dict()
+        for task_id in task_info:
+            enough_samples = all([count > self.min_samples_per_class for count in task_info[task_id][1].values()])
             if enough_samples:
-                updated_task_ids.append(task_id)
-
-        self.task_ids = updated_task_ids
+                self.task_ids[task_id] = task_info[task_id][0]
 
     def __len__(self):
         return len(self.task_ids)
@@ -292,7 +287,7 @@ class TCGA(MetaDataset):
 
         return samples_for_tasks
 
-    def get_task_ids(self):
+    def get_task_info(self):
         json_tasks = get_task_id_splits(self.meta_split)
         samples_for_tasks = {tuple(task_id.split('|', 1)): json_tasks[task_id] for task_id in json_tasks}
         return samples_for_tasks
