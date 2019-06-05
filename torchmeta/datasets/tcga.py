@@ -5,6 +5,8 @@ import numpy as np
 import torch
 import copy
 
+from collections import Counter
+
 from torchmeta.dataset import MetaDataset
 from torchmeta.tasks import Task
 from torchmeta.datasets.utils import get_asset
@@ -137,7 +139,7 @@ class TCGA(MetaDataset):
     _cancers = None
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
-                 min_samples_per_class=3, transform=None, target_transform=None,
+                 min_samples_per_class=5, transform=None, target_transform=None,
                  dataset_transform=None, download=False, chunksize=100, preload=True):
         super(TCGA, self).__init__(meta_train, meta_val, meta_test, dataset_transform=dataset_transform)
         self.root = os.path.join(os.path.expanduser(root), self.folder)
@@ -154,12 +156,24 @@ class TCGA(MetaDataset):
             self.download(chunksize)
 
         self.preloaded = False
+        self.gene_expression_data = None
         self.gene_expression_file = None
         if preload:
             self._preload_gene_expression_data()
             self.preloaded = True
 
         self.task_ids = self.get_task_ids()
+
+        updated_task_ids = []
+        for index, task_id in enumerate(self.task_ids):
+            dataset = self.__getitem__(index)
+            counts = Counter(dataset.labels)
+            enough_samples = all([count > self.min_samples_per_class for count in counts.values()])
+
+            if enough_samples:
+                updated_task_ids.append(task_id)
+
+        self.task_ids = updated_task_ids
 
     def __len__(self):
         return len(self.task_ids)
