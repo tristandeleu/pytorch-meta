@@ -18,36 +18,46 @@ class TieredImagenet(CombinationMetaDataset):
     ----------
     root : string
         Root directory where the dataset folder `tieredimagenet` exists.
+
     num_classes_per_task : int
         Number of classes per tasks. This corresponds to `N` in `N-way` 
         classification.
+
     meta_train : bool (default: `False`)
         Use the meta-train split of the dataset. If set to `True`, then the
         arguments `meta_val` and `meta_test` must be set to `False`. Exactly one 
         of these three arguments must be set to `True`.
+
     meta_val : bool (default: `False`)
         Use the meta-validation split of the dataset. If set to `True`, then the 
         arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
         of these three arguments must be set to `True`.
+
     meta_test : bool (default: `False`)
         Use the meta-test split of the dataset. If set to `True`, then the 
         arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
         of these three arguments must be set to `True`.
+
     meta_split : string in {'train', 'val', 'test'}, optional
         Name of the split to use. This overrides the arguments `meta_train`, 
         `meta_val` and `meta_test` if all three are set to `False`.
+
     transform : callable, optional
         A function/transform that takes a `PIL` image, and returns a transformed 
         version. See also `torchvision.transforms`.
+
     target_transform : callable, optional
         A function/transform that takes a target, and returns a transformed 
         version. See also `torchvision.transforms`.
+
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
+
     class_augmentations : list of callable, optional
         A list of functions that augment the dataset with new classes. These classes 
         are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+
     download : bool (default: `False`)
         If `True`, downloads the pickle files and processes the dataset in the root 
         directory (under the `tieredimagenet` folder). If the dataset is already 
