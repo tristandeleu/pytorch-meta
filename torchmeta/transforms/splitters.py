@@ -109,11 +109,11 @@ class ClassSplitter_(Splitter):
 
 
 class WeightedClassSplitter_(Splitter):
-    def __init__(self, shuffle=False, min_num_samples=1, max_num_samples=None,
+    def __init__(self, shuffle=True, min_num_samples=1, max_num_samples=None,
                  weights=None, train_weights=None, test_weights=None,
                  support_weights=None, query_weights=None,
                  force_equal_per_class=False):
-        self.shuffle = True
+        self.shuffle = shuffle
         self.min_num_samples = min_num_samples
         self.force_equal_per_class = force_equal_per_class
 
