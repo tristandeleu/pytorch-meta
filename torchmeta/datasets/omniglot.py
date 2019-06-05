@@ -101,8 +101,9 @@ class OmniglotClassDataset(ClassDataset):
     filename_labels = '{0}{1}_labels.json'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
-                 use_vinyals_split=True, transform=None, target_transform=None,
-                 class_augmentations=None, meta_split=None, download=False):
+                 meta_split=None, use_vinyals_split=True, transform=None,
+                 target_transform=None, class_augmentations=None,
+                 download=False):
         super(OmniglotClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
