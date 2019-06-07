@@ -135,6 +135,8 @@ class TCGA(MetaDataset):
     gene_expression_filename = 'TCGA_HiSeqV2.hdf5'
     gene_expression_torrent = 'e4081b995625f9fc599ad860138acf7b6eb1cf6f'
 
+    filename_tasks = '{0}_labels.json'
+
     _task_variables = None
     _cancers = None
 
@@ -151,6 +153,7 @@ class TCGA(MetaDataset):
 
         self._all_sample_ids = None
         self._gene_ids = None
+        self._tasks = None
 
         if download:
             self.download(chunksize)
@@ -162,13 +165,9 @@ class TCGA(MetaDataset):
             self._preload_gene_expression_data()
             self.preloaded = True
 
-        task_info = self.get_task_info()
-
-        self.task_ids = dict()
-        for task_id in task_info:
-            enough_samples = all([count > self.min_samples_per_class for count in task_info[task_id][1].values()])
-            if enough_samples:
-                self.task_ids[task_id] = task_info[task_id][0]
+        self.task_ids = self.get_task_ids()
+        self.split_filename_tasks = os.path.join(self.root,
+            self.filename_tasks.format(self.meta_split))
 
     def __len__(self):
         return len(self.task_ids)
@@ -179,6 +178,13 @@ class TCGA(MetaDataset):
         if not os.path.isfile(filename):
             raise IOError('Gene expression data not found at {}'.format(filename))
         return filename
+
+    @property
+    def tasks(self):
+        if self._tasks is None:
+            with open(self.split_filename_tasks, 'r') as f:
+                self._tasks = json.load(f)
+        return self._tasks
 
     @property
     def cancers(self):
@@ -224,12 +230,12 @@ class TCGA(MetaDataset):
     def __getitem__(self, index):
         import pandas as pd
 
-        label, cancer = list(self.task_ids.keys())[index]
+        label, cancer = self.tasks[index]
         filename = self.get_processed_filename(cancer)
         dataframe = pd.read_csv(filename, sep='\t', index_col=0, header=0)
         labels = dataframe[label].dropna().astype('category')
 
-        labels = labels[list(self.task_ids.values())[index]]
+        labels = labels[self.task_ids[(label, cancer)]]
         labels = labels.sort_index()
 
         if self.gene_expression_file is not None:
@@ -251,7 +257,7 @@ class TCGA(MetaDataset):
         self.gene_expression_file = h5py.File(self.gene_expression_path, 'r')
         self.gene_expression_data = self.gene_expression_file['expression_data']
 
-    def get_all_task_ids(self):
+    def _process_clinical_matrices(self):
         import pandas as pd
         clinical_matrices_folder = os.path.join(self.root, 'clinicalMatrices')
         processed_folder = os.path.join(clinical_matrices_folder, 'processed')
@@ -260,7 +266,6 @@ class TCGA(MetaDataset):
 
         col_in_task_variables = lambda col: (col == 'sampleID') or (col in self.task_variables)
 
-        samples_for_tasks = {}
         for cancer in self.cancers:
             filename = self.clinical_matrix_filename.format(cancer)
             filepath = os.path.join(clinical_matrices_folder, '{0}.tsv'.format(filename))
@@ -274,23 +279,20 @@ class TCGA(MetaDataset):
                 dataframe.index.names = ['index']
                 dataframe = dataframe.sort_index(axis=0)
                 dataframe.to_csv(processed, sep='\t')
-            else:
-                dataframe = pd.read_csv(processed, sep='\t', index_col=0, header=0)
+        return True
 
-            num_samples_per_label = dataframe.apply(pd.value_counts)
-            min_samples_per_class = num_samples_per_label.min(axis=0)
-            count_classes = num_samples_per_label.count(axis=0)
-            labels = min_samples_per_class[(min_samples_per_class > self.min_samples_per_class) & (count_classes > 1)]
+    def get_task_ids(self):
+        tasks = get_task_id_splits(self.meta_split)
+        task_ids = dict()
 
-            for label in labels.index:
-                samples_for_tasks[(label, cancer)] = dataframe[dataframe[label].notnull()].index.tolist()
+        for task_id in tasks:
+            indices, counts = tasks[task_id]
+            enough_samples = all(count > self.min_samples_per_class for count in counts.values())
+            if enough_samples:
+                task_id = tuple(task_id.split('|', 1))
+                task_ids[task_id] = indices
 
-        return samples_for_tasks
-
-    def get_task_info(self):
-        json_tasks = get_task_id_splits(self.meta_split)
-        samples_for_tasks = {tuple(task_id.split('|', 1)): json_tasks[task_id] for task_id in json_tasks}
-        return samples_for_tasks
+        return task_ids
 
     def download(self, chunksize=100):
         import gzip
@@ -359,6 +361,17 @@ class TCGA(MetaDataset):
                 os.remove(csv_file)
 
             print('Done')
+
+        self._process_clinical_matrices()
+
+        # Create label files
+        for split in ['train', 'val', 'test']:
+            filename = os.path.join(self.root, self.filename_tasks.format(split))
+            data = get_asset(self.folder, '{0}.json'.format(split), dtype='json')
+
+            with open(filename, 'w') as f:
+                labels = sorted([key.split('|', 1) for key in data])
+                json.dump(labels, f)
 
         # Clean up
         for cancer in self.cancers:
