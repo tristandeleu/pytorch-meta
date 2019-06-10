@@ -234,9 +234,7 @@ class TCGA(MetaDataset):
         filename = self.get_processed_filename(cancer)
         dataframe = pd.read_csv(filename, sep='\t', index_col=0, header=0)
         labels = dataframe[label].dropna().astype('category')
-
         labels = labels[self.task_ids[(label, cancer)]]
-        labels = labels.sort_index()
 
         if self.gene_expression_file is not None:
             data = self.gene_expression_data[labels.index]
