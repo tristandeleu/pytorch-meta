@@ -183,7 +183,7 @@ class TCGA(MetaDataset):
     def tasks(self):
         if self._tasks is None:
             with open(self.split_filename_tasks, 'r') as f:
-                self._tasks = json.load(f)
+                self._tasks = [task for task in json.load(f) if tuple(task) in self.task_ids]
         return self._tasks
 
     @property
