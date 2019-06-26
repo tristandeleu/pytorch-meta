@@ -83,8 +83,10 @@ class Omniglot(CombinationMetaDataset):
     .. [1] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2015). Human-level 
            concept learning through probabilistic program induction. Science, 350(6266), 
            1332-1338 (http://www.sciencemag.org/content/350/6266/1332.short)
+
     .. [2] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2019). The Omniglot 
            Challenge: A 3-Year Progress Report (https://arxiv.org/abs/1902.03477)
+
     .. [3] Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). 
            Matching Networks for One Shot Learning. In Advances in Neural 
            Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)

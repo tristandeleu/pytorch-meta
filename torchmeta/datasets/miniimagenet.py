@@ -75,6 +75,7 @@ class MiniImagenet(CombinationMetaDataset):
     .. [1] Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). 
            Matching Networks for One Shot Learning. In Advances in Neural 
            Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
+
     .. [2] Ravi, S. and Larochelle, H. (2016). Optimization as a Model for 
            Few-Shot Learning. (https://openreview.net/forum?id=rJY0-Kcll)
     """
