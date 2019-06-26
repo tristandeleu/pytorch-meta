@@ -9,8 +9,10 @@ from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
 
+
 class Omniglot(CombinationMetaDataset):
-    """The Omniglot dataset [1]_. A dataset of 1623 handwritten characters from 
+    """
+    The Omniglot dataset [1]_. A dataset of 1623 handwritten characters from 
     50 different alphabets. 
 
     Parameters

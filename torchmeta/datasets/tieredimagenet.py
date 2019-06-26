@@ -10,8 +10,10 @@ from torch.utils.data import Dataset
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import download_google_drive
 
+
 class TieredImagenet(CombinationMetaDataset):
-    """The Tiered-Imagenet dataset, introduced in [1]_. This dataset contains images 
+    """
+    The Tiered-Imagenet dataset, introduced in [1]_. This dataset contains images 
     of 608 different classes from the ILSVRC-12 dataset (Imagenet challenge).
 
     Parameters

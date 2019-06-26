@@ -5,130 +5,82 @@ import numpy as np
 import torch
 import copy
 
-from collections import Counter
-
 from torchmeta.dataset import MetaDataset
 from torchmeta.tasks import Task
 from torchmeta.datasets.utils import get_asset
 
 
-def _assign_samples(tcga_metadataset):
-    import pandas as pd
-    import munkres
-
-    blacklist = []
-    sample_to_task_assignment = {}
-    for cancer in get_cancers():
-        filename = tcga_metadataset.get_processed_filename(cancer)
-        dataframe = pd.read_csv(filename, sep='\t', index_col=0, header=0)
-        dataframe = dataframe.drop(blacklist, errors='ignore')
-        permutation = dataframe.index[torch.randperm(len(dataframe.index))]
-        dataframe = dataframe.reindex(permutation)
-        labels = dataframe.notna()
-        labels = labels.applymap(lambda x: 1. if x else munkres.DISALLOWED)
-        all_disallowed = labels.apply(lambda x: True if all(x == munkres.DISALLOWED) else False, axis=1)
-        labels = labels.drop(labels[all_disallowed].index)
-
-        matrix = labels.values
-        shape = matrix.shape
-        # The +5 allows for some slack in the assignment
-        # which is necessary for the used implementation to converge on BRCA
-        repeats = np.int(np.ceil(shape[0] / shape[1])) + 5
-        expanded_matrix = np.tile(matrix, (1, repeats))
-
-        indices = munkres.Munkres().compute(expanded_matrix)
-        mapped_indices = [(a, b % shape[1]) for a, b in indices]
-
-        for index, mapped_index in mapped_indices:
-            sample_to_task_assignment.setdefault((dataframe.columns[mapped_index], cancer), []).append(
-                dataframe.index[index])
-
-        blacklist.extend(dataframe.index.tolist())
-
-    return sample_to_task_assignment
-
-
-def _expand_sample_usage(meta_dataset, all_allowed_samples, additional_samples):
-    expanded_metadataset = {}
-    all_samples_of_metadataset = set()
-    for key, value in meta_dataset.items():
-        all_samples_of_metadataset.update(value)
-    all_samples_of_metadataset.update(additional_samples)
-
-    used_additional_samples = set()
-    for key in meta_dataset.keys():
-        allowed_samples = set(all_allowed_samples[key])
-        intersection = allowed_samples.intersection(all_samples_of_metadataset)
-        expanded_metadataset[key] = list(intersection)
-        used_additional_samples = additional_samples.intersection(intersection)
-
-    return expanded_metadataset, used_additional_samples
-
-
-def _split_tcga(tcga_metadataset, counts):
-    all_allowed_samples = tcga_metadataset.task_ids
-
-    # We first uniquely assing every sample to a task
-    sample_to_task_assignment = _assign_samples(tcga_metadataset)
-
-    keys = [i for i in all_allowed_samples.keys()]
-    difference = set(sample_to_task_assignment.keys()).difference(set(keys))
-
-    unassigned_samples = set()
-    for key in difference:
-        unassigned_samples.update(sample_to_task_assignment[key])
-
-    # Second we split the metadataset
-    # with a torch-based random sample
-    permutation = torch.randperm(len(keys)).numpy()
-
-    metadatasets = []
-    start = 0
-    end = 0
-    for count in counts:
-        end += count
-        current_keys = [keys[index] for index in permutation[start:end]]
-        metadatasets.append({key: sample_to_task_assignment[key] for key in current_keys})
-        start = end
-
-    expanded_metadatasets = [None] * len(metadatasets)
-    order = np.argsort([len(metadataset) for metadataset in metadatasets])
-
-    # Finally we expand the tasks by reusing samples wherever possible in the sets
-    blacklist = set()
-    for i in order:
-        additional_samples = unassigned_samples.difference(blacklist)
-        expanded_metadataset, used_additional_samples = _expand_sample_usage(metadatasets[i], all_allowed_samples,
-                                                                             additional_samples)
-        expanded_metadatasets[i] = (expanded_metadataset)
-        blacklist.update(used_additional_samples)
-
-    tcga_metadatasets = []
-    tcga_metadataset.close()
-    preloaded = tcga_metadataset.preloaded
-    for metadataset in expanded_metadatasets:
-        current_tcga_metadataset = copy.deepcopy(tcga_metadataset)
-        current_tcga_metadataset.task_ids = metadataset
-        if preloaded:
-            current_tcga_metadataset.open()
-        tcga_metadatasets.append(current_tcga_metadataset)
-
-    return tcga_metadatasets
-
-
-def get_cancers():
-    return get_asset(TCGA.folder, 'cancers.json', dtype='json')
-
-
-def get_task_variables():
-    return get_asset(TCGA.folder, 'task_variables.json', dtype='json')
-
-
-def get_task_id_splits(meta_split):
-    return get_asset(TCGA.folder, '{}.json'.format(meta_split), dtype='json')
-
-
 class TCGA(MetaDataset):
+    """
+    The TCGA dataset. A dataset of classification tasks over the values of an
+    attribute, based on the gene expression data from patients diagnosed with
+    specific types of cancer. This dataset is based on data from the Cancer
+    Genome Atlas Program from the National Cancer Institute.
+
+    Parameters
+    ----------
+    root : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    meta_train : bool (default: `False`)
+        Use the meta-train split of the dataset. If set to `True`, then the
+        arguments `meta_val` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+
+    meta_val : bool (default: `False`)
+        Use the meta-validation split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+
+    meta_test : bool (default: `False`)
+        Use the meta-test split of the dataset. If set to `True`, then the 
+        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
+        of these three arguments must be set to `True`.
+
+    meta_split : string in {'train', 'val', 'test'}, optional
+        Name of the split to use. This overrides the arguments `meta_train`, 
+        `meta_val` and `meta_test` if all three are set to `False`.
+
+    min_samples_per_class : int (default: 5)
+        Minimum number of samples per class in each classification task. This
+        filters tasks for which the amount of data for one of the classes is
+        too small.
+
+    transform : callable, optional
+        A function/transform that takes a `PIL` image, and returns a transformed 
+        version. See also `torchvision.transforms`.
+
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed 
+        version. See also `torchvision.transforms`.
+
+    dataset_transform : callable, optional
+        A function/transform that takes a dataset (ie. a task), and returns a 
+        transformed version of it. E.g. `transforms.ClassSplitter()`.
+
+    download : bool (default: `False`)
+        If `True`, downloads the files and processes the dataset in the root 
+        directory (under the `tcga` folder). If the dataset is already 
+        available, this does not download/process the dataset again.
+
+    chunksize : int (default: 100)
+        Size of the chunks to be processed when reading the CSV file. This is
+        only used while downloading and converting the dataset to HDF5.
+
+    preload : bool (default: `True`)
+        Opens the gene expression dataset and keeps a reference to it in memory.
+        This decreases the loading time of individual tasks.
+
+    Notes
+    -----
+    A task is the combination of a cancer type and an attribute. The data is the
+    gene expression of patients diagnosed with the cancer defined by the task.
+    It consists in a vector of size `(20530,)`. The task is to classify the
+    patients according to the attribute given by the task definition. The meta
+    train/validation/test splits are over 137/29/29 tasks (ie. types of cancer).
+    However, the number of tasks depends on the minimum number of samples per
+    class specified by `min_samples_per_class`.
+    """
     folder = 'tcga'
     clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
     clinical_matrix_filename, _ = os.path.splitext(os.path.basename(clinical_matrix_url))
@@ -451,3 +403,119 @@ class TCGATask(Task):
             target = self.target_transform(target)
 
         return (sample, target)
+
+
+def _assign_samples(tcga_metadataset):
+    import pandas as pd
+    import munkres
+
+    blacklist = []
+    sample_to_task_assignment = {}
+    for cancer in get_cancers():
+        filename = tcga_metadataset.get_processed_filename(cancer)
+        dataframe = pd.read_csv(filename, sep='\t', index_col=0, header=0)
+        dataframe = dataframe.drop(blacklist, errors='ignore')
+        permutation = dataframe.index[torch.randperm(len(dataframe.index))]
+        dataframe = dataframe.reindex(permutation)
+        labels = dataframe.notna()
+        labels = labels.applymap(lambda x: 1. if x else munkres.DISALLOWED)
+        all_disallowed = labels.apply(lambda x: True if all(x == munkres.DISALLOWED) else False, axis=1)
+        labels = labels.drop(labels[all_disallowed].index)
+
+        matrix = labels.values
+        shape = matrix.shape
+        # The +5 allows for some slack in the assignment
+        # which is necessary for the used implementation to converge on BRCA
+        repeats = np.int(np.ceil(shape[0] / shape[1])) + 5
+        expanded_matrix = np.tile(matrix, (1, repeats))
+
+        indices = munkres.Munkres().compute(expanded_matrix)
+        mapped_indices = [(a, b % shape[1]) for a, b in indices]
+
+        for index, mapped_index in mapped_indices:
+            sample_to_task_assignment.setdefault((dataframe.columns[mapped_index], cancer), []).append(
+                dataframe.index[index])
+
+        blacklist.extend(dataframe.index.tolist())
+
+    return sample_to_task_assignment
+
+
+def _expand_sample_usage(meta_dataset, all_allowed_samples, additional_samples):
+    expanded_metadataset = {}
+    all_samples_of_metadataset = set()
+    for key, value in meta_dataset.items():
+        all_samples_of_metadataset.update(value)
+    all_samples_of_metadataset.update(additional_samples)
+
+    used_additional_samples = set()
+    for key in meta_dataset.keys():
+        allowed_samples = set(all_allowed_samples[key])
+        intersection = allowed_samples.intersection(all_samples_of_metadataset)
+        expanded_metadataset[key] = list(intersection)
+        used_additional_samples = additional_samples.intersection(intersection)
+
+    return expanded_metadataset, used_additional_samples
+
+
+def _split_tcga(tcga_metadataset, counts):
+    all_allowed_samples = tcga_metadataset.task_ids
+
+    # We first uniquely assing every sample to a task
+    sample_to_task_assignment = _assign_samples(tcga_metadataset)
+
+    keys = [i for i in all_allowed_samples.keys()]
+    difference = set(sample_to_task_assignment.keys()).difference(set(keys))
+
+    unassigned_samples = set()
+    for key in difference:
+        unassigned_samples.update(sample_to_task_assignment[key])
+
+    # Second we split the metadataset
+    # with a torch-based random sample
+    permutation = torch.randperm(len(keys)).numpy()
+
+    metadatasets = []
+    start = 0
+    end = 0
+    for count in counts:
+        end += count
+        current_keys = [keys[index] for index in permutation[start:end]]
+        metadatasets.append({key: sample_to_task_assignment[key] for key in current_keys})
+        start = end
+
+    expanded_metadatasets = [None] * len(metadatasets)
+    order = np.argsort([len(metadataset) for metadataset in metadatasets])
+
+    # Finally we expand the tasks by reusing samples wherever possible in the sets
+    blacklist = set()
+    for i in order:
+        additional_samples = unassigned_samples.difference(blacklist)
+        expanded_metadataset, used_additional_samples = _expand_sample_usage(metadatasets[i], all_allowed_samples,
+                                                                             additional_samples)
+        expanded_metadatasets[i] = (expanded_metadataset)
+        blacklist.update(used_additional_samples)
+
+    tcga_metadatasets = []
+    tcga_metadataset.close()
+    preloaded = tcga_metadataset.preloaded
+    for metadataset in expanded_metadatasets:
+        current_tcga_metadataset = copy.deepcopy(tcga_metadataset)
+        current_tcga_metadataset.task_ids = metadataset
+        if preloaded:
+            current_tcga_metadataset.open()
+        tcga_metadatasets.append(current_tcga_metadataset)
+
+    return tcga_metadatasets
+
+
+def get_cancers():
+    return get_asset(TCGA.folder, 'cancers.json', dtype='json')
+
+
+def get_task_variables():
+    return get_asset(TCGA.folder, 'task_variables.json', dtype='json')
+
+
+def get_task_id_splits(meta_split):
+    return get_asset(TCGA.folder, '{}.json'.format(meta_split), dtype='json')

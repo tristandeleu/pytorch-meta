@@ -8,8 +8,10 @@ from torch.utils.data import Dataset
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import download_google_drive
 
+
 class MiniImagenet(CombinationMetaDataset):
-    """The Mini-Imagenet dataset, introduced in [1]_. This dataset contains images 
+    """
+    The Mini-Imagenet dataset, introduced in [1]_. This dataset contains images 
     of 100 different classes from the ILSVRC-12 dataset (Imagenet challenge). 
     The meta train/validation/test splits are taken from [2]_ for reproducibility.
 

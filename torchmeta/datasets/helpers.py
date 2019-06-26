@@ -11,18 +11,23 @@ def omniglot(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
     ----------
     folder : string
         Root directory where the dataset folder `omniglot` exists.
+
     shots : int
         Number of (training) examples per class in each task. This corresponds 
         to `k` in `k-shot` classification.
+
     ways : int
         Number of classes per task. This corresponds to `N` in `N-way` 
         classification.
-    shiffle : bool (default: `True`)
+
+    shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
+
     test_shots : int, optional
         Number of test examples per class in each task. If `None`, then the 
         number of test examples is equal to the number of training examples per 
         class.
+
     kwargs
         Additional arguments passed to the `Omniglot` class.
 
@@ -56,18 +61,23 @@ def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
     ----------
     folder : string
         Root directory where the dataset folder `miniimagenet` exists.
+
     shots : int
         Number of (training) examples per class in each task. This corresponds 
         to `k` in `k-shot` classification.
+
     ways : int
         Number of classes per task. This corresponds to `N` in `N-way` 
         classification.
-    shiffle : bool (default: `True`)
+
+    shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
+
     test_shots : int, optional
         Number of test examples per class in each task. If `None`, then the 
         number of test examples is equal to the number of training examples per 
         class.
+
     kwargs
         Additional arguments passed to the `MiniImagenet` class.
 
@@ -101,18 +111,23 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs)
     ----------
     folder : string
         Root directory where the dataset folder `tieredimagenet` exists.
+
     shots : int
         Number of (training) examples per class in each task. This corresponds 
         to `k` in `k-shot` classification.
+
     ways : int
         Number of classes per task. This corresponds to `N` in `N-way` 
         classification.
-    shiffle : bool (default: `True`)
+
+    shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
+
     test_shots : int, optional
         Number of test examples per class in each task. If `None`, then the 
         number of test examples is equal to the number of training examples per 
         class.
+
     kwargs
         Additional arguments passed to the `TieredImagenet` class.
 
