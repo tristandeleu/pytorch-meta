@@ -35,13 +35,16 @@ class Splitter(object):
 
     def _get_class_indices(self, task):
         class_indices = defaultdict(list)
-        for index in range(len(task)):
-            sample = task[index]
-            if (not isinstance(sample, tuple)) or (len(sample) < 2):
+        if task.num_classes is None: # Regression task
+            class_indices['regression'] = range(len(task))
+        else:
+            for index in range(len(task)):
+                sample = task[index]
+                if (not isinstance(sample, tuple)) or (len(sample) < 2):
+                    raise ValueError()
+                class_indices[sample[-1]].append(index)
+            if len(class_indices) != task.num_classes:
                 raise ValueError()
-            class_indices[sample[-1]].append(index)
-        if len(class_indices) != task.num_classes:
-            raise ValueError()
         return class_indices
 
     def __call__(self, task):
