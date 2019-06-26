@@ -75,6 +75,9 @@ class FC100(CombinationMetaDataset):
     .. [1] Oreshkin B. N., Rodriguez P., Lacoste A. (2018). TADAM: Task dependent
            adaptive metric for improved few-shot learning. In Advances in Neural 
            Information Processing Systems (https://arxiv.org/abs/1805.10123)
+
+    .. [2] Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny
+           Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
     """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, meta_split=None,
