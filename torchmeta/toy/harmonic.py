@@ -14,7 +14,7 @@ class Harmonic(MetaDataset):
     num_samples_per_task : int
         Number of examples per task.
 
-    num_tasks : int (default: 1,000,000)
+    num_tasks : int (default: 5,000)
         Overall number of tasks to sample.
 
     noise_std : float, optional

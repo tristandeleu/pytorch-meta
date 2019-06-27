@@ -2,11 +2,13 @@ import numpy as np
 
 from torchmeta.dataset import MetaDataset
 from torchmeta.tasks import Task
+from torchmeta.toy.sinusoid import SinusoidTask
 
 
-class Sinusoid(MetaDataset):
+class SinusoidAndLine(MetaDataset):
     """
-    Simple regression task, based on sinusoids, as introduced in [1]_.
+    Simple multimodal regression task, based on sinusoids and lines, as
+    introduced in [1]_.
 
     Parameters
     ----------
@@ -18,7 +20,8 @@ class Sinusoid(MetaDataset):
 
     noise_std : float, optional
         Amount of noise to include in the targets for each task. If `None`, then
-        nos noise is included, and the target is a sine function of the input.
+        nos noise is included, and the target is either a sine function, or a
+        linear function of the input.
 
     transform : callable, optional
         A function/transform that takes a numpy array of size (1,) and returns a
@@ -34,22 +37,24 @@ class Sinusoid(MetaDataset):
 
     Notes
     -----
-    The tasks are created randomly as random sinusoid function. The amplitude
-    varies within [0.1, 5.0], the phase within [0, pi], and the inputs are
-    sampled uniformly in [-5.0, 5.0]. Due to the way PyTorch handles datasets,
-    the number of tasks to be sampled needs to be fixed ahead of time (with
-    `num_tasks`). This will typically be equal to `meta_batch_size * num_batches`.
+    The tasks are created randomly as either random sinusoid functions, or
+    random linear functions. The amplitude of the sinusoids varies within
+    [0.1, 5.0] and the phase within [0, pi]. The slope and intercept of the lines
+    vary in [-3.0, 3.0]. The inputs are sampled uniformly in [-5.0, 5.0]. Due to
+    the way PyTorch handles datasets, the number of tasks to be sampled needs to
+    be fixed ahead of time (with `num_tasks`). This will typically be equal to
+    `meta_batch_size * num_batches`.
 
     References
     ----------
-    .. [1] Finn C., Abbeel P., and Levine, S. (2017). Model-Agnostic Meta-Learning
-           for Fast Adaptation of Deep Networks. International Conference on
-           Machine Learning (ICML) (https://arxiv.org/abs/1703.03400)
+    .. [1] Finn C., Xu K., Levine S. (2018). Probabilistic Model-Agnostic
+           Meta-Learning. In Advances in Neural Information Processing Systems
+           (https://arxiv.org/abs/1806.02817)
     """
     def __init__(self, num_samples_per_task, num_tasks=1_000_000,
                  noise_std=None, transform=None, target_transform=None,
                  dataset_transform=None):
-        super(Sinusoid, self).__init__(meta_split='train',
+        super(SinusoidAndLine, self).__init__(meta_split='train',
             dataset_transform=dataset_transform)
         self.num_samples_per_task = num_samples_per_task
         self.num_tasks = num_tasks
@@ -60,19 +65,34 @@ class Sinusoid(MetaDataset):
         self._input_range = np.array([-5.0, 5.0])
         amplitude_range = np.array([0.1, 5.0])
         phase_range = np.array([0, np.pi])
+        slope_range = np.array([-3.0, 3.0])
+        intercept_range = np.array([-3.0, 3.0])
+
+        self._is_sinusoid = np.zeros((self.num_tasks,), dtype=np.bool_)
+        self._is_sinusoid[self.num_tasks // 2:] = True
+        np.random.shuffle(self._is_sinusoid)
 
         self._amplitudes = np.random.uniform(amplitude_range[0],
             amplitude_range[1], size=self.num_tasks)
         self._phases = np.random.uniform(phase_range[0], phase_range[1],
             size=self.num_tasks)
+        self._slopes = np.random.uniform(slope_range[0], slope_range[1],
+            size=self.num_tasks)
+        self._intercepts = np.random.uniform(intercept_range[0],
+            intercept_range[1], size=self.num_tasks)
 
     def __len__(self):
         return self.num_tasks
 
     def __getitem__(self, index):
-        amplitude, phase = self._amplitudes[index], self._phases[index]
-        task = SinusoidTask(amplitude, phase, self._input_range, self.noise_std,
-            self.num_samples_per_task, self.transform, self.target_transform)
+        if self._is_sinusoid[index]:
+            amplitude, phase = self._amplitudes[index], self._phases[index]
+            task = SinusoidTask(amplitude, phase, self._input_range, self.noise_std,
+                self.num_samples_per_task, self.transform, self.target_transform)
+        else:
+            slope, intercept = self._slopes[index], self._intercepts[index]
+            task = LinearTask(slope, intercept, self._input_range, self.noise_std,
+                self.num_samples_per_task, self.transform, self.target_transform)
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -80,12 +100,12 @@ class Sinusoid(MetaDataset):
         return task
 
 
-class SinusoidTask(Task):
-    def __init__(self, amplitude, phase, input_range, noise_std, num_samples,
-                 transform=None, target_transform=None):
-        super(SinusoidTask, self).__init__(None) # Regression task
-        self.amplitude = amplitude
-        self.phase = phase
+class LinearTask(Task):
+    def __init__(self, slope, intercept, input_range, noise_std, num_samples,
+        transform=None, target_transform=None):
+        super(LinearTask, self).__init__(None) # Regression task
+        self.slope = slope
+        self.intercept = intercept
         self.input_range = input_range
         self.num_samples = num_samples
         self.noise_std = noise_std
@@ -95,7 +115,7 @@ class SinusoidTask(Task):
 
         self._inputs = np.random.uniform(input_range[0], input_range[1],
             size=(num_samples, 1))
-        self._targets = amplitude * np.sin(self._inputs - phase)
+        self._targets = intercept + slope * self._inputs
         if (noise_std is not None) and (noise_std > 0.):
             self._targets += noise_std * np.random.randn(num_samples, 1)
 
