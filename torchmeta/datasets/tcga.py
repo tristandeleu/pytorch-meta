@@ -245,10 +245,16 @@ class TCGA(MetaDataset):
         return task_ids
 
     def download(self, chunksize=100):
-        import gzip
-        import shutil
-        import pandas as pd
-        from six.moves import urllib
+        try:
+            import gzip
+            import shutil
+            import pandas as pd
+            from six.moves import urllib
+            import academictorrents as at
+        except ImportError as exception:
+            raise ImportError('{0}. To use the TCGA dataset, you need to '
+                'install the necessary dependencies with '
+                '`pip install torchmeta[tcga]`.'.format(exception.message))
 
         clinical_matrices_folder = os.path.join(self.root, 'clinicalMatrices')
         if not os.path.exists(clinical_matrices_folder):
@@ -274,7 +280,6 @@ class TCGA(MetaDataset):
 
         gene_expression_file = os.path.join(self.root, self.gene_expression_filename)
         if not os.path.isfile(gene_expression_file):
-            import academictorrents as at
             from tqdm import tqdm
             print('Downloading `{0}` using `academictorrents`...'.format(
                 self.gene_expression_filename))
