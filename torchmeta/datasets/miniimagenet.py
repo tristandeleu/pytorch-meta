@@ -4,7 +4,7 @@ from PIL import Image
 import h5py
 import json
 
-from torch.utils.data import Dataset
+from torchmeta.tasks import Dataset
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import download_google_drive
 
@@ -85,10 +85,10 @@ class MiniImagenet(CombinationMetaDataset):
                  class_augmentations=None, download=False):
         dataset = MiniImagenetClassDataset(root, meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, target_transform=target_transform,
-            class_augmentations=class_augmentations, download=download)
+            transform=transform, class_augmentations=class_augmentations,
+            download=download)
         super(MiniImagenet, self).__init__(dataset, num_classes_per_task,
-            dataset_transform=dataset_transform)
+            target_transform=target_transform, dataset_transform=dataset_transform)
 
 
 class MiniImagenetClassDataset(ClassDataset):
@@ -103,15 +103,14 @@ class MiniImagenetClassDataset(ClassDataset):
     filename_labels = '{0}_labels.json'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, transform=None, target_transform=None,
-                 class_augmentations=None, download=False):
+                 meta_split=None, transform=None, class_augmentations=None,
+                 download=False):
         super(MiniImagenetClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
         
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.transform = transform
-        self.target_transform = target_transform
 
         self.split_filename = os.path.join(self.root,
             self.filename.format(self.meta_split))
@@ -132,7 +131,7 @@ class MiniImagenetClassDataset(ClassDataset):
         class_name = self.labels[index % self.num_classes]
         data = self.data[class_name]
         transform = self.get_transform(index, self.transform)
-        target_transform = self.get_target_transform(index, self.target_transform)
+        target_transform = self.get_target_transform(index)
 
         return MiniImagenetDataset(data, class_name, transform=transform,
             target_transform=target_transform)
@@ -207,11 +206,10 @@ class MiniImagenetClassDataset(ClassDataset):
 
 class MiniImagenetDataset(Dataset):
     def __init__(self, data, class_name, transform=None, target_transform=None):
-        super(MiniImagenetDataset, self).__init__()
+        super(MiniImagenetDataset, self).__init__(transform=transform,
+            target_transform=target_transform)
         self.data = data
         self.class_name = class_name
-        self.transform = transform
-        self.target_transform = target_transform
 
     def __len__(self):
         return self.data.shape[0]

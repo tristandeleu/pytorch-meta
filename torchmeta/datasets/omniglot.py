@@ -4,7 +4,7 @@ import glob
 import h5py
 from PIL import Image, ImageOps
 
-from torch.utils.data import Dataset
+from torchmeta.tasks import Dataset
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
@@ -98,10 +98,10 @@ class Omniglot(CombinationMetaDataset):
         dataset = OmniglotClassDataset(root, meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test,
             use_vinyals_split=use_vinyals_split, transform=transform,
-            target_transform=target_transform, meta_split=meta_split,
-            class_augmentations=class_augmentations, download=download)
+            meta_split=meta_split, class_augmentations=class_augmentations,
+            download=download)
         super(Omniglot, self).__init__(dataset, num_classes_per_task,
-            dataset_transform=dataset_transform)
+            target_transform=target_transform, dataset_transform=dataset_transform)
 
 
 class OmniglotClassDataset(ClassDataset):
@@ -117,8 +117,7 @@ class OmniglotClassDataset(ClassDataset):
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, use_vinyals_split=True, transform=None,
-                 target_transform=None, class_augmentations=None,
-                 download=False):
+                 class_augmentations=None, download=False):
         super(OmniglotClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
@@ -131,7 +130,6 @@ class OmniglotClassDataset(ClassDataset):
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.use_vinyals_split = use_vinyals_split
         self.transform = transform
-        self.target_transform = target_transform
 
         self.split_filename = os.path.join(self.root, self.filename)
         self.split_filename_labels = os.path.join(self.root,
@@ -152,7 +150,7 @@ class OmniglotClassDataset(ClassDataset):
         character_name = '/'.join(self.labels[index % self.num_classes])
         data = self.data[character_name]
         transform = self.get_transform(index, self.transform)
-        target_transform = self.get_target_transform(index, self.target_transform)
+        target_transform = self.get_target_transform(index)
 
         return OmniglotDataset(data, character_name, transform=transform,
             target_transform=target_transform)
@@ -245,11 +243,10 @@ class OmniglotClassDataset(ClassDataset):
 
 class OmniglotDataset(Dataset):
     def __init__(self, data, character_name, transform=None, target_transform=None):
-        super(OmniglotDataset, self).__init__()
+        super(OmniglotDataset, self).__init__(transform=transform,
+            target_transform=target_transform)
         self.data = data
         self.character_name = character_name
-        self.transform = transform
-        self.target_transform = target_transform
 
     def __len__(self):
         return len(self.data)

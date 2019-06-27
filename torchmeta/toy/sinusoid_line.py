@@ -55,12 +55,11 @@ class SinusoidAndLine(MetaDataset):
                  noise_std=None, transform=None, target_transform=None,
                  dataset_transform=None):
         super(SinusoidAndLine, self).__init__(meta_split='train',
-            dataset_transform=dataset_transform)
+            target_transform=target_transform, dataset_transform=dataset_transform)
         self.num_samples_per_task = num_samples_per_task
         self.num_tasks = num_tasks
         self.noise_std = noise_std
         self.transform = transform
-        self.target_transform = target_transform
 
         self._input_range = np.array([-5.0, 5.0])
         amplitude_range = np.array([0.1, 5.0])

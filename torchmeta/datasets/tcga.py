@@ -95,13 +95,11 @@ class TCGA(MetaDataset):
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False, meta_split=None,
                  min_samples_per_class=5, transform=None, target_transform=None,
                  dataset_transform=None, download=False, chunksize=100, preload=True):
-        super(TCGA, self).__init__(meta_train, meta_val, meta_test, meta_split, dataset_transform=dataset_transform)
+        super(TCGA, self).__init__(meta_train, meta_val, meta_test, meta_split,
+            target_transform=target_transform, dataset_transform=dataset_transform)
         self.root = os.path.join(os.path.expanduser(root), self.folder)
-        
         self.min_samples_per_class = min_samples_per_class
-
         self.transform = transform
-        self.target_transform = target_transform
 
         self._all_sample_ids = None
         self._gene_ids = None
@@ -377,14 +375,12 @@ class TCGATask(Task):
 
     def __init__(self, task_id, data, labels, categories, transform=None,
                  target_transform=None):
-        super(TCGATask, self).__init__(len(categories))
+        super(TCGATask, self).__init__(len(categories), transform=transform,
+            target_transform=target_transform)
         self.id = task_id
         self.data = data
         self.labels = labels
         self.categories = categories
-
-        self.transform = transform
-        self.target_transform = target_transform
 
     @property
     def input_size(self):

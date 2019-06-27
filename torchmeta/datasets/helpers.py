@@ -1,7 +1,7 @@
 import warnings
 
 from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet
-from torchmeta.transforms import CategoricalWrapper, ClassSplitter, Rotation
+from torchmeta.transforms import Categorical, ClassSplitter, Rotation
 from torchvision.transforms import Compose, Resize, ToTensor
 
 def omniglot(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
@@ -42,13 +42,14 @@ def omniglot(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
         ways = kwargs['num_classes_per_task']
     if 'transform' not in kwargs:
         kwargs['transform'] = Compose([Resize(28), ToTensor()])
+    if 'target_transform' not in kwargs:
+        kwargs['target_transform'] = Categorical(ways)
     if 'class_augmentations' not in kwargs:
         kwargs['class_augmentations'] = [Rotation([90, 180, 270])]
     if test_shots is None:
         test_shots = shots
 
     dataset = Omniglot(folder, num_classes_per_task=ways, **kwargs)
-    dataset = CategoricalWrapper(dataset)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
 
@@ -92,13 +93,14 @@ def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
         ways = kwargs['num_classes_per_task']
     if 'transform' not in kwargs:
         kwargs['transform'] = Compose([Resize(84), ToTensor()])
+    if 'target_transform' not in kwargs:
+        kwargs['target_transform'] = Categorical(ways)
     if 'class_augmentations' not in kwargs:
         kwargs['class_augmentations'] = [Rotation([90, 180, 270])]
     if test_shots is None:
         test_shots = shots
 
     dataset = MiniImagenet(folder, num_classes_per_task=ways, **kwargs)
-    dataset = CategoricalWrapper(dataset)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
 
@@ -142,13 +144,14 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs)
         ways = kwargs['num_classes_per_task']
     if 'transform' not in kwargs:
         kwargs['transform'] = Compose([Resize(84), ToTensor()])
+    if 'target_transform' not in kwargs:
+        kwargs['target_transform'] = Categorical(ways)
     if 'class_augmentations' not in kwargs:
         kwargs['class_augmentations'] = [Rotation([90, 180, 270])]
     if test_shots is None:
         test_shots = shots
 
     dataset = TieredImagenet(folder, num_classes_per_task=ways, **kwargs)
-    dataset = CategoricalWrapper(dataset)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
 

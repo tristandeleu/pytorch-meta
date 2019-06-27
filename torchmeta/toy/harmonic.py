@@ -53,12 +53,11 @@ class Harmonic(MetaDataset):
                  noise_std=None, transform=None, target_transform=None,
                  dataset_transform=None):
         super(Harmonic, self).__init__(meta_split='train',
-            dataset_transform=dataset_transform)
+            target_transform=target_transform, dataset_transform=dataset_transform)
         self.num_samples_per_task = num_samples_per_task
         self.num_tasks = num_tasks
         self.noise_std = noise_std
         self.transform = transform
-        self.target_transform = target_transform
 
         domain_range = np.array([-4.0, 4.0])
         frequency_range = np.array([5.0, 7.0])

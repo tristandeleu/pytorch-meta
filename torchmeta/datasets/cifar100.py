@@ -4,7 +4,7 @@ import json
 import h5py
 from PIL import Image
 
-from torch.utils.data import Dataset
+from torchmeta.tasks import Dataset
 from torchvision.datasets.utils import check_integrity, download_url
 from torchmeta.dataset import ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import get_asset
@@ -85,10 +85,10 @@ class FC100(CombinationMetaDataset):
                  class_augmentations=None, download=False):
         dataset = FC100ClassDataset(root, meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, target_transform=target_transform,
-            class_augmentations=class_augmentations, download=download)
+            transform=transform, class_augmentations=class_augmentations,
+            download=download)
         super(FC100, self).__init__(dataset, num_classes_per_task,
-            dataset_transform=dataset_transform)
+            target_transform=target_transform, dataset_transform=dataset_transform)
 
 
 class FC100ClassDataset(ClassDataset):
@@ -106,15 +106,14 @@ class FC100ClassDataset(ClassDataset):
     filename_labels = '{0}_labels.json'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, transform=None, target_transform=None,
-                 class_augmentations=None, download=False):
+                 meta_split=None, transform=None, class_augmentations=None,
+                 download=False):
         super(FC100ClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
 
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.transform = transform
-        self.target_transform = target_transform
 
         self.split_filename_labels = os.path.join(self.root,
             self.filename_labels.format(self.meta_split))
@@ -132,7 +131,7 @@ class FC100ClassDataset(ClassDataset):
         coarse_label_name, fine_label_name = self.labels[index]
         data = self.data['{0}/{1}'.format(coarse_label_name, fine_label_name)]
         transform = self.get_transform(index, self.transform)
-        target_transform = self.get_target_transform(index, self.target_transform)
+        target_transform = self.get_target_transform(index)
 
         return FC100Dataset(data, coarse_label_name, fine_label_name,
             transform=transform, target_transform=target_transform)
@@ -236,12 +235,11 @@ class FC100ClassDataset(ClassDataset):
 class FC100Dataset(Dataset):
     def __init__(self, data, coarse_label_name, fine_label_name,
                  transform=None, target_transform=None):
-        super(FC100Dataset, self).__init__()
+        super(FC100Dataset, self).__init__(transform=transform,
+            target_transform=target_transform)
         self.data = data
         self.coarse_label_name = coarse_label_name
         self.fine_label_name = fine_label_name
-        self.transform = transform
-        self.target_transform = target_transform
 
     def __len__(self):
         return self.data.shape[0]
