@@ -1,7 +1,7 @@
 import torch
 
 from collections import OrderedDict, defaultdict
-from torchmeta.tasks import TaskWrapper, Task, ConcatTask, SubsetTask
+from torchmeta.tasks import Task, ConcatTask, SubsetTask
 from torchmeta.transforms.utils import apply_wrapper
 
 
@@ -10,16 +10,7 @@ class Splitter(object):
         self.splits = splits
 
     def get_indices(self, task):
-        if isinstance(task.unwrapped, ConcatTask):
-            if len(task) != len(task.unwrapped):
-                import warnings
-                warnings.warn('The length of the transformed task is different '
-                    'from the length of the original task. Maybe one of the '
-                    'dataset transformations applied is already taking a subset '
-                    'of the task (eg. calling two splitters in '
-                    '`dataset_transform`). `ClassSplitter` will roll back to a '
-                    'simple stategy for dataset splitting.', UserWarning, stacklevel=2)
-                return self.get_indices_task(task)
+        if isinstance(task, ConcatTask):
             indices = self.get_indices_concattask(task)
         elif isinstance(task, Task):
             indices = self.get_indices_task(task)
@@ -95,7 +86,7 @@ class ClassSplitter_(Splitter):
     def get_indices_concattask(self, task):
         indices = OrderedDict([(split, []) for split in self.splits])
         cum_size = 0
-        for dataset in task.unwrapped.datasets:
+        for dataset in task.datasets:
             num_samples = len(dataset)
             if num_samples < self._min_samples_per_class:
                 raise ValueError()
@@ -182,10 +173,10 @@ class WeightedClassSplitter_(Splitter):
     def get_indices_concattask(self, task):
         indices = OrderedDict([(split, []) for split in self.splits])
         cum_size = 0
-        min_samples = min([len(dataset) for dataset in task.unwrapped.datasets])
+        min_samples = min([len(dataset) for dataset in task.datasets])
         if min_samples < self._min_samples_per_class:
             raise ValueError()
-        for dataset in task.unwrapped.datasets:
+        for dataset in task.datasets:
             num_samples = (min_samples if self.force_equal_per_class
                 else len(dataset))
             if num_samples < self._min_samples_per_class:

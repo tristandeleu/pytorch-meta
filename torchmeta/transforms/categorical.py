@@ -1,43 +1,16 @@
 import torch
-from torchmeta.tasks import TaskWrapper
 from torchmeta.transforms.utils import apply_wrapper
 from collections import defaultdict
 
 
-class CategoricalWrapper_(TaskWrapper):
-    def __init__(self, task):
-        super(CategoricalWrapper_, self).__init__(task)
-        self._classes = None
-        self._labels = torch.randperm(self.num_classes).tolist()
-
-    @property
-    def classes(self):
-        if self._classes is None:
-            default_factory = lambda: self._labels[len(self._classes)]
-            self._classes = defaultdict(None)
-            self._classes.default_factory = default_factory
-        if len(self._classes) > self.num_classes:
-            raise ValueError()
-        return self._classes
-
-    def __getitem__(self, index):
-        sample = self.task[index]
-        if (not isinstance(sample, tuple)) or (len(sample) < 2):
-            raise ValueError()
-        return sample[:-1] + (self.classes[sample[-1]],)
-
-
-def CategoricalWrapper(task=None):
-    """Wraps a task, or a meta-dataset, so that the examples from the task(s) 
-    have a target in [0, num_classes) (instead of the raw target from the 
-    dataset).
+class Categorical(object):
+    """Target transform to return labels in `[0, num_classes)`.
 
     Parameters
     ----------
-    task : `Task` instance or `MetaDataset` instance, optional
-        If `task` is a `Task` instance, then wraps the task. If `task` is a 
-        `MetaDataset` instance, then adds it to its `dataset_transform`. If 
-        `None`, returns a function to be used as a `dataset_transform`.
+    num_classes : int, optional
+        Number of classes. If `None`, then the number of classes is inferred
+        from the number of individual labels encountered.
 
     Examples
     --------
@@ -47,25 +20,47 @@ def CategoricalWrapper(task=None):
     (<PIL.Image.Image image mode=L size=105x105 at 0x11EC797F0>,
     ('images_evaluation/Glagolitic/character12', None))
 
-    >>> dataset = Omniglot('data', num_classes_per_task=5, meta_train=True)
+    >>> dataset = Omniglot('data', num_classes_per_task=5, meta_train=True,
+    ... target_transform=Categorical(5))
     >>> task = dataset.sample_task()
-    >>> task = CategoricalWrapper(task)
     >>> task[0]
     (<PIL.Image.Image image mode=L size=105x105 at 0x11ED3F668>, 2)
-
-    >>> dataset = Omniglot('data', num_classes_per_task=5, meta_train=True)
-    >>> dataset = CategoricalWrapper(dataset)
-    >>> task = dataset.sample_task()
-    >>> task[0]
-    (<PIL.Image.Image image mode=L size=105x105 at 0x11EA55E10>, 4)
     """
-    class Categorical(object):
-        def __call__(self, task):
-            return CategoricalWrapper_(task)
+    def __init__(self, num_classes=None):
+        self.num_classes = num_classes
+        self._classes = None
+        self._labels = None
 
-        def __repr__(self):
-            return '{0}()'.format(self.__class__.__name__)
-    return apply_wrapper(Categorical(), task)
+    def reset(self):
+        self._classes = None
+        self._labels = None
+
+    @property
+    def classes(self):
+        if self._classes is None:
+            self._classes = defaultdict(None)
+            if self.num_classes is None:
+                default_factory = lambda: len(self._classes)
+            else:
+                default_factory = lambda: self.labels[len(self._classes)]
+            self._classes.default_factory = default_factory
+        if (self.num_classes is not None) and (len(self._classes) > self.num_classes):
+            raise ValueError('The number of individual labels ({0}) is greater '
+                'than the number of classes defined by `num_classes` '
+                '({1}).'.format(len(self._classes), self.num_classes))
+        return self._classes
+
+    @property
+    def labels(self):
+        if (self._labels is None) and (self.num_classes is not None):
+            self._labels = torch.randperm(self.num_classes).tolist()
+        return self._labels
+
+    def __call__(self, target):
+        return self.classes[target]
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__class__.__name__, self.num_classes or '')
 
 
 class FixedCategory(object):

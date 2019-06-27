@@ -1,11 +1,13 @@
 import torch
 import warnings
+from copy import deepcopy
 
 from itertools import combinations
 from torchvision.transforms import Compose
 
 from torchmeta.tasks import ConcatTask
-from torchmeta.transforms import FixedCategory
+from torchmeta.transforms import FixedCategory, Categorical
+from torchmeta.transforms.utils import wrap_transform
 
 class ClassDataset(object):
     """Base class for a dataset of classes. Each item from a `ClassDataset` is 
@@ -91,12 +93,9 @@ class ClassDataset(object):
             return class_transform
         return Compose([class_transform, transform])
 
-    def get_target_transform(self, index, transform=None):
+    def get_target_transform(self, index):
         class_transform = self.get_class_augmentation(index)
-        categorical_transform = FixedCategory(class_transform)
-        if transform is None:
-            return categorical_transform
-        return Compose([categorical_transform, transform])
+        return FixedCategory(class_transform)
 
     @property
     def meta_split(self):
@@ -146,12 +145,16 @@ class MetaDataset(object):
         Name of the split to use. This overrides the arguments `meta_train`, 
         `meta_val` and `meta_test`.
 
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed 
+        version. See also `torchvision.transforms`.
+
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
     """
     def __init__(self, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, dataset_transform=None):
+                 meta_split=None, target_transform=None, dataset_transform=None):
         if meta_train + meta_val + meta_test == 0:
             if meta_split is None:
                 raise ValueError('The meta-split is undefined. Use either the '
@@ -171,6 +174,7 @@ class MetaDataset(object):
         self.meta_val = meta_val
         self.meta_test = meta_test
         self._meta_split = meta_split
+        self.target_transform = target_transform
         self.dataset_transform = dataset_transform
 
     @property
@@ -215,11 +219,16 @@ class CombinationMetaDataset(MetaDataset):
         Number of classes per tasks. This corresponds to `N` in `N-way` 
         classification.
 
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed 
+        version. See also `torchvision.transforms`.
+
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
     """
-    def __init__(self, dataset, num_classes_per_task, dataset_transform=None):
+    def __init__(self, dataset, num_classes_per_task, target_transform=None,
+                 dataset_transform=None):
         if not isinstance(num_classes_per_task, int):
             raise TypeError('Unknown type for `num_classes_per_task`. Expected '
                 '`int`, got `{0}`.'.format(type(num_classes_per_task)))
@@ -227,7 +236,8 @@ class CombinationMetaDataset(MetaDataset):
         self.num_classes_per_task = num_classes_per_task
         super(CombinationMetaDataset, self).__init__(meta_train=dataset.meta_train,
             meta_val=dataset.meta_val, meta_test=dataset.meta_test,
-            meta_split=dataset.meta_split, dataset_transform=dataset_transform)
+            meta_split=dataset.meta_split, target_transform=target_transform,
+            dataset_transform=dataset_transform)
 
     def __iter__(self):
         num_classes = len(self.dataset)
@@ -249,7 +259,11 @@ class CombinationMetaDataset(MetaDataset):
                 self.num_classes_per_task - 1, index))
         assert len(index) == self.num_classes_per_task
         datasets = [self.dataset[i] for i in index]
-        task = ConcatTask(datasets, self.num_classes_per_task)
+        # Use deepcopy on `Categorical` target transforms, to avoid any side
+        # effect across tasks.
+        task = ConcatTask(datasets, self.num_classes_per_task,
+            target_transform=wrap_transform(self.target_transform,
+            copy_categorical, transform_type=Categorical))
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -261,3 +275,8 @@ class CombinationMetaDataset(MetaDataset):
         for i in range(1, self.num_classes_per_task + 1):
             length *= (num_classes - i + 1) / i
         return int(length)
+
+def copy_categorical(transform):
+    assert isinstance(transform, Categorical)
+    transform.reset()
+    return deepcopy(transform)

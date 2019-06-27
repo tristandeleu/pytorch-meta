@@ -18,3 +18,12 @@ def apply_wrapper(wrapper, task_or_dataset=None):
         return task_or_dataset
     else:
         raise NotImplementedError()
+
+def wrap_transform(transform, fn, transform_type=None):
+    if (transform_type is None) or isinstance(transform, transform_type):
+        return fn(transform)
+    elif isinstance(transform, Compose):
+        return Compose([wrap_transform(subtransform, fn, transform_type)
+            for subtransform in transform.transforms])
+    else:
+        return transform
