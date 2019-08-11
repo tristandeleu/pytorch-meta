@@ -14,8 +14,7 @@ transform = Compose([Resize(28), ToTensor()])
 dataset = Omniglot('data', num_classes_per_task=5, transform=transform,
                    target_transform=Categorical(num_classes=5),
                    meta_train=True, download=True)
-dataset = ClassSplitter(dataset, num_train_per_class=5, num_test_per_class=15,
-                        shuffle=True)
+dataset = ClassSplitter(dataset, num_train_per_class=5, num_test_per_class=15)
 
 dataloader = BasicMetaDataLoader(dataset, batch_size=16, num_workers=4)
 
