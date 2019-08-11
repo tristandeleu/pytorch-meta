@@ -6,8 +6,7 @@ import os
 import io
 import pickle
 
-from torchmeta.tasks import Dataset
-from torchmeta.dataset import ClassDataset, CombinationMetaDataset
+from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import download_google_drive
 
 

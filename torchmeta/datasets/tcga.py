@@ -5,8 +5,7 @@ import numpy as np
 import torch
 import copy
 
-from torchmeta.dataset import MetaDataset
-from torchmeta.tasks import Task
+from torchmeta.utils.data import Task, MetaDataset
 from torchmeta.datasets.utils import get_asset
 
 

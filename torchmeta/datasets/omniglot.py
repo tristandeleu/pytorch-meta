@@ -4,8 +4,7 @@ import glob
 import h5py
 from PIL import Image, ImageOps
 
-from torchmeta.tasks import Dataset
-from torchmeta.dataset import ClassDataset, CombinationMetaDataset
+from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
 from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
 

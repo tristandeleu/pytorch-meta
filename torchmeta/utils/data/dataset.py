@@ -5,9 +5,12 @@ from copy import deepcopy
 from itertools import combinations
 from torchvision.transforms import Compose
 
-from torchmeta.tasks import ConcatTask
+from torchmeta.utils.data.task import ConcatTask
 from torchmeta.transforms import FixedCategory, Categorical
 from torchmeta.transforms.utils import wrap_transform
+
+__all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset']
+
 
 class ClassDataset(object):
     """Base class for a dataset of classes. Each item from a `ClassDataset` is 

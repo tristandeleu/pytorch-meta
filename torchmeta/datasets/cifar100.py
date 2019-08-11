@@ -4,9 +4,8 @@ import json
 import h5py
 from PIL import Image
 
-from torchmeta.tasks import Dataset
 from torchvision.datasets.utils import check_integrity, download_url
-from torchmeta.dataset import ClassDataset, CombinationMetaDataset
+from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
 from torchmeta.datasets.utils import get_asset
 
 

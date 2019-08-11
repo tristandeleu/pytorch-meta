@@ -3,7 +3,7 @@ import torch
 from tqdm import tqdm
 
 from torchmeta.datasets.helpers import omniglot
-from torchmeta.dataloaders import BasicMetaDataLoader
+from torchmeta.utils.data import BatchMetaDataLoader
 
 from model import PrototypicalNetwork
 from utils import get_prototypes, prototypical_loss, get_accuracy
@@ -11,7 +11,7 @@ from utils import get_prototypes, prototypical_loss, get_accuracy
 def train(args):
     dataset = omniglot(args.folder, shots=args.num_shots, ways=args.num_ways,
         shuffle=True, test_shots=15, meta_train=True, download=args.download)
-    dataloader = BasicMetaDataLoader(dataset, batch_size=args.batch_size,
+    dataloader = BatchMetaDataLoader(dataset, batch_size=args.batch_size,
         shuffle=True, num_workers=args.num_workers)
 
     model = PrototypicalNetwork(1, args.embedding_size,

@@ -1,7 +1,6 @@
 import numpy as np
 
-from torchmeta.dataset import MetaDataset
-from torchmeta.tasks import Task
+from torchmeta.utils.data import Task, MetaDataset
 from torchmeta.toy.sinusoid import SinusoidTask
 
 

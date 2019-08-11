@@ -1,7 +1,7 @@
 import torch
 
 from collections import OrderedDict, defaultdict
-from torchmeta.tasks import Task, ConcatTask, SubsetTask
+from torchmeta.utils.data.task import Task, ConcatTask, SubsetTask
 from torchmeta.transforms.utils import apply_wrapper
 
 __all__ = ['Splitter', 'ClassSplitter', 'WeightedClassSplitter']

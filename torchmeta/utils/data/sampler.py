@@ -2,7 +2,9 @@ import random
 from itertools import combinations
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
-from torchmeta.dataset import CombinationMetaDataset
+from torchmeta.utils.data.dataset import CombinationMetaDataset
+
+__all__ = ['CombinationSequentialSampler', 'CombinationRandomSampler']
 
 
 class CombinationSequentialSampler(SequentialSampler):
