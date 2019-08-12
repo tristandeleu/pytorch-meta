@@ -4,7 +4,7 @@ from torchmeta.modules import (MetaModule, MetaSequential, MetaConv2d,
 from torchmeta.modules.utils import get_subdict
 
 def conv3x3(in_channels, out_channels, **kwargs):
-    return nn.Sequential(
+    return MetaSequential(
         MetaConv2d(in_channels, out_channels, kernel_size=3, padding=1, **kwargs),
         MetaBatchNorm2d(out_channels, momentum=1., track_running_stats=False),
         nn.ReLU(),
