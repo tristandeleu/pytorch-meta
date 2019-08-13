@@ -10,8 +10,8 @@ from torchvision.transforms import Resize, ToTensor, Compose
 
 from torchmeta.utils.data import BatchMetaDataLoader
 
-transform = Compose([Resize(28), ToTensor()])
-dataset = Omniglot('data', num_classes_per_task=5, transform=transform,
+dataset = Omniglot('data', num_classes_per_task=5,
+                   transform=Compose([Resize(28), ToTensor()]),
                    target_transform=Categorical(num_classes=5),
                    meta_train=True, download=True)
 dataset = ClassSplitter(dataset, num_train_per_class=5, num_test_per_class=15)
