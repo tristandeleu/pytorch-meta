@@ -169,9 +169,8 @@ class MiniImagenetClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        if not download_file_from_google_drive(self.gdrive_id, self.root,
-                self.gz_filename, md5=self.gz_md5):
-            raise RuntimeError('')
+        download_file_from_google_drive(self.gdrive_id, self.root,
+            self.gz_filename, md5=self.gz_md5)
 
         filename = os.path.join(self.root, self.gz_filename)
         with tarfile.open(filename, 'r') as f:
