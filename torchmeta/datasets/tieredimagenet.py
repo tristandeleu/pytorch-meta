@@ -7,7 +7,7 @@ import io
 import pickle
 
 from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchmeta.datasets.utils import download_google_drive
+from torchvision.datasets.utils import download_file_from_google_drive
 
 
 class TieredImagenet(CombinationMetaDataset):
@@ -175,7 +175,7 @@ class TieredImagenetClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        if not download_google_drive(self.gdrive_id, self.root,
+        if not download_file_from_google_drive(self.gdrive_id, self.root,
                 self.tar_filename, md5=self.tar_md5):
             raise RuntimeError('')
 

@@ -5,7 +5,7 @@ import h5py
 import json
 
 from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchmeta.datasets.utils import download_google_drive
+from torchvision.datasets.utils import download_file_from_google_drive
 
 
 class MiniImagenet(CombinationMetaDataset):
@@ -169,7 +169,7 @@ class MiniImagenetClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        if not download_google_drive(self.gdrive_id, self.root,
+        if not download_file_from_google_drive(self.gdrive_id, self.root,
                 self.gz_filename, md5=self.gz_md5):
             raise RuntimeError('')
 
