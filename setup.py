@@ -27,8 +27,8 @@ setup(
     keywords='meta-learning pytorch',
     packages=find_packages(exclude=['data', 'contrib', 'docs', 'tests', 'examples']),
     install_requires=[
-        'torch>=1.1.0',
-        'torchvision>=0.3.0',
+        'torch>=1.2.0',
+        'torchvision>=0.4.0',
         'numpy>=1.14.0',
         'Pillow>=5.0.0',
         'h5py~=2.9.0',

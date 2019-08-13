@@ -2,12 +2,9 @@ import torch.nn.functional as F
 
 from collections import OrderedDict
 from torch.nn.modules.batchnorm import _BatchNorm
-from torch._jit_internal import weak_module, weak_script_method
 from torchmeta.modules.module import MetaModule
 
-@weak_module
 class _MetaBatchNorm(_BatchNorm, MetaModule):
-    @weak_script_method
     def forward(self, input, params=None):
         self._check_input_dim(input)
         if params is None:
@@ -37,25 +34,19 @@ class _MetaBatchNorm(_BatchNorm, MetaModule):
             self.training or not self.track_running_stats,
             exponential_average_factor, self.eps)
 
-@weak_module
 class MetaBatchNorm1d(_MetaBatchNorm):
-    @weak_script_method
     def _check_input_dim(self, input):
         if input.dim() != 2 and input.dim() != 3:
             raise ValueError('expected 2D or 3D input (got {}D input)'
                              .format(input.dim()))
 
-@weak_module
 class MetaBatchNorm2d(_MetaBatchNorm):
-    @weak_script_method
     def _check_input_dim(self, input):
         if input.dim() != 4:
             raise ValueError('expected 4D input (got {}D input)'
                              .format(input.dim()))
 
-@weak_module
 class MetaBatchNorm3d(_MetaBatchNorm):
-    @weak_script_method
     def _check_input_dim(self, input):
         if input.dim() != 5:
             raise ValueError('expected 5D input (got {}D input)'
