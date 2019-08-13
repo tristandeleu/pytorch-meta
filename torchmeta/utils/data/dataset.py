@@ -266,20 +266,22 @@ class CombinationMetaDataset(MetaDataset):
         # effect across tasks.
         task = ConcatTask(datasets, self.num_classes_per_task,
             target_transform=wrap_transform(self.target_transform,
-            copy_categorical, transform_type=Categorical))
+            self._copy_categorical, transform_type=Categorical))
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
 
         return task
 
+    def _copy_categorical(self, transform):
+        assert isinstance(transform, Categorical)
+        transform.reset()
+        if transform.num_classes is None:
+            transform.num_classes = self.num_classes_per_task
+        return deepcopy(transform)
+
     def __len__(self):
         num_classes, length = len(self.dataset), 1
         for i in range(1, self.num_classes_per_task + 1):
             length *= (num_classes - i + 1) / i
         return int(length)
-
-def copy_categorical(transform):
-    assert isinstance(transform, Categorical)
-    transform.reset()
-    return deepcopy(transform)
