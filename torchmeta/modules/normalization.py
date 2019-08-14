@@ -5,6 +5,8 @@ from collections import OrderedDict
 from torchmeta.modules.module import MetaModule
 
 class MetaLayerNorm(nn.LayerNorm, MetaModule):
+    __doc__ = nn.LayerNorm.__doc__
+
     def forward(self, input, params=None):
         if params is None:
             params = OrderedDict(self.named_parameters())

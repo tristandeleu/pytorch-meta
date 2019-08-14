@@ -1,3 +1,4 @@
+import torch.nn as nn
 import torch.nn.functional as F
 
 from collections import OrderedDict
@@ -35,18 +36,24 @@ class _MetaBatchNorm(_BatchNorm, MetaModule):
             exponential_average_factor, self.eps)
 
 class MetaBatchNorm1d(_MetaBatchNorm):
+    __doc__ = nn.BatchNorm1d.__doc__
+
     def _check_input_dim(self, input):
         if input.dim() != 2 and input.dim() != 3:
             raise ValueError('expected 2D or 3D input (got {}D input)'
                              .format(input.dim()))
 
 class MetaBatchNorm2d(_MetaBatchNorm):
+    __doc__ = nn.BatchNorm2d.__doc__
+
     def _check_input_dim(self, input):
         if input.dim() != 4:
             raise ValueError('expected 4D input (got {}D input)'
                              .format(input.dim()))
 
 class MetaBatchNorm3d(_MetaBatchNorm):
+    __doc__ = nn.BatchNorm3d.__doc__
+
     def _check_input_dim(self, input):
         if input.dim() != 5:
             raise ValueError('expected 5D input (got {}D input)'

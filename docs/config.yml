@@ -6,7 +6,9 @@ nav:
   - Home: 'index.md'
   - API Reference:
     - Datasets: 'api_reference/datasets.md'
+    - Modules: 'api_reference/modules.md'
     - Toy: 'api_reference/toy.md'
+    - Transforms: 'api_reference/transforms.md'
 
 markdown_extensions:
   - nl2br

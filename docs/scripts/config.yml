@@ -1,4 +1,5 @@
 api-reference:
+
   - docs/api_reference/datasets.md:
     - name: Datasets
     - content:
@@ -7,8 +8,26 @@ api-reference:
         - MiniImagenet
         - TieredImagenet
         - FC100
+
+  - docs/api_reference/modules.md:
+    - name: Modules
+    - content:
+      - torchmeta.modules:
+        - __all__
+
   - docs/api_reference/toy.md:
     - name: Toy
     - content:
       - torchmeta.toy:
         - __all__
+
+  - docs/api_reference/transforms.md:
+    - name: Transforms
+    - content:
+      - torchmeta.transforms:
+        - Categorical
+        - Rotation
+        - HorizontalFlip
+        - VerticalFlip
+        - ClassSplitter
+        - WeightedClassSplitter

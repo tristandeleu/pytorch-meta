@@ -3,6 +3,7 @@ import inspect
 import re
 import yaml
 import logging
+import torch.nn as nn
 
 LAST_CHARACTER = re.compile(r'^[\w\.,\"\`]$')
 HEADER = re.compile(r'^\-+$')
@@ -51,10 +52,16 @@ def format_docs(module, kls):
     sections = parse_docs(kls.__doc__)
     for header, section in sections:
         if header is None:
-            markdown.append(section[0].strip())
+            # Add special case for inherited documentation
+            if len(sections) > 1:
+                markdown.append(section[0].strip())
             signature = '{0}.{1}{2}'.format(module.__name__, kls.__name__,
                 str(inspect.signature(kls)))
             markdown.append(format_signature(signature))
+            if len(sections) == 1 and any(c is nn.Module
+                    for c in inspect.getmro(kls)):
+                markdown.append(format_notes(['See: `torch.nn.{0}`'.format(
+                    kls.__name__[4:])]))
         elif header == 'Parameters':
             markdown.append(format_parameters(section))
         elif header == 'Notes':
