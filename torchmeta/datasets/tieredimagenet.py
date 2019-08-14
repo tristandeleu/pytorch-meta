@@ -83,7 +83,7 @@ class TieredImagenet(CombinationMetaDataset):
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, meta_split=None,
                  transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=True):
+                 class_augmentations=None, download=False):
         dataset = TieredImagenetClassDataset(root, meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             transform=transform, class_augmentations=class_augmentations,
