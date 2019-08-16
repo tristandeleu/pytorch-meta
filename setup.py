@@ -24,6 +24,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Tristan Deleu',
+    author_email='tristan.deleu@gmail.com',
     url='https://github.com/tristandeleu/pytorch-meta',
     keywords=['meta-learning', 'pytorch', 'few-shot', 'few-shot learning'],
     packages=find_packages(exclude=['data', 'contrib', 'docs', 'tests', 'examples']),
@@ -35,7 +36,7 @@ setup(
         'h5py~=2.9.0',
         'tqdm>=4.0.0',
     ],
-    extras_requires=extras,
+    extras_require=extras,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
