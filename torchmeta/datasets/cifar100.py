@@ -132,7 +132,7 @@ class FC100ClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return FC100Dataset(data, coarse_label_name, fine_label_name,
+        return CIFAR100Dataset(data, coarse_label_name, fine_label_name,
             transform=transform, target_transform=target_transform)
 
     @property
@@ -218,7 +218,8 @@ class FC100ClassDataset(ClassDataset):
             if os.path.isfile(split_filename_labels):
                 continue
 
-            data = get_asset(self.folder, '{0}.json'.format(split), dtype='json')
+            data = get_asset(self.folder, 'fc100',
+                '{0}.json'.format(split), dtype='json')
             with open(split_filename_labels, 'w') as f:
                 labels = [[coarse_name, fine_name] for coarse_name in data
                     for fine_name in fine_names[coarse_name]]
@@ -231,10 +232,10 @@ class FC100ClassDataset(ClassDataset):
             os.remove('{0}.tar.gz'.format(gz_folder))
 
 
-class FC100Dataset(Dataset):
+class CIFAR100Dataset(Dataset):
     def __init__(self, data, coarse_label_name, fine_label_name,
                  transform=None, target_transform=None):
-        super(FC100Dataset, self).__init__(transform=transform,
+        super(CIFAR100Dataset, self).__init__(transform=transform,
             target_transform=target_transform)
         self.data = data
         self.coarse_label_name = coarse_label_name
