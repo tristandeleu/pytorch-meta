@@ -5,93 +5,12 @@ import h5py
 from PIL import Image
 
 from torchvision.datasets.utils import check_integrity, download_url
-from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchmeta.datasets.utils import get_asset
+from torchmeta.utils.data import Dataset, ClassDataset
 
 
-class FC100(CombinationMetaDataset):
-    """
-    The Fewshot-CIFAR100 dataset, introduced in [1]_. This dataset contains
-    images of 100 different classes from the CIFAR100 dataset [2]_.
-
-    Parameters
-    ----------
-    root : string
-        Root directory where the dataset folder `cifar100` exists.
-
-    num_classes_per_task : int
-        Number of classes per tasks. This corresponds to `N` in `N-way` 
-        classification.
-
-    meta_train : bool (default: `False`)
-        Use the meta-train split of the dataset. If set to `True`, then the
-        arguments `meta_val` and `meta_test` must be set to `False`. Exactly one 
-        of these three arguments must be set to `True`.
-
-    meta_val : bool (default: `False`)
-        Use the meta-validation split of the dataset. If set to `True`, then the 
-        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
-        of these three arguments must be set to `True`.
-
-    meta_test : bool (default: `False`)
-        Use the meta-test split of the dataset. If set to `True`, then the 
-        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
-        of these three arguments must be set to `True`.
-
-    meta_split : string in {'train', 'val', 'test'}, optional
-        Name of the split to use. This overrides the arguments `meta_train`, 
-        `meta_val` and `meta_test` if all three are set to `False`.
-
-    transform : callable, optional
-        A function/transform that takes a `PIL` image, and returns a transformed 
-        version. See also `torchvision.transforms`.
-
-    target_transform : callable, optional
-        A function/transform that takes a target, and returns a transformed 
-        version. See also `torchvision.transforms`.
-
-    dataset_transform : callable, optional
-        A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
-
-    class_augmentations : list of callable, optional
-        A list of functions that augment the dataset with new classes. These classes 
-        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
-
-    download : bool (default: `False`)
-        If `True`, downloads the pickle files and processes the dataset in the root 
-        directory (under the `cifar100` folder). If the dataset is already 
-        available, this does not download/process the dataset again.
-
-    Notes
-    -----
-    The meta train/validation/test splits are over 12/4/4 superclasses from the
-    CIFAR100 dataset. The meta train/validation/test splits contain 60/20/20
-    classes.
-
-    References
-    ----------
-    .. [1] Oreshkin B. N., Rodriguez P., Lacoste A. (2018). TADAM: Task dependent
-           adaptive metric for improved few-shot learning. In Advances in Neural 
-           Information Processing Systems (https://arxiv.org/abs/1805.10123)
-
-    .. [2] Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny
-           Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
-    """
-    def __init__(self, root, num_classes_per_task=None, meta_train=False,
-                 meta_val=False, meta_test=False, meta_split=None,
-                 transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=False):
-        dataset = FC100ClassDataset(root, meta_train=meta_train,
-            meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, class_augmentations=class_augmentations,
-            download=download)
-        super(FC100, self).__init__(dataset, num_classes_per_task,
-            target_transform=target_transform, dataset_transform=dataset_transform)
-
-
-class FC100ClassDataset(ClassDataset):
+class CIFAR100ClassDataset(ClassDataset):
     folder = 'cifar100'
+    subfolder = None
     download_url = 'https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz'
     gz_folder = 'cifar-100-python'
     gz_md5 = 'eb9058c3a382ffc7106e4002c42a8d85'
@@ -107,14 +26,17 @@ class FC100ClassDataset(ClassDataset):
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, class_augmentations=None,
                  download=False):
-        super(FC100ClassDataset, self).__init__(meta_train=meta_train,
+        super(CIFAR100ClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
+
+        if self.subfolder is None:
+            raise ValueError()
 
         self.root = os.path.join(os.path.expanduser(root), self.folder)
         self.transform = transform
 
-        self.split_filename_labels = os.path.join(self.root,
+        self.split_filename_labels = os.path.join(self.root, self.subfolder,
             self.filename_labels.format(self.meta_split))
         self._data = None
         self._labels = None
@@ -153,8 +75,11 @@ class FC100ClassDataset(ClassDataset):
         return self._labels
 
     def _check_integrity(self):
-        return (os.path.isfile(os.path.join(self.root, self.filename))
+        return (self._check_integrity_data()
             and os.path.isfile(self.split_filename_labels))
+
+    def _check_integrity_data(self):
+        return os.path.isfile(os.path.join(self.root, self.filename))
 
     def close(self):
         if self._data is not None:
@@ -166,7 +91,7 @@ class FC100ClassDataset(ClassDataset):
         import pickle
         import shutil
 
-        if self._check_integrity():
+        if self._check_integrity_data():
             return
 
         gz_filename = '{0}.tar.gz'.format(self.gz_folder)
@@ -211,19 +136,6 @@ class FC100ClassDataset(ClassDataset):
                     dataset = group.create_dataset(fine_label_names[j],
                         data=images[fine_labels == j])
                 fine_names[coarse_name] = [fine_label_names[j] for j in fine_indices]
-
-        for split in ['train', 'val', 'test']:
-            split_filename_labels = os.path.join(self.root,
-                self.filename_labels.format(split))
-            if os.path.isfile(split_filename_labels):
-                continue
-
-            data = get_asset(self.folder, 'fc100',
-                '{0}.json'.format(split), dtype='json')
-            with open(split_filename_labels, 'w') as f:
-                labels = [[coarse_name, fine_name] for coarse_name in data
-                    for fine_name in fine_names[coarse_name]]
-                json.dump(labels, f)
 
         gz_folder = os.path.join(self.root, self.gz_folder)
         if os.path.isdir(gz_folder):
