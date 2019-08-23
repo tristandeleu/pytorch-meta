@@ -3,7 +3,7 @@ import warnings
 from torchmeta.toy import Sinusoid, Harmonic
 from torchmeta.transforms import ClassSplitter
 
-def sinusoid(shots, shuffle=True, test_shots=None, **kwargs):
+def sinusoid(shots, shuffle=True, test_shots=None, seed=None, **kwargs):
     """Helper function to create a meta-dataset for the Sinusoid toy dataset.
 
     Parameters
@@ -18,6 +18,9 @@ def sinusoid(shots, shuffle=True, test_shots=None, **kwargs):
     test_shots : int, optional
         Number of test examples in each task. If `None`, then the number of test
         examples is equal to the number of training examples in each task.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
 
     kwargs
         Additional arguments passed to the `Sinusoid` class.
@@ -46,10 +49,11 @@ def sinusoid(shots, shuffle=True, test_shots=None, **kwargs):
     dataset = Sinusoid(num_samples_per_task=shots + test_shots, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
+    dataset.seed(seed)
 
     return dataset
 
-def harmonic(shots, shuffle=True, test_shots=None, **kwargs):
+def harmonic(shots, shuffle=True, test_shots=None, seed=None, **kwargs):
     """Helper function to create a meta-dataset for the Harmonic toy dataset.
 
     Parameters
@@ -64,6 +68,9 @@ def harmonic(shots, shuffle=True, test_shots=None, **kwargs):
     test_shots : int, optional
         Number of test examples in each task. If `None`, then the number of test
         examples is equal to the number of training examples in each task.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
 
     kwargs
         Additional arguments passed to the `Harmonic` class.
@@ -92,5 +99,6 @@ def harmonic(shots, shuffle=True, test_shots=None, **kwargs):
     dataset = Harmonic(num_samples_per_task=shots + test_shots, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
+    dataset.seed(seed)
 
     return dataset

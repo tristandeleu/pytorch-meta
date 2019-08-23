@@ -1,4 +1,4 @@
-import torch
+import numpy as np
 import warnings
 from copy import deepcopy
 
@@ -179,6 +179,7 @@ class MetaDataset(object):
         self._meta_split = meta_split
         self.target_transform = target_transform
         self.dataset_transform = dataset_transform
+        self.seed()
 
     @property
     def meta_split(self):
@@ -193,12 +194,15 @@ class MetaDataset(object):
                 raise NotImplementedError()
         return self._meta_split
 
+    def seed(self, seed=None):
+        self.np_random = np.random.RandomState(seed=seed)
+
     def __iter__(self):
         for index in range(len(self)):
             yield self[index]
 
     def sample_task(self):
-        index = torch.randint(len(self), size=()).item()
+        index = self.np_random.randint(len(self))
         return self[index]
 
     def __getitem__(self, index):
@@ -248,9 +252,9 @@ class CombinationMetaDataset(MetaDataset):
             yield self[index]
 
     def sample_task(self):
-        import random
-        index = random.sample(range(len(self.dataset)), self.num_classes_per_task)
-        return self[index]
+        index = self.np_random.choice(len(self.dataset),
+            size=self.num_classes_per_task, replace=False)
+        return self[tuple(index)]
 
     def __getitem__(self, index):
         if isinstance(index, int):

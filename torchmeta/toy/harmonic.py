@@ -62,13 +62,13 @@ class Harmonic(MetaDataset):
         frequency_range = np.array([5.0, 7.0])
         phase_range = np.array([0, 2 * np.pi])
 
-        self._domains = np.random.uniform(domain_range[0], domain_range[1],
+        self._domains = self.np_random.uniform(domain_range[0], domain_range[1],
             size=self.num_tasks)
-        self._frequencies = np.random.uniform(frequency_range[0],
+        self._frequencies = self.np_random.uniform(frequency_range[0],
             frequency_range[1], size=self.num_tasks)
-        self._phases = np.random.uniform(phase_range[0],
+        self._phases = self.np_random.uniform(phase_range[0],
             phase_range[1], size=(self.num_tasks, 2))
-        self._amplitudes = np.random.randn(self.num_tasks, 2)
+        self._amplitudes = self.np_random.randn(self.num_tasks, 2)
 
     def __len__(self):
         return self.num_tasks

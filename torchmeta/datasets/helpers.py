@@ -4,7 +4,8 @@ from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation
 from torchvision.transforms import Compose, Resize, ToTensor
 
-def omniglot(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
+def omniglot(folder, shots, ways, shuffle=True, test_shots=None,
+             seed=None, **kwargs):
     """Helper function to create a meta-dataset for the Omniglot dataset.
 
     Parameters
@@ -27,6 +28,9 @@ def omniglot(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
         Number of test examples per class in each task. If `None`, then the 
         number of test examples is equal to the number of training examples per 
         class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
 
     kwargs
         Additional arguments passed to the `Omniglot` class.
@@ -52,10 +56,12 @@ def omniglot(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
     dataset = Omniglot(folder, num_classes_per_task=ways, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
+    dataset.seed(seed)
 
     return dataset
 
-def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
+def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None,
+                 seed=None, **kwargs):
     """Helper function to create a meta-dataset for the Mini-Imagenet dataset.
 
     Parameters
@@ -78,6 +84,9 @@ def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
         Number of test examples per class in each task. If `None`, then the 
         number of test examples is equal to the number of training examples per 
         class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
 
     kwargs
         Additional arguments passed to the `MiniImagenet` class.
@@ -103,10 +112,12 @@ def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
     dataset = MiniImagenet(folder, num_classes_per_task=ways, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
+    dataset.seed(seed)
 
     return dataset
 
-def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs):
+def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None,
+                   seed=None, **kwargs):
     """Helper function to create a meta-dataset for the Tiered-Imagenet dataset.
 
     Parameters
@@ -129,6 +140,9 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs)
         Number of test examples per class in each task. If `None`, then the 
         number of test examples is equal to the number of training examples per 
         class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
 
     kwargs
         Additional arguments passed to the `TieredImagenet` class.
@@ -154,5 +168,6 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None, **kwargs)
     dataset = TieredImagenet(folder, num_classes_per_task=ways, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
+    dataset.seed(seed)
 
     return dataset

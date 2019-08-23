@@ -53,6 +53,7 @@ class Categorical(object):
     @property
     def labels(self):
         if (self._labels is None) and (self.num_classes is not None):
+            # TODO: Replace torch.randperm with seed-friendly counterpart
             self._labels = torch.randperm(self.num_classes).tolist()
         return self._labels
 

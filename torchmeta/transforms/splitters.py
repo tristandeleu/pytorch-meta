@@ -143,6 +143,7 @@ class ClassSplitter_(Splitter):
                     num_samples, self._min_samples_per_class))
 
             if self.shuffle:
+                # TODO: Replace torch.randperm with seed-friendly counterpart
                 dataset_indices = torch.randperm(num_samples).tolist()
 
             ptr = 0
@@ -167,6 +168,7 @@ class ClassSplitter_(Splitter):
                     self._min_samples_per_class))
 
             if self.shuffle:
+                # TODO: Replace torch.randperm with seed-friendly counterpart
                 dataset_indices = torch.randperm(num_samples).tolist()
 
             ptr = 0
@@ -290,6 +292,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(class_indices))
             if self.shuffle:
+                # TODO: Replace torch.randperm with seed-friendly counterpart
                 dataset_indices = torch.randperm(num_samples).tolist()
 
             ptr = 0
@@ -319,6 +322,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(dataset))
             if self.shuffle:
+                # TODO: Replace torch.randperm with seed-friendly counterpart
                 dataset_indices = torch.randperm(num_samples).tolist()
 
             ptr = 0

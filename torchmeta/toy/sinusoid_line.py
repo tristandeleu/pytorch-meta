@@ -70,13 +70,13 @@ class SinusoidAndLine(MetaDataset):
         self._is_sinusoid[self.num_tasks // 2:] = True
         np.random.shuffle(self._is_sinusoid)
 
-        self._amplitudes = np.random.uniform(amplitude_range[0],
+        self._amplitudes = self.np_random.uniform(amplitude_range[0],
             amplitude_range[1], size=self.num_tasks)
-        self._phases = np.random.uniform(phase_range[0], phase_range[1],
+        self._phases = self.np_random.uniform(phase_range[0], phase_range[1],
             size=self.num_tasks)
-        self._slopes = np.random.uniform(slope_range[0], slope_range[1],
+        self._slopes = self.np_random.uniform(slope_range[0], slope_range[1],
             size=self.num_tasks)
-        self._intercepts = np.random.uniform(intercept_range[0],
+        self._intercepts = self.np_random.uniform(intercept_range[0],
             intercept_range[1], size=self.num_tasks)
 
     def __len__(self):

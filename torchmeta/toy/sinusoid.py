@@ -59,9 +59,9 @@ class Sinusoid(MetaDataset):
         amplitude_range = np.array([0.1, 5.0])
         phase_range = np.array([0, np.pi])
 
-        self._amplitudes = np.random.uniform(amplitude_range[0],
+        self._amplitudes = self.np_random.uniform(amplitude_range[0],
             amplitude_range[1], size=self.num_tasks)
-        self._phases = np.random.uniform(phase_range[0], phase_range[1],
+        self._phases = self.np_random.uniform(phase_range[0], phase_range[1],
             size=self.num_tasks)
 
     def __len__(self):
