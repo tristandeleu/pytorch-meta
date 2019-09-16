@@ -11,7 +11,7 @@ from torchmeta.datasets.utils import get_asset
 
 class Omniglot(CombinationMetaDataset):
     """
-    The Omniglot dataset [1]_. A dataset of 1623 handwritten characters from 
+    The Omniglot dataset [1]. A dataset of 1623 handwritten characters from 
     50 different alphabets. 
 
     Parameters
@@ -20,7 +20,7 @@ class Omniglot(CombinationMetaDataset):
         Root directory where the dataset folder `omniglot` exists.
 
     num_classes_per_task : int
-        Number of classes per tasks. This corresponds to `N` in `N-way` 
+        Number of classes per tasks. This corresponds to "N" in "N-way" 
         classification.
 
     meta_train : bool (default: `False`)
@@ -43,7 +43,7 @@ class Omniglot(CombinationMetaDataset):
         `meta_val` and `meta_test` if all three are set to `False`.
 
     use_vinyals_split : bool (default: `True`)
-        If set to `True`, the dataset uses the splits defined in [3]_. If `False`, 
+        If set to `True`, the dataset uses the splits defined in [3]. If `False`, 
         then the meta-train split corresponds to `images_background`, and the 
         meta-test split corresponds to `images_evaluation` (raises an error when 
         calling the meta-validation split).
@@ -58,11 +58,12 @@ class Omniglot(CombinationMetaDataset):
 
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     class_augmentations : list of callable, optional
         A list of functions that augment the dataset with new classes. These classes 
-        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+        are transformations of existing classes. E.g.
+        `torchmeta.transforms.HorizontalFlip()`.
 
     download : bool (default: `False`)
         If `True`, downloads the zip files and processes the dataset in the root 
@@ -71,10 +72,10 @@ class Omniglot(CombinationMetaDataset):
 
     Notes
     -----
-    The dataset is downloaded from the original `Omniglot repository 
-    <https://github.com/brendenlake/omniglot>`__. The meta train/validation/test 
-    splits used in [3]_ are taken from `this repository 
-    <https://github.com/jakesnell/prototypical-networks>`__. These splits are 
+    The dataset is downloaded from the original [Omniglot repository]
+    (https://github.com/brendenlake/omniglot). The meta train/validation/test 
+    splits used in [3] are taken from [this repository]
+    (https://github.com/jakesnell/prototypical-networks). These splits are 
     over 1028/172/423 classes (characters).
 
     References

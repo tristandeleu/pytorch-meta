@@ -1,0 +1,14 @@
+api-reference:
+  - docs/api_reference/datasets.md:
+    - name: Datasets
+    - content:
+      - torchmeta.datasets:
+        - Omniglot
+        - MiniImagenet
+        - TieredImagenet
+        - FC100
+  - docs/api_reference/toy.md:
+    - name: Toy
+    - content:
+      - torchmeta.toy:
+        - __all__

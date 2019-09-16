@@ -6,7 +6,7 @@ from torchmeta.utils.data import Task, MetaDataset
 class Harmonic(MetaDataset):
     """
     Simple regression task, based on the sum of two sine waves, as introduced
-    in [1]_.
+    in [1].
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ class Harmonic(MetaDataset):
 
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     Notes
     -----
