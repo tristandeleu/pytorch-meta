@@ -104,8 +104,6 @@ def miniimagenet(folder, shots, ways, shuffle=True, test_shots=None,
         kwargs['transform'] = Compose([Resize(84), ToTensor()])
     if 'target_transform' not in kwargs:
         kwargs['target_transform'] = Categorical(ways)
-    if 'class_augmentations' not in kwargs:
-        kwargs['class_augmentations'] = [Rotation([90, 180, 270])]
     if test_shots is None:
         test_shots = shots
 
@@ -160,8 +158,6 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None,
         kwargs['transform'] = Compose([Resize(84), ToTensor()])
     if 'target_transform' not in kwargs:
         kwargs['target_transform'] = Categorical(ways)
-    if 'class_augmentations' not in kwargs:
-        kwargs['class_augmentations'] = [Rotation([90, 180, 270])]
     if test_shots is None:
         test_shots = shots
 
