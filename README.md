@@ -1,5 +1,5 @@
 # Torchmeta
-[![PyPI version](https://badge.fury.io/py/torchmeta.svg)](https://badge.fury.io/py/torchmeta)
+[![PyPI version](https://badge.fury.io/py/torchmeta.svg)](https://badge.fury.io/py/torchmeta) [![Build Status](https://travis-ci.com/tristandeleu/pytorch-meta.svg?branch=master)](https://travis-ci.com/tristandeleu/pytorch-meta)
 
 A collection of extensions and data-loaders for few-shot learning & meta-learning in [PyTorch](https://pytorch.org/). Torchmeta contains popular meta-learning benchmarks, fully compatible with both [`torchvision`](https://pytorch.org/docs/stable/torchvision/index.html) and PyTorch's [`DataLoader`](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader).
 
