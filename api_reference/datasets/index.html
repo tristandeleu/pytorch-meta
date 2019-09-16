@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Datasets - Torchmeta</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Datasets";
+    var mkdocs_page_input_path = "api_reference/datasets.md";
+    var mkdocs_page_url = "/pytorch-meta/api_reference/datasets/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Torchmeta</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">API Reference</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">Datasets</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#omniglot">Omniglot</a></li>
+    
+
+    <li class="toctree-l3"><a href="#miniimagenet">MiniImagenet</a></li>
+    
+
+    <li class="toctree-l3"><a href="#tieredimagenet">TieredImagenet</a></li>
+    
+
+    <li class="toctree-l3"><a href="#fc100">FC100</a></li>
+    
+
+    <li class="toctree-l3"><a href="#cifarfs">CIFARFS</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../modules/">Modules</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../toy/">Toy</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../transforms/">Transforms</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Torchmeta</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>API Reference &raquo;</li>
+        
+      
+    
+    <li>Datasets</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tristandeleu/pytorch-meta/edit/master/docs/api_reference/datasets.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="omniglot">Omniglot</h2>
+<p>The Omniglot dataset [1]. A dataset of 1623 handwritten characters from 50 different alphabets.</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Omniglot</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">use_vinyals_split</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>omniglot</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>use_vinyals_split</strong>: <em>bool (default: <code>True</code>)</em><br />
+ If set to <code>True</code>, the dataset uses the splits defined in [3]. If <code>False</code>, then the meta-train split corresponds to <code>images_background</code>, and the meta-test split corresponds to <code>images_evaluation</code> (raises an error when calling the meta-validation split).</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>torchmeta.transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the zip files and processes the dataset in the root directory (under the <code>omniglot</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The dataset is downloaded from the original <a href="https://github.com/brendenlake/omniglot">Omniglot repository</a>. The meta train/validation/test splits used in [3] are taken from <a href="https://github.com/jakesnell/prototypical-networks">this repository</a>. These splits are over 1028/172/423 classes (characters).</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2015). Human-level concept learning through probabilistic program induction. Science, 350(6266), 1332-1338 (http://www.sciencemag.org/content/350/6266/1332.short)</li>
+<li><strong>[2]</strong> Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2019). The Omniglot Challenge: A 3-Year Progress Report (https://arxiv.org/abs/1902.03477)</li>
+<li><strong>[3]</strong> Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). Matching Networks for One Shot Learning. In Advances in Neural Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)</li>
+</ul>
+</div>
+<h2 id="miniimagenet">MiniImagenet</h2>
+<p>The Mini-Imagenet dataset, introduced in [1]. This dataset contains images of 100 different classes from the ILSVRC-12 dataset (Imagenet challenge). The meta train/validation/test splits are taken from [2] for reproducibility.</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">MiniImagenet</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>miniimagenet</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>torchmeta.transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the pickle files and processes the dataset in the root directory (under the <code>miniimagenet</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The dataset is downloaded from <a href="https://github.com/renmengye/few-shot-ssl-public/">this repository</a>. The meta train/validation/test splits are over 64/16/20 classes.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016). Matching Networks for One Shot Learning. In Advances in Neural Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)</li>
+<li><strong>[2]</strong> Ravi, S. and Larochelle, H. (2016). Optimization as a Model for Few-Shot Learning. (https://openreview.net/forum?id=rJY0-Kcll)</li>
+</ul>
+</div>
+<h2 id="tieredimagenet">TieredImagenet</h2>
+<p>The Tiered-Imagenet dataset, introduced in [1]. This dataset contains images of 608 different classes from the ILSVRC-12 dataset (Imagenet challenge).</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">TieredImagenet</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>tieredimagenet</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>torchmeta.transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the pickle files and processes the dataset in the root directory (under the <code>tieredimagenet</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The dataset is downloaded from <a href="https://github.com/renmengye/few-shot-ssl-public/">this repository</a>. The dataset contains images from 34 categories. The meta train/validation/test splits are over 20/6/8 categories. Each category contains between 10 and 30 classes. The splits over categories (instead of over classes) ensures that all the training classes are sufficiently distinct from the test classes (unlike Mini-Imagenet).</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Ren, M., Triantafillou, E., Ravi, S., Snell, J., Swersky, K., Tenenbaum, J.B., Larochelle, H. and Zemel, R.S. (2018). Meta-learning for semi-supervised few-shot classification. International Conference on Learning Representations. (https://arxiv.org/abs/1803.00676)</li>
+</ul>
+</div>
+<h2 id="fc100">FC100</h2>
+<p>The Fewshot-CIFAR100 dataset, introduced in [1]<em>. This dataset contains images of 100 different classes from the CIFAR100 dataset [2]</em>.</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">FC100</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>cifar100</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to <code>N</code> in <code>N-way</code> classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the pickle files and processes the dataset in the root directory (under the <code>cifar100</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The meta train/validation/test splits are over 12/4/4 superclasses from the CIFAR100 dataset. The meta train/validation/test splits contain 60/20/20 classes.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Oreshkin B. N., Rodriguez P., Lacoste A. (2018). TADAM: Task dependent adaptive metric for improved few-shot learning. In Advances in Neural Information Processing Systems (https://arxiv.org/abs/1805.10123)</li>
+<li><strong>[2]</strong> Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)</li>
+</ul>
+</div>
+<h2 id="cifarfs">CIFARFS</h2>
+<p>The CIFAR-FS dataset, introduced in [1]<em>. This dataset contains images of 100 different classes from the CIFAR100 dataset [2]</em>.</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFARFS</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>cifar100</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to <code>N</code> in <code>N-way</code> classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the pickle files and processes the dataset in the root directory (under the <code>cifar100</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The meta train/validation/test splits are over 64/16/20 classes from the CIFAR100 dataset.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Bertinetto L., Henriques J. F., Torr P. H.S., Vedaldi A. (2019). Meta-learning with differentiable closed-form solvers. In International Conference on Learning Representations (https://arxiv.org/abs/1805.08136)</li>
+<li><strong>[2]</strong> Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)</li>
+</ul>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../modules/" class="btn btn-neutral float-right" title="Modules">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../.." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/tristandeleu/pytorch-meta/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../.." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../modules/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+
+</body>
+</html>

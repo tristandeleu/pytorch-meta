@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Home - Torchmeta</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/pytorch-meta/";
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Torchmeta</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#torchmeta">Torchmeta</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#features">Features</a></li>
+        
+            <li><a class="toctree-l3" href="#datasets-available">Datasets available</a></li>
+        
+            <li><a class="toctree-l3" href="#installation">Installation</a></li>
+        
+            <li><a class="toctree-l3" href="#example">Example</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">API Reference</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="api_reference/datasets/">Datasets</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="api_reference/modules/">Modules</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="api_reference/toy/">Toy</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="api_reference/transforms/">Transforms</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Torchmeta</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tristandeleu/pytorch-meta/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="torchmeta">Torchmeta</h1>
+<p><a href="https://pypi.org/project/torchmeta/"><img alt="PyPI" src="https://img.shields.io/pypi/v/torchmeta" /></a> <a href="https://travis-ci.com/tristandeleu/pytorch-meta"><img alt="Build Status" src="https://travis-ci.com/tristandeleu/pytorch-meta.svg?branch=master" /></a></p>
+<p>A collection of extensions and data-loaders for few-shot learning &amp; meta-learning in <a href="https://pytorch.org/">PyTorch</a>. Torchmeta contains popular meta-learning benchmarks, fully compatible with both <a href="https://pytorch.org/docs/stable/torchvision/index.html"><code>torchvision</code></a> and PyTorch's <a href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader"><code>DataLoader</code></a>.</p>
+<h4 id="features">Features</h4>
+<ul>
+<li>A unified interface for both few-shot classification and regression problems, to allow easy benchmarking on multiple problems and reproducibility.</li>
+<li>Helper functions for some popular problems, with default arguments from the literature.</li>
+<li>An thin extension of PyTorch's <a href="https://pytorch.org/docs/stable/nn.html#torch.nn.Module"><code>Module</code></a>, called <code>MetaModule</code>, that simplifies the creation of certain meta-learning models (e.g. gradient based meta-learning methods). See the <a href="examples/maml">MAML example</a> for an example using <code>MetaModule</code>.</li>
+</ul>
+<h4 id="datasets-available">Datasets available</h4>
+<ul>
+<li><strong>Few-shot regression</strong> (toy problems):<ul>
+<li>Sine waves (<a href="https://arxiv.org/abs/1703.03400">Finn et al., 2017</a>)</li>
+<li>Harmonic functions (<a href="https://arxiv.org/abs/1806.07528">Lacoste et al., 2018</a>)</li>
+<li>Sinusoid &amp; lines (<a href="https://arxiv.org/abs/1806.02817">Finn et al., 2018</a>)</li>
+</ul>
+</li>
+<li><strong>Few-shot classification</strong> (image classification):<ul>
+<li>Omniglot (<a href="http://www.sciencemag.org/content/350/6266/1332.short">Lake et al., 2015</a><a href="https://arxiv.org/abs/1902.03477">, 2019</a>)</li>
+<li>Mini-ImageNet (<a href="https://arxiv.org/abs/1606.04080">Vinyals et al., 2016</a>, <a href="https://openreview.net/forum?id=rJY0-Kcll">Ravi et al., 2017</a>)</li>
+<li>Tiered-ImageNet (<a href="https://arxiv.org/abs/1803.00676">Ren et al., 2018</a>)</li>
+<li>CIFAR-FS (<a href="https://arxiv.org/abs/1805.08136">Bertinetto et al., 2018</a>)</li>
+<li>Fewshot-CIFAR100 (<a href="https://arxiv.org/abs/1805.10123">Oreshkin et al., 2018</a>)</li>
+</ul>
+</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>You can install Torchmeta either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with <a href="https://docs.python-guide.org/dev/virtualenvs/"><code>virtualenv</code></a>. To install <code>virtualenv</code>:<br />
+<div class="highlight"><pre><span></span>pip install --upgrade virtualenv
+virtualenv venv
+<span class="nb">source</span> venv/bin/activate
+</pre></div></p>
+<h4 id="requirements">Requirements</h4>
+<ul>
+<li>Python 3.5 or above</li>
+<li>PyTorch 1.2</li>
+<li>Torchvision 0.4</li>
+</ul>
+<h4 id="using-pip">Using pip</h4>
+<p>This is the recommended way to install Torchmeta:<br />
+<div class="highlight"><pre><span></span>pip install torchmeta
+</pre></div></p>
+<h4 id="from-source">From source</h4>
+<p>You can also install Torchmeta from source. This is recommended if you want to contribute to Torchmeta.<br />
+<div class="highlight"><pre><span></span>git clone https://github.com/tristandeleu/pytorch-meta.git
+<span class="nb">cd</span> pytorch-meta
+python setup.py install
+</pre></div></p>
+<h2 id="example">Example</h2>
+<h4 id="minimal-example">Minimal example</h4>
+<p>This minimal example below shows how to create a dataloader for the 5-shot 5-way Omniglot dataset with Torchmeta. The dataloader loads a batch of randomly generated tasks, and all the samples are concatenated into a single tensor. For more examples, check the <a href="examples/">examples</a> folder.<br />
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchmeta.datasets.helpers</span> <span class="kn">import</span> <span class="n">omniglot</span>
+<span class="kn">from</span> <span class="nn">torchmeta.utils.data</span> <span class="kn">import</span> <span class="n">BatchMetaDataLoader</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">omniglot</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">ways</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">test_shots</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">meta_train</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">BatchMetaDataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">train_inputs</span><span class="p">,</span> <span class="n">train_targets</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Train inputs shape: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">train_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>    <span class="c1"># (16, 25, 1, 28, 28)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Train targets shape: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">train_targets</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>  <span class="c1"># (16, 25)</span>
+
+    <span class="n">test_inputs</span><span class="p">,</span> <span class="n">test_targets</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Test inputs shape: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>      <span class="c1"># (16, 75, 1, 28, 28)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Test targets shape: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_targets</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>    <span class="c1"># (16, 75)</span>
+</pre></div></p>
+<h4 id="advanced-example">Advanced example</h4>
+<p>Helper functions are only avaiable for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable <code>dataset</code> defined above is equivalent to the following<br />
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchmeta.datasets</span> <span class="kn">import</span> <span class="n">Omniglot</span>
+<span class="kn">from</span> <span class="nn">torchmeta.transforms</span> <span class="kn">import</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">ClassSplitter</span><span class="p">,</span> <span class="n">Rotation</span>
+<span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="n">Compose</span><span class="p">,</span> <span class="n">Resize</span><span class="p">,</span> <span class="n">ToTensor</span>
+<span class="kn">from</span> <span class="nn">torchmeta.utils.data</span> <span class="kn">import</span> <span class="n">BatchMetaDataLoader</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Omniglot</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+                   <span class="c1"># Number of ways</span>
+                   <span class="n">num_classes_per_task</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                   <span class="c1"># Resize the images to 28x28 and converts them to PyTorch tensors (from Torchvision)</span>
+                   <span class="n">transform</span><span class="o">=</span><span class="n">Compose</span><span class="p">([</span><span class="n">Resize</span><span class="p">(</span><span class="mi">28</span><span class="p">),</span> <span class="n">ToTensor</span><span class="p">()]),</span>
+                   <span class="c1"># Transform the labels to integers (e.g. (&quot;Glagolitic/character01&quot;, &quot;Sanskrit/character14&quot;, ...) to (0, 1, ...))</span>
+                   <span class="n">target_transform</span><span class="o">=</span><span class="n">Categorical</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+                   <span class="c1"># Creates new virtual classes with rotated versions of the images (from Santoro et al., 2016)</span>
+                   <span class="n">class_augmentations</span><span class="o">=</span><span class="p">[</span><span class="n">Rotation</span><span class="p">([</span><span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">])],</span>
+                   <span class="n">meta_train</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                   <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">ClassSplitter</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">num_train_per_class</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">num_test_per_class</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">BatchMetaDataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div><br />
+Note that the dataloader, receiving the dataset, remains the same.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api_reference/datasets/" class="btn btn-neutral float-right" title="Datasets">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/tristandeleu/pytorch-meta/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+        <span style="margin-left: 15px"><a href="api_reference/datasets/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2019-09-16 12:34:52
+-->

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Toy - Torchmeta</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Toy";
+    var mkdocs_page_input_path = "api_reference/toy.md";
+    var mkdocs_page_url = "/pytorch-meta/api_reference/toy/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Torchmeta</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">API Reference</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../datasets/">Datasets</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../modules/">Modules</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">Toy</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#harmonic">Harmonic</a></li>
+    
+
+    <li class="toctree-l3"><a href="#sinusoid">Sinusoid</a></li>
+    
+
+    <li class="toctree-l3"><a href="#sinusoidandline">SinusoidAndLine</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../transforms/">Transforms</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Torchmeta</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>API Reference &raquo;</li>
+        
+      
+    
+    <li>Toy</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tristandeleu/pytorch-meta/edit/master/docs/api_reference/toy.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="harmonic">Harmonic</h2>
+<p>Simple regression task, based on the sum of two sine waves, as introduced in [1].</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">toy</span><span class="o">.</span><span class="n">Harmonic</span><span class="p">(</span><span class="n">num_samples_per_task</span><span class="p">,</span> <span class="n">num_tasks</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>num_samples_per_task</strong>: <em>int</em><br />
+ Number of examples per task.</p>
+</li>
+<li>
+<p><strong>num_tasks</strong>: <em>int (default: 5,000)</em><br />
+ Overall number of tasks to sample.</p>
+</li>
+<li>
+<p><strong>noise_std</strong>: <em>float, optional</em><br />
+ Amount of noise to include in the targets for each task. If <code>None</code>, then nos noise is included, and the target is the sum of 2 sine functions of the input.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a numpy array of size (1,) and returns a transformed version of the input.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a numpy array of size (1,) and returns a transformed version of the target.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The tasks are created randomly as the sum of two sinusoid functions, with a frequency ratio of 2. The amplitudes vary within [5.0, 7.0], the phases within [0, 2 * pi], and the inputs are sampled according to N(mu_x, 1), with mu_x varying in [-4.0, 4.0]. Due to the way PyTorch handles datasets, the number of tasks to be sampled needs to be fixed ahead of time (with <code>num_tasks</code>). This will typically be equal to <code>meta_batch_size * num_batches</code>.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Lacoste A., Oreshkin B., Chung W., Boquet T., Rostamzadeh N., Krueger D. (2018). Uncertainty in Multitask Transfer Learning. In Advances in Neural Information Processing Systems (https://arxiv.org/abs/1806.07528)</li>
+</ul>
+</div>
+<h2 id="sinusoid">Sinusoid</h2>
+<p>Simple regression task, based on sinusoids, as introduced in [1].</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">toy</span><span class="o">.</span><span class="n">Sinusoid</span><span class="p">(</span><span class="n">num_samples_per_task</span><span class="p">,</span> <span class="n">num_tasks</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>num_samples_per_task</strong>: <em>int</em><br />
+ Number of examples per task.</p>
+</li>
+<li>
+<p><strong>num_tasks</strong>: <em>int (default: 1,000,000)</em><br />
+ Overall number of tasks to sample.</p>
+</li>
+<li>
+<p><strong>noise_std</strong>: <em>float, optional</em><br />
+ Amount of noise to include in the targets for each task. If <code>None</code>, then nos noise is included, and the target is a sine function of the input.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a numpy array of size (1,) and returns a transformed version of the input.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a numpy array of size (1,) and returns a transformed version of the target.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The tasks are created randomly as random sinusoid function. The amplitude varies within [0.1, 5.0], the phase within [0, pi], and the inputs are sampled uniformly in [-5.0, 5.0]. Due to the way PyTorch handles datasets, the number of tasks to be sampled needs to be fixed ahead of time (with <code>num_tasks</code>). This will typically be equal to <code>meta_batch_size * num_batches</code>.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Finn C., Abbeel P., and Levine, S. (2017). Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks. International Conference on Machine Learning (ICML) (https://arxiv.org/abs/1703.03400)</li>
+</ul>
+</div>
+<h2 id="sinusoidandline">SinusoidAndLine</h2>
+<p>Simple multimodal regression task, based on sinusoids and lines, as introduced in [1].</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">toy</span><span class="o">.</span><span class="n">SinusoidAndLine</span><span class="p">(</span><span class="n">num_samples_per_task</span><span class="p">,</span> <span class="n">num_tasks</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>
+    <span class="n">noise_std</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>num_samples_per_task</strong>: <em>int</em><br />
+ Number of examples per task.</p>
+</li>
+<li>
+<p><strong>num_tasks</strong>: <em>int (default: 1,000,000)</em><br />
+ Overall number of tasks to sample.</p>
+</li>
+<li>
+<p><strong>noise_std</strong>: <em>float, optional</em><br />
+ Amount of noise to include in the targets for each task. If <code>None</code>, then nos noise is included, and the target is either a sine function, or a linear function of the input.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a numpy array of size (1,) and returns a transformed version of the input.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a numpy array of size (1,) and returns a transformed version of the target.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The tasks are created randomly as either random sinusoid functions, or random linear functions. The amplitude of the sinusoids varies within [0.1, 5.0] and the phase within [0, pi]. The slope and intercept of the lines vary in [-3.0, 3.0]. The inputs are sampled uniformly in [-5.0, 5.0]. Due to the way PyTorch handles datasets, the number of tasks to be sampled needs to be fixed ahead of time (with <code>num_tasks</code>). This will typically be equal to <code>meta_batch_size * num_batches</code>.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Finn C., Xu K., Levine S. (2018). Probabilistic Model-Agnostic Meta-Learning. In Advances in Neural Information Processing Systems (https://arxiv.org/abs/1806.02817)</li>
+</ul>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../transforms/" class="btn btn-neutral float-right" title="Transforms">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../modules/" class="btn btn-neutral" title="Modules"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/tristandeleu/pytorch-meta/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../modules/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../transforms/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+site_name: Torchmeta
+repo_url: https://github.com/tristandeleu/pytorch-meta
+site_url: https://tristandeleu.github.io/pytorch-meta
+theme: readthedocs
+site_dir: ../site
+docs_dir: .
+
+nav:
+  - Home: 'index.md'
+  - API Reference:
+    - Datasets: 'api_reference/datasets.md'
+    - Modules: 'api_reference/modules.md'
+    - Toy: 'api_reference/toy.md'
+    - Transforms: 'api_reference/transforms.md'
+
+markdown_extensions:
+  - nl2br
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight

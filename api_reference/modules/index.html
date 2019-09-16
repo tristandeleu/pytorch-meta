@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Modules - Torchmeta</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Modules";
+    var mkdocs_page_input_path = "api_reference/modules.md";
+    var mkdocs_page_url = "/pytorch-meta/api_reference/modules/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Torchmeta</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">API Reference</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../datasets/">Datasets</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">Modules</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#metabatchnorm1d">MetaBatchNorm1d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metabatchnorm2d">MetaBatchNorm2d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metabatchnorm3d">MetaBatchNorm3d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metasequential">MetaSequential</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metaconv1d">MetaConv1d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metaconv2d">MetaConv2d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metaconv3d">MetaConv3d</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metalinear">MetaLinear</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metabilinear">MetaBilinear</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metamodule">MetaModule</a></li>
+    
+
+    <li class="toctree-l3"><a href="#metalayernorm">MetaLayerNorm</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../toy/">Toy</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../transforms/">Transforms</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Torchmeta</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>API Reference &raquo;</li>
+        
+      
+    
+    <li>Modules</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tristandeleu/pytorch-meta/edit/master/docs/api_reference/modules.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="metabatchnorm1d">MetaBatchNorm1d</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaBatchNorm1d</span><span class="p">(</span><span class="n">num_features</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">affine</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">track_running_stats</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.BatchNorm1d</code></p>
+</div>
+<h2 id="metabatchnorm2d">MetaBatchNorm2d</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaBatchNorm2d</span><span class="p">(</span><span class="n">num_features</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">affine</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">track_running_stats</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.BatchNorm2d</code></p>
+</div>
+<h2 id="metabatchnorm3d">MetaBatchNorm3d</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaBatchNorm3d</span><span class="p">(</span><span class="n">num_features</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">affine</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">track_running_stats</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.BatchNorm3d</code></p>
+</div>
+<h2 id="metasequential">MetaSequential</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaSequential</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.Sequential</code></p>
+</div>
+<h2 id="metaconv1d">MetaConv1d</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaConv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dilation</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">padding_mode</span><span class="o">=</span><span class="s1">&#39;zeros&#39;</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.Conv1d</code></p>
+</div>
+<h2 id="metaconv2d">MetaConv2d</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaConv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dilation</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">padding_mode</span><span class="o">=</span><span class="s1">&#39;zeros&#39;</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.Conv2d</code></p>
+</div>
+<h2 id="metaconv3d">MetaConv3d</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaConv3d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dilation</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">padding_mode</span><span class="o">=</span><span class="s1">&#39;zeros&#39;</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.Conv3d</code></p>
+</div>
+<h2 id="metalinear">MetaLinear</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaLinear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.Linear</code></p>
+</div>
+<h2 id="metabilinear">MetaBilinear</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaBilinear</span><span class="p">(</span><span class="n">in1_features</span><span class="p">,</span> <span class="n">in2_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span>
+    <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.Bilinear</code></p>
+</div>
+<h2 id="metamodule">MetaModule</h2>
+<p>Base class for PyTorch meta-learning modules. These modules accept an additional argument <code>params</code> in their <code>forward</code> method.</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaModule</span><span class="p">()</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>Objects inherited from <code>MetaModule</code> are fully compatible with PyTorch modules from <code>torch.nn.Module</code>. The argument <code>params</code> is a dictionary of tensors, with full support of the computation graph (for differentiation).</p>
+</div>
+<h2 id="metalayernorm">MetaLayerNorm</h2>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">MetaLayerNorm</span><span class="p">(</span><span class="n">normalized_shape</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span>
+    <span class="n">elementwise_affine</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>See: <code>torch.nn.LayerNorm</code></p>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../toy/" class="btn btn-neutral float-right" title="Toy">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../datasets/" class="btn btn-neutral" title="Datasets"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/tristandeleu/pytorch-meta/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../datasets/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../toy/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+
+</body>
+</html>
