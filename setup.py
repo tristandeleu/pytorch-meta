@@ -37,6 +37,8 @@ setup(
         'tqdm>=4.0.0',
     ],
     extras_require=extras,
+    package_data={'torchmeta': ['torchmeta/datasets/assets/*']},
+    include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
