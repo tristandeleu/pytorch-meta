@@ -3,11 +3,6 @@ python:
   - "3.7"
 install: ""
 script: ""
-before_deploy:
-  - export TORCHMETA_VERSION_CHANGED=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep torchmeta/version.py | wc -l)
-  - echo $((TORCHMETA_VERSION_CHANGED))
-  - echo $TRAVIS_COMMIT_RANGE
-  - echo $(git diff --name-only $TRAVIS_COMMIT_RANGE | grep torchmeta/version.py)
 deploy:
   provider: pypi
   user: $PYPI_USER
@@ -18,4 +13,4 @@ deploy:
   on:
     repo: tristandeleu/pytorch-meta
     branch: master
-    condition: $((TORCHMETA_VERSION_CHANGED)) -gt 0
+    condition: $(($(git diff --name-only $TRAVIS_COMMIT_RANGE | grep torchmeta/version.py | wc -l))) -gt 0
