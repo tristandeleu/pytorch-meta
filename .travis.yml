@@ -7,6 +7,8 @@ install:
   - pip install .
 script:
   - pytest
+before_deploy:
+  - export TORCHMETA_VERSION_CHANGED=$(git diff --name-only HEAD~1 HEAD | grep torchmeta/version.py | wc -l)
 deploy:
   provider: pypi
   user: $PYPI_USER
@@ -16,4 +18,4 @@ deploy:
   on:
     repo: tristandeleu/pytorch-meta
     branch: master
-    condition: $(git diff --name-only HEAD~1 HEAD | grep torchmeta/version.py | wc -l) -gt 0
+    condition: $((TORCHMETA_VERSION_CHANGED)) -gt 0
