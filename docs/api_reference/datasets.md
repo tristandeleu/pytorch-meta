@@ -162,7 +162,7 @@ torchmeta.datasets.TieredImagenet(root, num_classes_per_task=None,
 
 ## FC100
 
-The Fewshot-CIFAR100 dataset, introduced in [1]_. This dataset contains images of 100 different classes from the CIFAR100 dataset [2]_.
+The Fewshot-CIFAR100 dataset, introduced in [1]. This dataset contains images of 100 different classes from the CIFAR100 dataset [2].
 
 ```python
 torchmeta.datasets.FC100(root, num_classes_per_task=None, meta_train=False,
@@ -215,7 +215,7 @@ torchmeta.datasets.FC100(root, num_classes_per_task=None, meta_train=False,
 
 ## CIFARFS
 
-The CIFAR-FS dataset, introduced in [1]_. This dataset contains images of 100 different classes from the CIFAR100 dataset [2]_.
+The CIFAR-FS dataset, introduced in [1]. This dataset contains images of 100 different classes from the CIFAR100 dataset [2].
 
 ```python
 torchmeta.datasets.CIFARFS(root, num_classes_per_task=None, meta_train=False,

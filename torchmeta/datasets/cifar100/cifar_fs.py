@@ -8,8 +8,8 @@ from torchmeta.utils.data import ClassDataset, CombinationMetaDataset
 
 class CIFARFS(CombinationMetaDataset):
     """
-    The CIFAR-FS dataset, introduced in [1]_. This dataset contains
-    images of 100 different classes from the CIFAR100 dataset [2]_.
+    The CIFAR-FS dataset, introduced in [1]. This dataset contains
+    images of 100 different classes from the CIFAR100 dataset [2].
 
     Parameters
     ----------

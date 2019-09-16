@@ -1,5 +1,8 @@
 site_name: Torchmeta
+repo_url: https://github.com/tristandeleu/pytorch-meta
+site_url: https://tristandeleu.github.io/pytorch-meta
 theme: readthedocs
+site_dir: ../site
 docs_dir: .
 
 nav:
