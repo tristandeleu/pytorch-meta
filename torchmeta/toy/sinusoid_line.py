@@ -7,7 +7,7 @@ from torchmeta.toy.sinusoid import SinusoidTask
 class SinusoidAndLine(MetaDataset):
     """
     Simple multimodal regression task, based on sinusoids and lines, as
-    introduced in [1]_.
+    introduced in [1].
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ class SinusoidAndLine(MetaDataset):
 
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     Notes
     -----

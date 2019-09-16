@@ -12,7 +12,7 @@ from torchvision.datasets.utils import download_file_from_google_drive
 
 class TieredImagenet(CombinationMetaDataset):
     """
-    The Tiered-Imagenet dataset, introduced in [1]_. This dataset contains images 
+    The Tiered-Imagenet dataset, introduced in [1]. This dataset contains images 
     of 608 different classes from the ILSVRC-12 dataset (Imagenet challenge).
 
     Parameters
@@ -21,7 +21,7 @@ class TieredImagenet(CombinationMetaDataset):
         Root directory where the dataset folder `tieredimagenet` exists.
 
     num_classes_per_task : int
-        Number of classes per tasks. This corresponds to `N` in `N-way` 
+        Number of classes per tasks. This corresponds to "N" in "N-way" 
         classification.
 
     meta_train : bool (default: `False`)
@@ -53,11 +53,12 @@ class TieredImagenet(CombinationMetaDataset):
 
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     class_augmentations : list of callable, optional
         A list of functions that augment the dataset with new classes. These classes 
-        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+        are transformations of existing classes. E.g.
+        `torchmeta.transforms.HorizontalFlip()`.
 
     download : bool (default: `False`)
         If `True`, downloads the pickle files and processes the dataset in the root 
@@ -66,8 +67,8 @@ class TieredImagenet(CombinationMetaDataset):
 
     Notes
     -----
-    The dataset is downloaded from `this repository 
-    <https://github.com/renmengye/few-shot-ssl-public/>`__. The dataset contains 
+    The dataset is downloaded from [this repository]
+    (https://github.com/renmengye/few-shot-ssl-public/). The dataset contains 
     images from 34 categories. The meta train/validation/test splits are over 
     20/6/8 categories. Each category contains between 10 and 30 classes. The 
     splits over categories (instead of over classes) ensures that all the training 

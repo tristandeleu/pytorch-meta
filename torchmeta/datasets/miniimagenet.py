@@ -10,9 +10,9 @@ from torchvision.datasets.utils import download_file_from_google_drive
 
 class MiniImagenet(CombinationMetaDataset):
     """
-    The Mini-Imagenet dataset, introduced in [1]_. This dataset contains images 
+    The Mini-Imagenet dataset, introduced in [1]. This dataset contains images 
     of 100 different classes from the ILSVRC-12 dataset (Imagenet challenge). 
-    The meta train/validation/test splits are taken from [2]_ for reproducibility.
+    The meta train/validation/test splits are taken from [2] for reproducibility.
 
     Parameters
     ----------
@@ -20,7 +20,7 @@ class MiniImagenet(CombinationMetaDataset):
         Root directory where the dataset folder `miniimagenet` exists.
 
     num_classes_per_task : int
-        Number of classes per tasks. This corresponds to `N` in `N-way` 
+        Number of classes per tasks. This corresponds to "N" in "N-way" 
         classification.
 
     meta_train : bool (default: `False`)
@@ -52,11 +52,12 @@ class MiniImagenet(CombinationMetaDataset):
 
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     class_augmentations : list of callable, optional
         A list of functions that augment the dataset with new classes. These classes 
-        are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
+        are transformations of existing classes. E.g.
+        `torchmeta.transforms.HorizontalFlip()`.
 
     download : bool (default: `False`)
         If `True`, downloads the pickle files and processes the dataset in the root 
@@ -65,8 +66,8 @@ class MiniImagenet(CombinationMetaDataset):
 
     Notes
     -----
-    The dataset is downloaded from `this repository 
-    <https://github.com/renmengye/few-shot-ssl-public/>`__. The meta train/
+    The dataset is downloaded from [this repository]
+    (https://github.com/renmengye/few-shot-ssl-public/). The meta train/
     validation/test splits are over 64/16/20 classes.
 
     References

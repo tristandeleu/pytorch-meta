@@ -5,7 +5,7 @@ from torchmeta.utils.data import Task, MetaDataset
 
 class Sinusoid(MetaDataset):
     """
-    Simple regression task, based on sinusoids, as introduced in [1]_.
+    Simple regression task, based on sinusoids, as introduced in [1].
 
     Parameters
     ----------
@@ -29,7 +29,7 @@ class Sinusoid(MetaDataset):
 
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
-        transformed version of it. E.g. `transforms.ClassSplitter()`.
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     Notes
     -----
