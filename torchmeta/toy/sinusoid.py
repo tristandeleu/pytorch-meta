@@ -45,7 +45,7 @@ class Sinusoid(MetaDataset):
            for Fast Adaptation of Deep Networks. International Conference on
            Machine Learning (ICML) (https://arxiv.org/abs/1703.03400)
     """
-    def __init__(self, num_samples_per_task, num_tasks=1_000_000,
+    def __init__(self, num_samples_per_task, num_tasks=1000000,
                  noise_std=None, transform=None, target_transform=None,
                  dataset_transform=None):
         super(Sinusoid, self).__init__(meta_split='train',

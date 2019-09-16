@@ -20,7 +20,7 @@ def test_toy_meta_dataset(dataset_class):
 @pytest.mark.parametrize('dataset_class',
     [Sinusoid, Harmonic, SinusoidAndLine])
 def test_toy_task(dataset_class):
-    dataset = dataset_class(10, num_tasks=1_000, noise_std=None)
+    dataset = dataset_class(10, num_tasks=1000, noise_std=None)
     task = dataset[0]
 
     assert isinstance(task, Task)
@@ -30,7 +30,7 @@ def test_toy_task(dataset_class):
 @pytest.mark.parametrize('dataset_class',
     [Sinusoid, Harmonic, SinusoidAndLine])
 def test_toy_sample(dataset_class):
-    dataset = dataset_class(10, num_tasks=1_000, noise_std=None)
+    dataset = dataset_class(10, num_tasks=1000, noise_std=None)
     task = dataset[0]
     input, target = task[0]
 

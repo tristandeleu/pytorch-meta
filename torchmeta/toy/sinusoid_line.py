@@ -50,7 +50,7 @@ class SinusoidAndLine(MetaDataset):
            Meta-Learning. In Advances in Neural Information Processing Systems
            (https://arxiv.org/abs/1806.02817)
     """
-    def __init__(self, num_samples_per_task, num_tasks=1_000_000,
+    def __init__(self, num_samples_per_task, num_tasks=1000000,
                  noise_std=None, transform=None, target_transform=None,
                  dataset_transform=None):
         super(SinusoidAndLine, self).__init__(meta_split='train',

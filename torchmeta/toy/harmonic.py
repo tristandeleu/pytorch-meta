@@ -48,7 +48,7 @@ class Harmonic(MetaDataset):
            Krueger D. (2018). Uncertainty in Multitask Transfer Learning. In
            Advances in Neural Information Processing Systems (https://arxiv.org/abs/1806.07528)
     """
-    def __init__(self, num_samples_per_task, num_tasks=5_000,
+    def __init__(self, num_samples_per_task, num_tasks=5000,
                  noise_std=None, transform=None, target_transform=None,
                  dataset_transform=None):
         super(Harmonic, self).__init__(meta_split='train',
