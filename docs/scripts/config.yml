@@ -8,6 +8,7 @@ api-reference:
         - MiniImagenet
         - TieredImagenet
         - FC100
+        - CIFARFS
 
   - docs/api_reference/modules.md:
     - name: Modules
