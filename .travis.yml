@@ -7,3 +7,9 @@ install:
   - pip install .
 script:
   - pytest
+deploy:
+  provider: pypi
+  server: https://testpypi.python.org/pypi
+  distributions: "sdist bdist_wheel"
+  on:
+    tags: true
