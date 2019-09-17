@@ -91,3 +91,17 @@ dataset = ClassSplitter(dataset, shuffle=True, num_train_per_class=5, num_test_p
 dataloader = BatchMetaDataLoader(dataset, batch_size=16, num_workers=4)
 ```
 Note that the dataloader, receiving the dataset, remains the same.
+
+## Citation
+> Tristan Deleu, Tobias Würfl, Mandana Samiei, Joseph Paul Cohen, and Yoshua Bengio. Torchmeta: A Meta-Learning library for PyTorch, 2019 [[ArXiv](https://arxiv.org/abs/1909.06576)]
+
+If you want to cite Torchmeta, use the following Bibtex entry:
+```
+@misc{deleu2019torchmeta,
+  title={{Torchmeta: A Meta-Learning library for PyTorch}},
+  author={Deleu, Tristan and W\"urfl, Tobias and Samiei, Mandana and Cohen, Joseph Paul and Bengio, Yoshua},
+  year={2019},
+  url={https://arxiv.org/abs/1909.06576},
+  note={Available at: https://github.com/tristandeleu/pytorch-meta}
+}
+```

@@ -1,0 +1,7 @@
+@misc{deleu2019torchmeta,
+  title={{Torchmeta: A Meta-Learning library for PyTorch}},
+  author={Deleu, Tristan and W\"urfl, Tobias and Samiei, Mandana and Cohen, Joseph Paul and Bengio, Yoshua},
+  year={2019},
+  url={https://arxiv.org/abs/1909.06576},
+  note={Available at: https://github.com/tristandeleu/pytorch-meta}
+}
