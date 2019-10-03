@@ -27,7 +27,7 @@ def no_collate(batch):
     return batch
 
 class MetaDataLoader(DataLoader):
-    def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None,
+    def __init__(self, dataset, batch_size=1, shuffle=True, sampler=None,
                  batch_sampler=None, num_workers=0, collate_fn=None,
                  pin_memory=False, drop_last=False, timeout=0,
                  worker_init_fn=None):
@@ -49,7 +49,7 @@ class MetaDataLoader(DataLoader):
 
 
 class BatchMetaDataLoader(MetaDataLoader):
-    def __init__(self, dataset, batch_size=1, shuffle=False, num_workers=0,
+    def __init__(self, dataset, batch_size=1, shuffle=True, num_workers=0,
                  pin_memory=False, drop_last=False, timeout=0, worker_init_fn=None):
         collate_fn = batch_meta_collate(default_collate)
 
