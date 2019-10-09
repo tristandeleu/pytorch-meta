@@ -45,7 +45,7 @@ class CIFAR100ClassDataset(ClassDataset):
             self.download()
 
         if not self._check_integrity():
-            raise RuntimeError()
+            raise RuntimeError('CIFAR100 integrity check failed')
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):

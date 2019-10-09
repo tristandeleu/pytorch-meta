@@ -127,7 +127,7 @@ class TieredImagenetClassDataset(ClassDataset):
             self.download()
 
         if not self._check_integrity():
-            raise RuntimeError()
+            raise RuntimeError('TieredImagenet integrity check failed')
         self._num_classes = len(self.labels_specific)
 
     @property
