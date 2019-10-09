@@ -143,7 +143,7 @@ class OmniglotClassDataset(ClassDataset):
             self.download()
 
         if not self._check_integrity():
-            raise RuntimeError()
+            raise RuntimeError('Omniglot integrity check failed')
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
