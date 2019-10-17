@@ -15,7 +15,8 @@ class Dataset(Dataset_):
             return
         if self.target_transform is None:
             self.target_transform = transform
-        self.target_transform = Compose([self.target_transform, transform])
+        else:
+            self.target_transform = Compose([self.target_transform, transform])
 
 
 class Task(Dataset):
