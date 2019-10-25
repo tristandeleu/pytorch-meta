@@ -77,6 +77,9 @@
     <li class="toctree-l3"><a href="#cifarfs">CIFARFS</a></li>
     
 
+    <li class="toctree-l3"><a href="#tcga">TCGA</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -465,6 +468,75 @@
 <ul>
 <li><strong>[1]</strong> Bertinetto L., Henriques J. F., Torr P. H.S., Vedaldi A. (2019). Meta-learning with differentiable closed-form solvers. In International Conference on Learning Representations (https://arxiv.org/abs/1805.08136)</li>
 <li><strong>[2]</strong> Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)</li>
+</ul>
+</div>
+<h2 id="tcga">TCGA</h2>
+<p>The TCGA dataset [1]. A dataset of classification tasks over the values of an attribute, based on the gene expression data from patients diagnosed with specific types of cancer. This dataset is based on data from the Cancer Genome Atlas Program from the National Cancer Institute.</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">TCGA</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">min_samples_per_class</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">chunksize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>omniglot</code> exists.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>min_samples_per_class</strong>: <em>int (default: 5)</em><br />
+ Minimum number of samples per class in each classification task. This filters tasks for which the amount of data for one of the classes is too small.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the files and processes the dataset in the root directory (under the <code>tcga</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+<li>
+<p><strong>chunksize</strong>: <em>int (default: 100)</em><br />
+ Size of the chunks to be processed when reading the CSV file. This is only used while downloading and converting the dataset to HDF5.</p>
+</li>
+<li>
+<p><strong>preload</strong>: <em>bool (default: <code>True</code>)</em><br />
+ Opens the gene expression dataset and keeps a reference to it in memory. This decreases the loading time of individual tasks.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>A task is the combination of a cancer type and an attribute. The data is the gene expression of patients diagnosed with the cancer defined by the task. It consists in a vector of size <code>(20530,)</code>. The task is to classify the patients according to the attribute given by the task definition. The meta train/validation/test splits are over 137/29/29 tasks (ie. types of cancer). However, the number of tasks depends on the minimum number of samples per class specified by <code>min_samples_per_class</code>.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Samiei, M., Wurfl, T., Deleu, T., Weiss, M., Dutil, F., Fevens, T., Boucher, G., Lemieux, S., and Cohen, J. P. (2019). The TCGA Meta-Dataset Clinical Benchmark. (https://arxiv.org/abs/1910.08636)</li>
 </ul>
 </div>
               

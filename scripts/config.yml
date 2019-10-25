@@ -9,6 +9,7 @@ api-reference:
         - TieredImagenet
         - FC100
         - CIFARFS
+        - TCGA
 
   - docs/api_reference/modules.md:
     - name: Modules
