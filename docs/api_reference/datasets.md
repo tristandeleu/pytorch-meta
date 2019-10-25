@@ -265,3 +265,58 @@ torchmeta.datasets.CIFARFS(root, num_classes_per_task=None, meta_train=False,
 !!! attention "References"
     - **[1]** Bertinetto L., Henriques J. F., Torr P. H.S., Vedaldi A. (2019). Meta-learning with differentiable closed-form solvers. In International Conference on Learning Representations (https://arxiv.org/abs/1805.08136)
     - **[2]** Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
+
+## TCGA
+
+The TCGA dataset [1]. A dataset of classification tasks over the values of an attribute, based on the gene expression data from patients diagnosed with specific types of cancer. This dataset is based on data from the Cancer Genome Atlas Program from the National Cancer Institute.
+
+```python
+torchmeta.datasets.TCGA(root, meta_train=False, meta_val=False,
+    meta_test=False, meta_split=None, min_samples_per_class=5, transform=None,
+    target_transform=None, dataset_transform=None, download=False,
+    chunksize=100, preload=True)
+```
+
+**Parameters**
+
+ - **root**: *string*
+ Root directory where the dataset folder `omniglot` exists.
+
+ - **meta_train**: *bool (default: `False`)*
+ Use the meta-train split of the dataset. If set to `True`, then the arguments `meta_val` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_val**: *bool (default: `False`)*
+ Use the meta-validation split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_test**: *bool (default: `False`)*
+ Use the meta-test split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_val` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_split**: *string in {'train', 'val', 'test'}, optional*
+ Name of the split to use. This overrides the arguments `meta_train`, `meta_val` and `meta_test` if all three are set to `False`.
+
+ - **min_samples_per_class**: *int (default: 5)*
+ Minimum number of samples per class in each classification task. This filters tasks for which the amount of data for one of the classes is too small.
+
+ - **transform**: *callable, optional*
+ A function/transform that takes a `PIL` image, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **target_transform**: *callable, optional*
+ A function/transform that takes a target, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **dataset_transform**: *callable, optional*
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. `transforms.ClassSplitter()`.
+
+ - **download**: *bool (default: `False`)*
+ If `True`, downloads the files and processes the dataset in the root directory (under the `tcga` folder). If the dataset is already available, this does not download/process the dataset again.
+
+ - **chunksize**: *int (default: 100)*
+ Size of the chunks to be processed when reading the CSV file. This is only used while downloading and converting the dataset to HDF5.
+
+ - **preload**: *bool (default: `True`)*
+ Opens the gene expression dataset and keeps a reference to it in memory. This decreases the loading time of individual tasks.
+
+!!! note "Notes"
+    A task is the combination of a cancer type and an attribute. The data is the gene expression of patients diagnosed with the cancer defined by the task. It consists in a vector of size `(20530,)`. The task is to classify the patients according to the attribute given by the task definition. The meta train/validation/test splits are over 137/29/29 tasks (ie. types of cancer). However, the number of tasks depends on the minimum number of samples per class specified by `min_samples_per_class`.
+
+!!! attention "References"
+    - **[1]** Samiei, M., Wurfl, T., Deleu, T., Weiss, M., Dutil, F., Fevens, T., Boucher, G., Lemieux, S., and Cohen, J. P. (2019). The TCGA Meta-Dataset Clinical Benchmark. (https://arxiv.org/abs/1910.08636)

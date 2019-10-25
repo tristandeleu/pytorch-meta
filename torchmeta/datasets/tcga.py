@@ -11,8 +11,8 @@ from torchmeta.datasets.utils import get_asset
 
 class TCGA(MetaDataset):
     """
-    The TCGA dataset. A dataset of classification tasks over the values of an
-    attribute, based on the gene expression data from patients diagnosed with
+    The TCGA dataset [1]. A dataset of classification tasks over the values of
+    an attribute, based on the gene expression data from patients diagnosed with
     specific types of cancer. This dataset is based on data from the Cancer
     Genome Atlas Program from the National Cancer Institute.
 
@@ -79,6 +79,12 @@ class TCGA(MetaDataset):
     train/validation/test splits are over 137/29/29 tasks (ie. types of cancer).
     However, the number of tasks depends on the minimum number of samples per
     class specified by `min_samples_per_class`.
+
+    References
+    ----------
+    .. [1] Samiei, M., Wurfl, T., Deleu, T., Weiss, M., Dutil, F., Fevens, T.,
+           Boucher, G., Lemieux, S., and Cohen, J. P. (2019). The TCGA
+           Meta-Dataset Clinical Benchmark. (https://arxiv.org/abs/1910.08636)
     """
     folder = 'tcga'
     clinical_matrix_url = 'https://tcga.xenahubs.net/download/TCGA.{0}.sampleMap/{0}_clinicalMatrix.gz'
