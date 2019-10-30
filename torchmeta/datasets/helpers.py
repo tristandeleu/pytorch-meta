@@ -170,7 +170,7 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None,
     return dataset
 
 def cifar_fs(folder, shots, ways, shuffle=True, test_shots=None,
-                   seed=None, **kwargs):
+             seed=None, **kwargs):
     """Helper function to create a meta-dataset for the CIFAR-FS dataset.
 
     Parameters
