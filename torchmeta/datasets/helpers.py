@@ -1,7 +1,6 @@
 import warnings
 
-from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet
-from torchmeta.datasets.cifar100 import CIFARFS
+from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation
 from torchvision.transforms import Compose, Resize, ToTensor
 
@@ -210,7 +209,7 @@ def cifar_fs(folder, shots, ways, shuffle=True, test_shots=None,
             'Ignoring the argument `ways`.', stacklevel=2)
         ways = kwargs['num_classes_per_task']
     if 'transform' not in kwargs:
-        kwargs['transform'] = Compose([ToTensor()])
+        kwargs['transform'] = ToTensor()
     if 'target_transform' not in kwargs:
         kwargs['target_transform'] = Categorical(ways)
     if test_shots is None:
