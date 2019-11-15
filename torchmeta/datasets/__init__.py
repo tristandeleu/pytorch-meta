@@ -1,3 +1,4 @@
+from torchmeta.datasets.cub import CUB
 from torchmeta.datasets.cifar100 import CIFARFS, FC100
 from torchmeta.datasets.miniimagenet import MiniImagenet
 from torchmeta.datasets.omniglot import Omniglot
@@ -13,5 +14,6 @@ __all__ = [
     'TieredImagenet',
     'CIFARFS',
     'FC100',
+    'CUB',
     'helpers'
 ]

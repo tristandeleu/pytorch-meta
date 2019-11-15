@@ -9,6 +9,7 @@ api-reference:
         - TieredImagenet
         - FC100
         - CIFARFS
+        - CUB
         - TCGA
 
   - docs/api_reference/modules.md:

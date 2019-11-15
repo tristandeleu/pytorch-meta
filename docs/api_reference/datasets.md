@@ -266,6 +266,60 @@ torchmeta.datasets.CIFARFS(root, num_classes_per_task=None, meta_train=False,
     - **[1]** Bertinetto L., Henriques J. F., Torr P. H.S., Vedaldi A. (2019). Meta-learning with differentiable closed-form solvers. In International Conference on Learning Representations (https://arxiv.org/abs/1805.08136)
     - **[2]** Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
 
+## CUB
+
+The Caltech-UCSD Birds dataset, introduced in [1]. This dataset is based on images from 200 species of birds from the Caltech-UCSD Birds dataset [2].
+
+```python
+torchmeta.datasets.CUB(root, num_classes_per_task=None, meta_train=False,
+    meta_val=False, meta_test=False, meta_split=None, transform=None,
+    target_transform=None, dataset_transform=None, class_augmentations=None,
+    download=False)
+```
+
+**Parameters**
+
+ - **root**: *string*
+ Root directory where the dataset folder `cub` exists.
+
+ - **num_classes_per_task**: *int*
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.
+
+ - **meta_train**: *bool (default: `False`)*
+ Use the meta-train split of the dataset. If set to `True`, then the arguments `meta_val` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_val**: *bool (default: `False`)*
+ Use the meta-validation split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_test**: *bool (default: `False`)*
+ Use the meta-test split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_val` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_split**: *string in {'train', 'val', 'test'}, optional*
+ Name of the split to use. This overrides the arguments `meta_train`, `meta_val` and `meta_test` if all three are set to `False`.
+
+ - **transform**: *callable, optional*
+ A function/transform that takes a `PIL` image, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **target_transform**: *callable, optional*
+ A function/transform that takes a target, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **dataset_transform**: *callable, optional*
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
+
+ - **class_augmentations**: *list of callable, optional*
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. `torchmeta.transforms.HorizontalFlip()`.
+
+ - **download**: *bool (default: `False`)*
+ If `True`, downloads the pickle files and processes the dataset in the root directory (under the `cub` folder). If the dataset is already available, this does not download/process the dataset again.
+
+!!! note "Notes"
+    The dataset is downloaded from [2]. The dataset contains images from 200 classes. The meta train/validation/test splits are over 100/50/50 classes. The splits are taken from [3] ([code](https://github.com/wyharveychen/CloserLookFewShot)for reproducibility).
+
+!!! attention "References"
+    - **[1]** Hilliard, N., Phillips, L., Howland, S., Yankov, A., Corley, C. D., Hodas, N. O. (2018). Few-Shot Learning with Metric-Agnostic Conditional Embeddings. (https://arxiv.org/abs/1802.04376)
+    - **[2]** Wah, C., Branson, S., Welinder, P., Perona, P., Belongie, S. (2011). The Caltech-UCSD Birds-200-2011 Dataset (http://www.vision.caltech.edu/visipedia/CUB-200-2011.html)
+    - **[3]** Chen, W., Liu, Y. and Kira, Z. and Wang, Y. and  Huang, J. (2019). A Closer Look at Few-shot Classification. International Conference on Learning Representations (https://openreview.net/forum?id=HkxLXnAcFQ)
+
 ## TCGA
 
 The TCGA dataset [1]. A dataset of classification tasks over the values of an attribute, based on the gene expression data from patients diagnosed with specific types of cancer. This dataset is based on data from the Cancer Genome Atlas Program from the National Cancer Institute.
