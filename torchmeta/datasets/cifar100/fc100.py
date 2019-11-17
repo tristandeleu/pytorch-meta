@@ -101,11 +101,15 @@ class FC100ClassDataset(CIFAR100ClassDataset):
     def download(self):
         if self._check_integrity():
             return
-        super(CIFARFSClassDataset, self).download()
+        super(FC100ClassDataset, self).download()
 
         subfolder = os.path.join(self.root, self.subfolder)
         if not os.path.exists(subfolder):
             os.makedirs(subfolder)
+
+        filename_fine_names = os.path.join(self.root, self.filename_fine_names)
+        with open(filename_fine_names, 'r') as f:
+            fine_names = json.load(f)
 
         for split in ['train', 'val', 'test']:
             split_filename_labels = os.path.join(subfolder,

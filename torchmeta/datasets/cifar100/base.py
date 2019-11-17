@@ -22,6 +22,7 @@ class CIFAR100ClassDataset(ClassDataset):
 
     filename = 'data.hdf5'
     filename_labels = '{0}_labels.json'
+    filename_fine_names = 'fine_names.json'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, class_augmentations=None,
@@ -136,6 +137,10 @@ class CIFAR100ClassDataset(ClassDataset):
                     dataset = group.create_dataset(fine_label_names[j],
                         data=images[fine_labels == j])
                 fine_names[coarse_name] = [fine_label_names[j] for j in fine_indices]
+
+        filename_fine_names = os.path.join(self.root, self.filename_fine_names)
+        with open(filename_fine_names, 'w') as f:
+            json.dump(fine_names, f)
 
         gz_folder = os.path.join(self.root, self.gz_folder)
         if os.path.isdir(gz_folder):
