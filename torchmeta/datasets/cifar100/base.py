@@ -50,7 +50,7 @@ class CIFAR100ClassDataset(ClassDataset):
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
-        coarse_label_name, fine_label_name = self.labels[index]
+        coarse_label_name, fine_label_name = self.labels[index % self.num_classes]
         data = self.data['{0}/{1}'.format(coarse_label_name, fine_label_name)]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
