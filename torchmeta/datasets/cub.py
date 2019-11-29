@@ -133,7 +133,7 @@ class CUBClassDataset(ClassDataset):
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
-        label = self.labels[index]
+        label = self.labels[index % self.num_classes]
         data = self.data[label]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
