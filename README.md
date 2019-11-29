@@ -19,6 +19,7 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Tiered-ImageNet ([Ren et al., 2018](https://arxiv.org/abs/1803.00676))
     - CIFAR-FS ([Bertinetto et al., 2018](https://arxiv.org/abs/1805.08136))
     - Fewshot-CIFAR100 ([Oreshkin et al., 2018](https://arxiv.org/abs/1805.10123))
+    - Caltech-UCSD Birds ([Hilliard et al., 2019](https://arxiv.org/abs/1802.04376), [Wah et al., 2019](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html))
 
 ## Installation
 You can install Torchmeta either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/). To install `virtualenv`:
