@@ -77,7 +77,8 @@ class CIFAR100ClassDataset(ClassDataset):
 
     def _check_integrity(self):
         return (self._check_integrity_data()
-            and os.path.isfile(self.split_filename_labels))
+            and os.path.isfile(self.split_filename_labels)
+            and os.path.isfile(os.path.join(self.root, self.filename_fine_names)))
 
     def _check_integrity_data(self):
         return os.path.isfile(os.path.join(self.root, self.filename))
