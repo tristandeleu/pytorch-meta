@@ -70,7 +70,7 @@ for batch in dataloader:
 ```
 
 #### Advanced example
-Helper functions are only avaiable for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable `dataset` defined above is equivalent to the following
+Helper functions are only available for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable `dataset` defined above is equivalent to the following
 ```python
 from torchmeta.datasets import Omniglot
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation
