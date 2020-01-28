@@ -196,6 +196,8 @@ class MetaDataset(object):
 
     def seed(self, seed=None):
         self.np_random = np.random.RandomState(seed=seed)
+        # Seed the dataset transform
+        _seed_dataset_transform(self.dataset_transform, seed=seed)
 
     def __iter__(self):
         for index in range(len(self)):
@@ -289,3 +291,11 @@ class CombinationMetaDataset(MetaDataset):
         for i in range(1, self.num_classes_per_task + 1):
             length *= (num_classes - i + 1) / i
         return int(length)
+
+
+def _seed_dataset_transform(transform, seed=None):
+    if isinstance(transform, Compose):
+        for subtransform in transform.transforms:
+            _seed_dataset_transform(subtransform, seed=seed)
+    elif hasattr(transform, 'seed'):
+        transform.seed(seed=seed)

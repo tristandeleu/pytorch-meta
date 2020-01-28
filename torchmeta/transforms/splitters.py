@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 from collections import OrderedDict, defaultdict
 from torchmeta.utils.data.task import Task, ConcatTask, SubsetTask
@@ -10,6 +11,10 @@ __all__ = ['Splitter', 'ClassSplitter', 'WeightedClassSplitter']
 class Splitter(object):
     def __init__(self, splits):
         self.splits = splits
+        self.seed()
+
+    def seed(self, seed=None):
+        self.np_random = np.random.RandomState(seed=seed)
 
     def get_indices(self, task):
         if isinstance(task, ConcatTask):
@@ -143,13 +148,13 @@ class ClassSplitter_(Splitter):
                     num_samples, self._min_samples_per_class))
 
             if self.shuffle:
-                # TODO: Replace torch.randperm with seed-friendly counterpart
-                dataset_indices = torch.randperm(num_samples).tolist()
+                dataset_indices = self.np_random.permutation(num_samples)
+            else:
+                dataset_indices = np.arange(num_samples)
 
             ptr = 0
             for split, num_split in self.splits.items():
-                split_indices = (dataset_indices[ptr:ptr + num_split]
-                    if self.shuffle else range(ptr, ptr + num_split))
+                split_indices = dataset_indices[ptr:ptr + num_split]
                 indices[split].extend([class_indices[idx] for idx in split_indices])
                 ptr += num_split
 
@@ -168,14 +173,14 @@ class ClassSplitter_(Splitter):
                     self._min_samples_per_class))
 
             if self.shuffle:
-                # TODO: Replace torch.randperm with seed-friendly counterpart
-                dataset_indices = torch.randperm(num_samples).tolist()
+                dataset_indices = self.np_random.permutation(num_samples)
+            else:
+                dataset_indices = np.arange(num_samples)
 
             ptr = 0
             for split, num_split in self.splits.items():
-                split_indices = (dataset_indices[ptr:ptr + num_split]
-                    if self.shuffle else range(ptr, ptr + num_split))
-                indices[split].extend([idx + cum_size for idx in split_indices])
+                split_indices = dataset_indices[ptr:ptr + num_split]
+                indices[split].extend(split_indices + cum_size)
                 ptr += num_split
             cum_size += num_samples
 
@@ -292,16 +297,16 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(class_indices))
             if self.shuffle:
-                # TODO: Replace torch.randperm with seed-friendly counterpart
-                dataset_indices = torch.randperm(num_samples).tolist()
+                dataset_indices = self.np_random.permutation(num_samples)
+            else:
+                dataset_indices = np.arange(num_samples)
 
             ptr = 0
             for split, weight in self.splits.items():
                 num_split = max(self.min_num_samples[split], int(weight * num_samples))
                 if self.max_num_samples is not None:
                     num_split = min(self.max_num_samples[split], num_split)
-                split_indices = (dataset_indices[ptr:ptr + num_split]
-                    if self.shuffle else range(ptr, ptr + num_split))
+                split_indices = dataset_indices[ptr:ptr + num_split]
                 indices[split].extend([class_indices[idx] for idx in split_indices])
                 ptr += num_split
 
@@ -322,15 +327,15 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(dataset))
             if self.shuffle:
-                # TODO: Replace torch.randperm with seed-friendly counterpart
-                dataset_indices = torch.randperm(num_samples).tolist()
+                dataset_indices = self.np_random.permutation(num_samples)
+            else:
+                dataset_indices = np.arange(num_samples)
 
             ptr = 0
             for split, weight in self.splits.items():
                 num_split = max(self.min_num_samples, int(weight * num_samples))
-                split_indices = (dataset_indices[ptr:ptr + num_split]
-                    if self.shuffle else range(ptr, ptr + num_split))
-                indices[split].extend([idx + cum_size for idx in split_indices])
+                split_indices = dataset_indices[ptr:ptr + num_split]
+                indices[split].extend(split_indices + cum_size)
             cum_size += num_samples
 
         return indices
