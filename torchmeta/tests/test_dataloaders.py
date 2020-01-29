@@ -39,7 +39,7 @@ def test_meta_dataloader_task_loader():
     assert targets.shape == (5, 1)
 
 
-def test_basic_meta_dataloader():
+def test_batch_meta_dataloader():
     dataset = Sinusoid(10, num_tasks=1000, noise_std=None)
     meta_dataloader = BatchMetaDataLoader(dataset, batch_size=4)
     assert isinstance(meta_dataloader, DataLoader)
@@ -52,7 +52,7 @@ def test_basic_meta_dataloader():
     assert targets.shape == (4, 10, 1)
 
 
-def test_basic_meta_dataloader_splitter():
+def test_batch_meta_dataloader_splitter():
     dataset = Sinusoid(20, num_tasks=1000, noise_std=None)
     dataset = ClassSplitter(dataset, num_train_per_class=5,
         num_test_per_class=15)
