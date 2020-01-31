@@ -155,6 +155,7 @@
 <li>CIFAR-FS (<a href="https://arxiv.org/abs/1805.08136">Bertinetto et al., 2018</a>)</li>
 <li>Fewshot-CIFAR100 (<a href="https://arxiv.org/abs/1805.10123">Oreshkin et al., 2018</a>)</li>
 <li>Caltech-UCSD Birds (<a href="https://arxiv.org/abs/1802.04376">Hilliard et al., 2019</a>, <a href="http://www.vision.caltech.edu/visipedia/CUB-200-2011.html">Wah et al., 2019</a>)</li>
+<li>Double MNIST (<a href="https://github.com/shaohua0116/MultiDigitMNIST">Sun, 2019</a>)</li>
 </ul>
 </li>
 </ul>
@@ -199,7 +200,7 @@ python setup.py install
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Test targets shape: {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_targets</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>    <span class="c1"># (16, 75)</span>
 </pre></div></p>
 <h4 id="advanced-example">Advanced example</h4>
-<p>Helper functions are only avaiable for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable <code>dataset</code> defined above is equivalent to the following<br />
+<p>Helper functions are only available for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable <code>dataset</code> defined above is equivalent to the following<br />
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torchmeta.datasets</span> <span class="kn">import</span> <span class="n">Omniglot</span>
 <span class="kn">from</span> <span class="nn">torchmeta.transforms</span> <span class="kn">import</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">ClassSplitter</span><span class="p">,</span> <span class="n">Rotation</span>
 <span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="n">Compose</span><span class="p">,</span> <span class="n">Resize</span><span class="p">,</span> <span class="n">ToTensor</span>
@@ -283,5 +284,5 @@ Note that the dataloader, receiving the dataset, remains the same.</p>
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-11-29 00:39:04
+Build Date UTC : 2020-01-31 22:39:53
 -->
