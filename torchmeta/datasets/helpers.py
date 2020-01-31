@@ -1,6 +1,6 @@
 import warnings
 
-from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS, CUB
+from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS, CUB, DoubleMNIST
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -274,6 +274,62 @@ def cub(folder, shots, ways, shuffle=True, test_shots=None,
         test_shots = shots
 
     dataset = CUB(folder, num_classes_per_task=ways, **kwargs)
+    dataset = ClassSplitter(dataset, shuffle=shuffle,
+        num_train_per_class=shots, num_test_per_class=test_shots)
+    dataset.seed(seed)
+
+    return dataset
+
+def doublemnist(folder, shots, ways, shuffle=True, test_shots=None,
+                seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Double MNIST dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `doublemnist` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds 
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way` 
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the 
+        number of test examples is equal to the number of training examples per 
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `DoubleMNIST` class.
+
+    See also
+    --------
+    `datasets.doublemnist.DoubleMNIST` : Meta-dataset for the Double MNIST dataset.
+    """
+    if 'num_classes_per_task' is kwargs:
+        warnings.warn('Both arguments `ways` and `num_classes_per_task` were '
+            'set in the helper function for the number of classes per task. '
+            'Ignoring the argument `ways`.', stacklevel=2)
+        ways = kwargs['num_classes_per_task']
+    if 'transform' not in kwargs:
+        kwargs['transform'] = Compose([ToTensor()])
+    if 'target_transform' not in kwargs:
+        kwargs['target_transform'] = Categorical(ways)
+    if 'class_augmentations' not in kwargs:
+        kwargs['class_augmentations'] = [Rotation([90, 180, 270])]
+    if test_shots is None:
+        test_shots = shots
+
+    dataset = DoubleMNIST(folder, num_classes_per_task=ways, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
     dataset.seed(seed)
