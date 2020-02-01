@@ -58,30 +58,54 @@ class Harmonic(MetaDataset):
         self.noise_std = noise_std
         self.transform = transform
 
-        domain_range = np.array([-4.0, 4.0])
-        frequency_range = np.array([5.0, 7.0])
-        phase_range = np.array([0, 2 * np.pi])
+        self._domain_range = np.array([-4.0, 4.0])
+        self._frequency_range = np.array([5.0, 7.0])
+        self._phase_range = np.array([0, 2 * np.pi])
 
-        self._domains = self.np_random.uniform(domain_range[0], domain_range[1],
-            size=self.num_tasks)
-        self._frequencies = self.np_random.uniform(frequency_range[0],
-            frequency_range[1], size=self.num_tasks)
-        self._phases = self.np_random.uniform(phase_range[0],
-            phase_range[1], size=(self.num_tasks, 2))
-        self._amplitudes = self.np_random.randn(self.num_tasks, 2)
+        self._domains = None
+        self._frequencies = None
+        self._phases = None
+        self._amplitudes = None
+
+    @property
+    def domains(self):
+        if self._domains is None:
+            self._domains = self.np_random.uniform(self._domain_range[0],
+                self._domain_range[1], size=self.num_tasks)
+        return self._domains
+
+    @property
+    def frequencies(self):
+        if self._frequencies is None:
+            self._frequencies = self.np_random.uniform(self._frequency_range[0],
+                self._frequency_range[1], size=self.num_tasks)
+        return self._frequencies
+
+    @property
+    def phases(self):
+        if self._phases is None:
+            self._phases = self.np_random.uniform(self._phase_range[0],
+                self._phase_range[1], size=(self.num_tasks, 2))
+        return self._phases
+
+    @property
+    def amplitudes(self):
+        if self._amplitudes is None:
+            self._amplitudes = self.np_random.randn(self.num_tasks, 2)
+        return self._amplitudes
 
     def __len__(self):
         return self.num_tasks
 
     def __getitem__(self, index):
-        domain = self._domains[index]
-        frequency = self._frequencies[index]
-        phases = self._phases[index]
-        amplitudes = self._amplitudes[index]
+        domain = self.domains[index]
+        frequency = self.frequencies[index]
+        phases = self.phases[index]
+        amplitudes = self.amplitudes[index]
 
         task = HarmonicTask(domain, frequency, phases, amplitudes,
             self.noise_std, self.num_samples_per_task, self.transform,
-            self.target_transform)
+            self.target_transform, np_random=self.np_random)
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -91,7 +115,8 @@ class Harmonic(MetaDataset):
 
 class HarmonicTask(Task):
     def __init__(self, domain, frequency, phases, amplitudes, noise_std,
-                 num_samples, transform=None, target_transform=None):
+                 num_samples, transform=None, target_transform=None,
+                 np_random=None):
         super(HarmonicTask, self).__init__(None) # Regression task
         self.domain = domain
         self.frequency = frequency
@@ -103,14 +128,17 @@ class HarmonicTask(Task):
         self.transform = transform
         self.target_transform = target_transform
 
+        if np_random is None:
+            np_random = np.random.RandomState(None)
+
         a_1, a_2 = self.amplitudes
         b_1, b_2 = self.phases
 
-        self._inputs = self.domain + np.random.randn(num_samples, 1)
+        self._inputs = self.domain + np_random.randn(num_samples, 1)
         self._targets = (a_1 * np.sin(frequency * self._inputs + b_1)
             + a_2 * np.sin(2 * frequency * self._inputs + b_2))
         if (noise_std is not None) and (noise_std > 0.):
-            self._targets += noise_std * np.random.randn(num_samples, 1)
+            self._targets += noise_std * np_random.randn(num_samples, 1)
 
     def __len__(self):
         return self.num_samples

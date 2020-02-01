@@ -56,21 +56,34 @@ class Sinusoid(MetaDataset):
         self.transform = transform
 
         self._input_range = np.array([-5.0, 5.0])
-        amplitude_range = np.array([0.1, 5.0])
-        phase_range = np.array([0, np.pi])
+        self._amplitude_range = np.array([0.1, 5.0])
+        self._phase_range = np.array([0, np.pi])
 
-        self._amplitudes = self.np_random.uniform(amplitude_range[0],
-            amplitude_range[1], size=self.num_tasks)
-        self._phases = self.np_random.uniform(phase_range[0], phase_range[1],
-            size=self.num_tasks)
+        self._amplitudes = None
+        self._phases = None
+
+    @property
+    def amplitudes(self):
+        if self._amplitudes is None:
+            self._amplitudes = self.np_random.uniform(self._amplitude_range[0],
+                self._amplitude_range[1], size=self.num_tasks)
+        return self._amplitudes
+
+    @property
+    def phases(self):
+        if self._phases is None:
+            self._phases = self.np_random.uniform(self._phase_range[0],
+                self._phase_range[1], size=self.num_tasks)
+        return self._phases
 
     def __len__(self):
         return self.num_tasks
 
     def __getitem__(self, index):
-        amplitude, phase = self._amplitudes[index], self._phases[index]
+        amplitude, phase = self.amplitudes[index], self.phases[index]
         task = SinusoidTask(amplitude, phase, self._input_range, self.noise_std,
-            self.num_samples_per_task, self.transform, self.target_transform)
+            self.num_samples_per_task, self.transform, self.target_transform,
+            np_random=self.np_random)
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -80,7 +93,7 @@ class Sinusoid(MetaDataset):
 
 class SinusoidTask(Task):
     def __init__(self, amplitude, phase, input_range, noise_std, num_samples,
-                 transform=None, target_transform=None):
+                 transform=None, target_transform=None, np_random=None):
         super(SinusoidTask, self).__init__(None) # Regression task
         self.amplitude = amplitude
         self.phase = phase
@@ -91,11 +104,14 @@ class SinusoidTask(Task):
         self.transform = transform
         self.target_transform = target_transform
 
-        self._inputs = np.random.uniform(input_range[0], input_range[1],
+        if np_random is None:
+            np_random = np.random.RandomState(None)
+
+        self._inputs = np_random.uniform(input_range[0], input_range[1],
             size=(num_samples, 1))
         self._targets = amplitude * np.sin(self._inputs - phase)
         if (noise_std is not None) and (noise_std > 0.):
-            self._targets += noise_std * np.random.randn(num_samples, 1)
+            self._targets += noise_std * np_random.randn(num_samples, 1)
 
     def __len__(self):
         return self.num_samples
