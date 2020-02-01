@@ -32,8 +32,8 @@ source venv/bin/activate
 
 #### Requirements
  - Python 3.5 or above
- - PyTorch 1.3
- - Torchvision 0.4
+ - PyTorch 1.3 or above
+ - Torchvision 0.4 or above
 
 #### Using pip
 This is the recommended way to install Torchmeta:
