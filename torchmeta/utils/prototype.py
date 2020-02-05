@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-__all__ = ['get_num_samples', 'get_prototypes']
+__all__ = ['get_num_samples', 'get_prototypes', 'prototypical_loss']
 
 
 def get_num_samples(targets, num_classes, dtype=None):
