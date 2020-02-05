@@ -47,3 +47,31 @@ def get_prototypes(embeddings, targets, num_classes):
     prototypes.scatter_add_(1, indices, embeddings).div_(num_samples)
 
     return prototypes
+
+
+def prototypical_loss(prototypes, embeddings, targets, **kwargs):
+    """Compute the loss (i.e. negative log-likelihood) for the prototypical 
+    network, on the test/query points.
+
+    Parameters
+    ----------
+    prototypes : `torch.FloatTensor` instance
+        A tensor containing the prototypes for each class. This tensor has shape 
+        `(batch_size, num_classes, embedding_size)`.
+
+    embeddings : `torch.FloatTensor` instance
+        A tensor containing the embeddings of the query points. This tensor has 
+        shape `(batch_size, num_examples, embedding_size)`.
+
+    targets : `torch.LongTensor` instance
+        A tensor containing the targets of the query points. This tensor has 
+        shape `(batch_size, num_examples)`.
+
+    Returns
+    -------
+    loss : `torch.FloatTensor` instance
+        The negative log-likelihood on the query points.
+    """
+    squared_distances = torch.sum((prototypes.unsqueeze(2)
+        - embeddings.unsqueeze(1)) ** 2, dim=-1)
+    return F.cross_entropy(-squared_distances, targets, **kwargs)
