@@ -49,12 +49,12 @@ class MetaDataLoader(DataLoader):
 
 
 class BatchMetaDataLoader(MetaDataLoader):
-    def __init__(self, dataset, batch_size=1, shuffle=True, num_workers=0,
+    def __init__(self, dataset, batch_size=1, shuffle=True, sampler=None, num_workers=0,
                  pin_memory=False, drop_last=False, timeout=0, worker_init_fn=None):
         collate_fn = batch_meta_collate(default_collate)
 
         super(BatchMetaDataLoader, self).__init__(dataset,
-            batch_size=batch_size, shuffle=shuffle, sampler=None,
+            batch_size=batch_size, shuffle=shuffle, sampler=sampler,
             batch_sampler=None, num_workers=num_workers,
             collate_fn=collate_fn, pin_memory=pin_memory, drop_last=drop_last,
             timeout=timeout, worker_init_fn=worker_init_fn)
