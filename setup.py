@@ -30,10 +30,10 @@ setup(
     keywords=['meta-learning', 'pytorch', 'few-shot', 'few-shot learning'],
     packages=find_packages(exclude=['data', 'contrib', 'docs', 'tests', 'examples']),
     install_requires=[
-        'torch>=1.3.0,<1.5.0',
-        'torchvision>=0.4.0,<0.6.0',
+        'torch>=1.4.0,<1.5.0',
+        'torchvision>=0.5.0,<0.6.0',
         'numpy>=1.14.0',
-        'Pillow>=5.0.0,<7.0.0',
+        'Pillow>=7.0.0',
         'h5py~=2.9.0',
         'tqdm>=4.0.0',
         'requests' # Required by Torchvision
