@@ -2,8 +2,10 @@ import torch
 from torchmeta.transforms.utils import apply_wrapper
 from collections import defaultdict
 
+from torchmeta.transforms.target_transforms import TargetTransform
 
-class Categorical(object):
+
+class Categorical(TargetTransform):
     """Target transform to return labels in `[0, num_classes)`.
 
     Parameters
@@ -27,6 +29,7 @@ class Categorical(object):
     (<PIL.Image.Image image mode=L size=105x105 at 0x11ED3F668>, 2)
     """
     def __init__(self, num_classes=None):
+        super(Categorical, self).__init__()
         self.num_classes = num_classes
         self._classes = None
         self._labels = None

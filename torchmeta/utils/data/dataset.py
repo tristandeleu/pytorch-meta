@@ -6,7 +6,7 @@ from itertools import combinations
 from torchvision.transforms import Compose
 
 from torchmeta.utils.data.task import ConcatTask
-from torchmeta.transforms import FixedCategory, Categorical
+from torchmeta.transforms import FixedCategory, Categorical, DefaultTargetTransform
 from torchmeta.transforms.utils import wrap_transform
 
 __all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset']
@@ -243,6 +243,12 @@ class CombinationMetaDataset(MetaDataset):
                 '`int`, got `{0}`.'.format(type(num_classes_per_task)))
         self.dataset = dataset
         self.num_classes_per_task = num_classes_per_task
+        # If no target_transform, then use a default target transform that
+        # is well behaved for the `default_collate` function (assign class
+        # augmentations ot integers).
+        if target_transform is None:
+            target_transform = DefaultTargetTransform(dataset.class_augmentations)
+
         super(CombinationMetaDataset, self).__init__(meta_train=dataset.meta_train,
             meta_val=dataset.meta_val, meta_test=dataset.meta_test,
             meta_split=dataset.meta_split, target_transform=target_transform,
