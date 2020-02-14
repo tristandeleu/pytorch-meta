@@ -9,12 +9,20 @@ __all__ = ['Splitter', 'ClassSplitter', 'WeightedClassSplitter']
 
 
 class Splitter(object):
-    def __init__(self, splits):
+    def __init__(self, splits, random_state_seed, fixed_random_state):
         self.splits = splits
-        self.seed()
+        self.fixed_random_state = fixed_random_state
+        self.seed(random_state_seed)
 
-    def seed(self, seed=None):
+    def seed(self, seed):
         self.np_random = np.random.RandomState(seed=seed)
+        self.random_state_seed = seed
+
+    def get_random_state(self):
+        if self.fixed_random_state:
+            return np.random.RandomState(self.random_state_seed)
+        else:
+            return self.np_random
 
     def get_indices(self, task):
         if isinstance(task, ConcatTask):
@@ -68,7 +76,8 @@ class Splitter(object):
 class ClassSplitter_(Splitter):
     def __init__(self, shuffle=True, num_samples_per_class=None,
                  num_train_per_class=None, num_test_per_class=None,
-                 num_support_per_class=None, num_query_per_class=None):
+                 num_support_per_class=None, num_query_per_class=None,
+                 random_state_seed=0, fixed_random_state=False):
         """
         Transforms a dataset into train/test splits for few-shot learning tasks,
         based on a fixed number of samples per class for each split. This is a
@@ -106,6 +115,14 @@ class ClassSplitter_(Splitter):
             `None`, then this argument is ignored. If not `None`, this creates
             an item `query` for each task.
 
+        random_state_seed : int, optional
+            seed of the np.RandomState. Defaults to '0'.
+
+        fixed_random_state : bool (default: `False`)
+            If `True`, then the same random state is used for every class split.
+            This ensures that the same task samples are sampled to each split while
+            being in (pseudo) random order.
+
         Examples
         --------
         >>> transform = ClassSplitter(num_samples_per_class={
@@ -133,7 +150,7 @@ class ClassSplitter_(Splitter):
         assert len(num_samples_per_class) > 0
 
         self._min_samples_per_class = sum(num_samples_per_class.values())
-        super(ClassSplitter_, self).__init__(num_samples_per_class)
+        super(ClassSplitter_, self).__init__(num_samples_per_class, random_state_seed, fixed_random_state)
 
     def get_indices_task(self, task):
         all_class_indices = self._get_class_indices(task)
@@ -148,7 +165,7 @@ class ClassSplitter_(Splitter):
                     num_samples, self._min_samples_per_class))
 
             if self.shuffle:
-                dataset_indices = self.np_random.permutation(num_samples)
+                dataset_indices = self.get_random_state().permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
 
@@ -173,7 +190,7 @@ class ClassSplitter_(Splitter):
                     self._min_samples_per_class))
 
             if self.shuffle:
-                dataset_indices = self.np_random.permutation(num_samples)
+                dataset_indices = self.get_random_state().permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
 
@@ -191,7 +208,8 @@ class WeightedClassSplitter_(Splitter):
     def __init__(self, shuffle=True, min_num_samples=1, max_num_samples=None,
                  weights=None, train_weights=None, test_weights=None,
                  support_weights=None, query_weights=None,
-                 force_equal_per_class=False):
+                 force_equal_per_class=False, random_state_seed=0,
+                 fixed_random_state=False):
         """
         Transforms a dataset into train/test splits for few-shot learning tasks.
         The number of samples per class is proportional to the number of samples
@@ -237,6 +255,14 @@ class WeightedClassSplitter_(Splitter):
             If `True`, then the number of samples per class is equal for each
             class; this is then proportional to the number of samples in the
             class with the minimum number of samples.
+
+        random_state_seed : int, optional
+            seed of the np.RandomState. Defaults to '0'.
+
+        fixed_random_state : bool (default: `False`)
+            If `True`, then the same random state is used for every class split.
+            This ensures that the same task samples are sampled to each split while
+            being in (pseudo) random order.
         """
         self.shuffle = shuffle
         self.force_equal_per_class = force_equal_per_class
@@ -279,7 +305,7 @@ class WeightedClassSplitter_(Splitter):
                 'type `{0}`.'.format(type(min_num_samples)))
 
         self._min_samples_per_class = sum(self.min_num_samples.values())
-        super(WeightedClassSplitter_, self).__init__(weights)
+        super(WeightedClassSplitter_, self).__init__(weights, random_state_seed, fixed_random_state)
 
     def get_indices_task(self, task):
         all_class_indices = self._get_class_indices(task)
@@ -297,7 +323,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(class_indices))
             if self.shuffle:
-                dataset_indices = self.np_random.permutation(num_samples)
+                dataset_indices = self.get_random_state().permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
 
@@ -327,7 +353,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(dataset))
             if self.shuffle:
-                dataset_indices = self.np_random.permutation(num_samples)
+                dataset_indices = self.get_random_state().permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
 
