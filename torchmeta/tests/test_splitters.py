@@ -46,13 +46,14 @@ def test_fixed_random_state_class_splitter():
         def __getitem__(self, index):
             return self._inputs[index]
 
-    splitter = ClassSplitter(shuffle=True, num_train_per_class=5, num_test_per_class=5, fixed_random_state=True)
+    splitter = ClassSplitter(shuffle=True, num_train_per_class=5, num_test_per_class=5)
     task = DemoTask()
 
     all_train_samples = list()
     all_test_samples = list()
-    # split task five times into train and test
-    for i in range(5):
+
+    # split task ten times into train and test
+    for i in range(10):
         tasks_split = splitter(task)
         train_task = tasks_split["train"]
         test_task = tasks_split["test"]
