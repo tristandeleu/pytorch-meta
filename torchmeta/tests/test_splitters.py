@@ -14,11 +14,11 @@ def test_seed_class_splitter():
         dataset_transform=dataset_transform)
     dataset.seed(1)
 
-    expected_train_inputs = np.array([1.08565437,-1.56211897,4.62078213,-2.03870077,0.76977846])
-    expected_train_targets = np.array([-0.00309463,-1.37650356,-0.9346262,-0.1031986,-0.4698061])
+    expected_train_inputs = np.array([-2.03870077,  0.09898378,  3.75388738,  1.08565437, -1.56211897])
+    expected_train_targets = np.array([-0.1031986 , -1.61885041,  0.91773121, -0.00309463, -1.37650356])
 
-    expected_test_inputs = np.array([-2.48340416,3.75388738,-3.15504396,0.09898378,0.32922559])
-    expected_test_targets = np.array([0.73113509,0.91773121,1.86656819,-1.61885041,-1.52508997])
+    expected_test_inputs = np.array([ 4.62078213, -2.48340416,  0.32922559,  0.76977846, -3.15504396])
+    expected_test_targets = np.array([-0.9346262 ,  0.73113509, -1.52508997, -0.4698061 ,  1.86656819])
 
     task = dataset[0]
     train_dataset, test_dataset = task['train'], task['test']
