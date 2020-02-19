@@ -224,9 +224,8 @@ class TripleMNISTClassDataset(ClassDataset):
                             array = bytearray(f.read())
                             dataset[i] = np.asarray(array, dtype=np.uint8)
 
-        zip_folder, _ = os.path.splitext(zip_filename)
-        if os.path.isdir(zip_folder):
-            shutil.rmtree(zip_folder)
+        if os.path.isdir(zip_foldername):
+            shutil.rmtree(zip_foldername)
 
 
 class TripleMNISTDataset(Dataset):
