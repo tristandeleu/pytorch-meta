@@ -21,6 +21,7 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Fewshot-CIFAR100 ([Oreshkin et al., 2018](https://arxiv.org/abs/1805.10123))
     - Caltech-UCSD Birds ([Hilliard et al., 2019](https://arxiv.org/abs/1802.04376), [Wah et al., 2019](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html))
     - Double MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
+    - Triple MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
 
 ## Installation
 You can install Torchmeta either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/). To install `virtualenv`:

@@ -11,18 +11,18 @@ from torchvision.datasets.utils import download_file_from_google_drive
 from torchmeta.datasets.utils import get_asset
 
 
-class DoubleMNIST(CombinationMetaDataset):
+class TripleMNIST(CombinationMetaDataset):
     """
-    The Double MNIST dataset, introduced in [1]. This dataset is based on
+    The Triple MNIST dataset, introduced in [1]. This dataset is based on
     the MNIST dataset [2]. It consists of sampled images from MNIST
     that are put together to create images with multiple digits. It contains
-    100,000 images from 100 different classes (1000 images per class, for the 
-    numbers 00 to 99).
+    1,000,000 images from 1000 different classes (1000 images per class, for 
+    the numbers 000 to 999).
 
     Parameters
     ----------
     root : string
-        Root directory where the dataset folder `doublemnist` exists.
+        Root directory where the dataset folder `triplemnist` exists.
 
     num_classes_per_task : int
         Number of classes per tasks. This corresponds to "N" in "N-way" 
@@ -66,15 +66,15 @@ class DoubleMNIST(CombinationMetaDataset):
 
     download : bool (default: `False`)
         If `True`, downloads the pickle files and processes the dataset in the
-        root directory (under the `doublemnist` folder). If the dataset is
+        root directory (under the `triplemnist` folder). If the dataset is
         already available, this does not download/process the dataset again.
 
     Notes
     -----
     The dataset is downloaded from the Multi-digit MNIST repository
     [1](https://github.com/shaohua0116/MultiDigitMNIST). The dataset contains
-    images (MNIST double digits) from 100 classes, for the numbers 00 to 99.
-    The meta train/validation/test splits are 64/16/20 classes.
+    images (MNIST triple digits) from 1000 classes, for the numbers 000 to 999.
+    The meta train/validation/test splits are 640/160/200 classes.
     The splits are taken from [1].
 
     References
@@ -90,31 +90,31 @@ class DoubleMNIST(CombinationMetaDataset):
                  meta_val=False, meta_test=False, meta_split=None,
                  transform=None, target_transform=None, dataset_transform=None,
                  class_augmentations=None, download=False):
-        dataset = DoubleMNISTClassDataset(root,
+        dataset = TripleMNISTClassDataset(root,
             meta_train=meta_train, meta_val=meta_val,
             meta_test=meta_test, meta_split=meta_split, transform=transform,
             class_augmentations=class_augmentations, download=download)
-        super(DoubleMNIST, self).__init__(dataset, num_classes_per_task,
+        super(TripleMNIST, self).__init__(dataset, num_classes_per_task,
             target_transform=target_transform,
             dataset_transform=dataset_transform)
 
 
-class DoubleMNISTClassDataset(ClassDataset):
-    folder = 'doublemnist'
+class TripleMNISTClassDataset(ClassDataset):
+    folder = 'triplemnist'
     # Google Drive ID from https://github.com/shaohua0116/MultiDigitMNIST
-    gdrive_id = '1MqQCdLt9TVE3joAMw4FwJp_B8F-htrAo'
-    zip_filename = 'double_mnist_seed_123_image_size_64_64.zip'
-    zip_md5 = '6d8b185c0cde155eb39d0e3615ab4f23'
+    gdrive_id = '1xqyW289seXYaDSqD2jaBPMKVAAjPP9ee'
+    zip_filename = 'triple_mnist_seed_123_image_size_84_84.zip'
+    zip_md5 = '9508b047f9fbb834c02bc13ef44245da'
 
     filename = '{0}_data.hdf5'
     filename_labels = '{0}_labels.json'
 
-    image_folder = 'double_mnist_seed_123_image_size_64_64'
+    image_folder = 'triple_mnist_seed_123_image_size_84_84'
 
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, class_augmentations=None,
                  download=False):
-        super(DoubleMNISTClassDataset, self).__init__(meta_train=meta_train,
+        super(TripleMNISTClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
 
@@ -134,7 +134,7 @@ class DoubleMNISTClassDataset(ClassDataset):
             self.download()
 
         if not self._check_integrity():
-            raise RuntimeError('Double MNIST integrity check failed')
+            raise RuntimeError('Triple MNIST integrity check failed')
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
@@ -143,7 +143,7 @@ class DoubleMNISTClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return DoubleMNISTDataset(data, label, transform=transform,
+        return TripleMNISTDataset(data, label, transform=transform,
                                   target_transform=target_transform)
 
     @property
@@ -228,9 +228,9 @@ class DoubleMNISTClassDataset(ClassDataset):
             shutil.rmtree(zip_foldername)
 
 
-class DoubleMNISTDataset(Dataset):
+class TripleMNISTDataset(Dataset):
     def __init__(self, data, label, transform=None, target_transform=None):
-        super(DoubleMNISTDataset, self).__init__(transform=transform,
+        super(TripleMNISTDataset, self).__init__(transform=transform,
             target_transform=target_transform)
         self.data = data
         self.label = label
