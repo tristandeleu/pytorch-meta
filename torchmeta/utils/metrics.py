@@ -84,16 +84,17 @@ def hardness_metric(batch, num_classes):
         # Get the weights by normalizing the features
         weights = F.normalize(train_features, p=2, dim=2)
 
-        # Compute the logits of the test/query examples
+        # Compute and normalize the logits of the test/query examples
         test_logits = backbone(padded_test_inputs.view(-1, 3, 224, 224))
         test_logits = test_logits.view(batch_size, num_test_images, -1)
+        test_logits = F.normalize(test_logits, p=2, dim=2)
 
         # Compute the log probabilities of the test/query examples
         test_logits = torch.bmm(weights, test_logits.transpose(1, 2))
-        test_log_probas = F.cross_entropy(test_logits, test_targets,
-                                          reduction='none')
+        test_log_probas = -F.cross_entropy(test_logits, test_targets,
+                                           reduction='none')
 
         # Compute the log-odds ratios for each image of the test/query set
         log_odds_ratios = torch.log1p(-test_log_probas.exp()) - test_log_probas
 
-    return torch.mean(test_log_probas, dim=1)
+    return torch.mean(log_odds_ratios, dim=1)
