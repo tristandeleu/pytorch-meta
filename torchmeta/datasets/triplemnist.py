@@ -143,7 +143,7 @@ class TripleMNISTClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return TripleMNISTDataset(data, label, transform=transform,
+        return TripleMNISTDataset(index, data, label, transform=transform,
                                   target_transform=target_transform)
 
     @property
@@ -229,9 +229,10 @@ class TripleMNISTClassDataset(ClassDataset):
 
 
 class TripleMNISTDataset(Dataset):
-    def __init__(self, data, label, transform=None, target_transform=None):
-        super(TripleMNISTDataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+    def __init__(self, index, data, label,
+                 transform=None, target_transform=None):
+        super(TripleMNISTDataset, self).__init__(index, transform=transform,
+                                                 target_transform=target_transform)
         self.data = data
         self.label = label
 
