@@ -138,7 +138,7 @@ class CUBClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return CUBDataset(data, label, transform=transform,
+        return CUBDataset(index, data, label, transform=transform,
                           target_transform=target_transform)
 
     @property
@@ -218,9 +218,10 @@ class CUBClassDataset(ClassDataset):
 
 
 class CUBDataset(Dataset):
-    def __init__(self, data, label, transform=None, target_transform=None):
-        super(CUBDataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+    def __init__(self, index, data, label,
+                 transform=None, target_transform=None):
+        super(CUBDataset, self).__init__(index, transform=transform,
+                                         target_transform=target_transform)
         self.data = data
         self.label = label
 

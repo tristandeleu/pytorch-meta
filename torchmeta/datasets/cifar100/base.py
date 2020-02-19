@@ -55,7 +55,7 @@ class CIFAR100ClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return CIFAR100Dataset(data, coarse_label_name, fine_label_name,
+        return CIFAR100Dataset(index, data, coarse_label_name, fine_label_name,
             transform=transform, target_transform=target_transform)
 
     @property
@@ -151,10 +151,10 @@ class CIFAR100ClassDataset(ClassDataset):
 
 
 class CIFAR100Dataset(Dataset):
-    def __init__(self, data, coarse_label_name, fine_label_name,
+    def __init__(self, index, data, coarse_label_name, fine_label_name,
                  transform=None, target_transform=None):
-        super(CIFAR100Dataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+        super(CIFAR100Dataset, self).__init__(index, transform=transform,
+                                              target_transform=target_transform)
         self.data = data
         self.coarse_label_name = coarse_label_name
         self.fine_label_name = fine_label_name
