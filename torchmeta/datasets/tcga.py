@@ -378,10 +378,10 @@ class TCGATask(Task):
                    labels.cat.categories.tolist(), transform=transform,
                    target_transform=target_transform)
 
-    def __init__(self, task_id, data, labels, categories, transform=None,
-                 target_transform=None):
-        super(TCGATask, self).__init__(len(categories), transform=transform,
-            target_transform=target_transform)
+    def __init__(self, task_id, data, labels, categories,
+                 transform=None, target_transform=None):
+        super(TCGATask, self).__init__(task_id, len(categories),
+            transform=transform, target_transform=target_transform)
         self.id = task_id
         self.data = data
         self.labels = labels

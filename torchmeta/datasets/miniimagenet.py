@@ -133,8 +133,8 @@ class MiniImagenetClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return MiniImagenetDataset(data, class_name, transform=transform,
-            target_transform=target_transform)
+        return MiniImagenetDataset(index, data, class_name,
+            transform=transform, target_transform=target_transform)
 
     @property
     def num_classes(self):
@@ -204,9 +204,10 @@ class MiniImagenetClassDataset(ClassDataset):
 
 
 class MiniImagenetDataset(Dataset):
-    def __init__(self, data, class_name, transform=None, target_transform=None):
-        super(MiniImagenetDataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+    def __init__(self, index, data, class_name,
+                 transform=None, target_transform=None):
+        super(MiniImagenetDataset, self).__init__(index, transform=transform,
+                                                  target_transform=target_transform)
         self.data = data
         self.class_name = class_name
 

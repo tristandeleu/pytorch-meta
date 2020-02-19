@@ -151,7 +151,8 @@ class TieredImagenetClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return TieredImagenetDataset(data, general_class_name, specific_class_name,
+        return TieredImagenetDataset(index, data,
+            general_class_name, specific_class_name,
             transform=transform, target_transform=target_transform)
 
     @property
@@ -225,10 +226,10 @@ class TieredImagenetClassDataset(ClassDataset):
 
 
 class TieredImagenetDataset(Dataset):
-    def __init__(self, data, general_class_name, specific_class_name,
+    def __init__(self, index, data, general_class_name, specific_class_name,
                  transform=None, target_transform=None):
-        super(TieredImagenetDataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+        super(TieredImagenetDataset, self).__init__(index, transform=transform,
+                                                    target_transform=target_transform)
         self.data = data
         self.general_class_name = general_class_name
         self.specific_class_name = specific_class_name
