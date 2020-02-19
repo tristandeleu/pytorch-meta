@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://tristandeleu.github.io/pytorch-meta/</loc>
-     <lastmod>2020-01-31</lastmod>
+     <lastmod>2020-02-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://tristandeleu.github.io/pytorch-meta/api_reference/datasets/</loc>
-     <lastmod>2020-01-31</lastmod>
+     <lastmod>2020-02-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://tristandeleu.github.io/pytorch-meta/api_reference/modules/</loc>
-     <lastmod>2020-01-31</lastmod>
+     <lastmod>2020-02-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://tristandeleu.github.io/pytorch-meta/api_reference/toy/</loc>
-     <lastmod>2020-01-31</lastmod>
+     <lastmod>2020-02-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://tristandeleu.github.io/pytorch-meta/api_reference/transforms/</loc>
-     <lastmod>2020-01-31</lastmod>
+     <lastmod>2020-02-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

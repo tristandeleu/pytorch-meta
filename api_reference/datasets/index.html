@@ -83,6 +83,9 @@
     <li class="toctree-l3"><a href="#doublemnist">DoubleMNIST</a></li>
     
 
+    <li class="toctree-l3"><a href="#triplemnist">TripleMNIST</a></li>
+    
+
     <li class="toctree-l3"><a href="#tcga">TCGA</a></li>
     
 
@@ -601,6 +604,72 @@
 <div class="admonition note">
 <p class="admonition-title">Notes</p>
 <p>The dataset is downloaded from the Multi-digit MNIST repository <a href="https://github.com/shaohua0116/MultiDigitMNIST">1</a>. The dataset contains images (MNIST double digits) from 100 classes, for the numbers 00 to 99. The meta train/validation/test splits are 64/16/20 classes. The splits are taken from [1].</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Sun, S. (2019). Multi-digit MNIST for Few-shot Learning. (https://github.com/shaohua0116/MultiDigitMNIST)</li>
+<li><strong>[2]</strong> LeCun, Y., Cortes, C., and Burges, CJ. (2010). MNIST Handwritten Digit Database. (http://yann.lecun.com/exdb/mnist)</li>
+</ul>
+</div>
+<h2 id="triplemnist">TripleMNIST</h2>
+<p>The Triple MNIST dataset, introduced in [1]. This dataset is based on the MNIST dataset [2]. It consists of sampled images from MNIST that are put together to create images with multiple digits. It contains 1,000,000 images from 1000 different classes (1000 images per class, for the numbers 000 to 999).</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">TripleMNIST</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_val</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>triplemnist</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_val</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-validation split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'val', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, <code>meta_val</code> and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>target_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a target, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>torchmeta.transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the pickle files and processes the dataset in the root directory (under the <code>triplemnist</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>The dataset is downloaded from the Multi-digit MNIST repository <a href="https://github.com/shaohua0116/MultiDigitMNIST">1</a>. The dataset contains images (MNIST triple digits) from 1000 classes, for the numbers 000 to 999. The meta train/validation/test splits are 640/160/200 classes. The splits are taken from [1].</p>
 </div>
 <div class="admonition attention">
 <p class="admonition-title">References</p>
