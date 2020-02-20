@@ -34,7 +34,7 @@ def test_seed_class_splitter():
         assert np.isclose(test_input, expected_test_inputs[i])
         assert np.isclose(test_target, expected_test_targets[i])
 
-def test_fixed_random_state_class_splitter():
+def test_class_splitter_for_fold_overlaps():
     class DemoTask(Task):
         def __init__(self):
             super(DemoTask, self).__init__(index=0, num_classes=None)
