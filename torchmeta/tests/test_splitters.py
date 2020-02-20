@@ -37,7 +37,7 @@ def test_seed_class_splitter():
 def test_fixed_random_state_class_splitter():
     class DemoTask(Task):
         def __init__(self):
-            super(DemoTask, self).__init__(None)
+            super(DemoTask, self).__init__(index=0, num_classes=None)
             self._inputs = np.arange(10)
 
         def __len__(self):
