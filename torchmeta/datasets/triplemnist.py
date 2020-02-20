@@ -7,19 +7,22 @@ import glob
 import h5py
 
 from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchvision.datasets.utils import download_url
+from torchvision.datasets.utils import download_file_from_google_drive
 from torchmeta.datasets.utils import get_asset
 
 
-class CUB(CombinationMetaDataset):
+class TripleMNIST(CombinationMetaDataset):
     """
-    The Caltech-UCSD Birds dataset, introduced in [1]. This dataset is based on
-    images from 200 species of birds from the Caltech-UCSD Birds dataset [2].
+    The Triple MNIST dataset, introduced in [1]. This dataset is based on
+    the MNIST dataset [2]. It consists of sampled images from MNIST
+    that are put together to create images with multiple digits. It contains
+    1,000,000 images from 1000 different classes (1000 images per class, for 
+    the numbers 000 to 999).
 
     Parameters
     ----------
     root : string
-        Root directory where the dataset folder `cub` exists.
+        Root directory where the dataset folder `triplemnist` exists.
 
     num_classes_per_task : int
         Number of classes per tasks. This corresponds to "N" in "N-way" 
@@ -32,13 +35,13 @@ class CUB(CombinationMetaDataset):
 
     meta_val : bool (default: `False`)
         Use the meta-validation split of the dataset. If set to `True`, then the 
-        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one 
-        of these three arguments must be set to `True`.
+        arguments `meta_train` and `meta_test` must be set to `False`. Exactly
+        one of these three arguments must be set to `True`.
 
     meta_test : bool (default: `False`)
         Use the meta-test split of the dataset. If set to `True`, then the 
-        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one 
-        of these three arguments must be set to `True`.
+        arguments `meta_train` and `meta_val` must be set to `False`. Exactly
+        one of these three arguments must be set to `True`.
 
     meta_split : string in {'train', 'val', 'test'}, optional
         Name of the split to use. This overrides the arguments `meta_train`, 
@@ -57,59 +60,61 @@ class CUB(CombinationMetaDataset):
         transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
     class_augmentations : list of callable, optional
-        A list of functions that augment the dataset with new classes. These classes 
-        are transformations of existing classes. E.g.
+        A list of functions that augment the dataset with new classes. These
+        classes are transformations of existing classes. E.g.
         `torchmeta.transforms.HorizontalFlip()`.
 
     download : bool (default: `False`)
-        If `True`, downloads the pickle files and processes the dataset in the root 
-        directory (under the `cub` folder). If the dataset is already 
-        available, this does not download/process the dataset again.
+        If `True`, downloads the pickle files and processes the dataset in the
+        root directory (under the `triplemnist` folder). If the dataset is
+        already available, this does not download/process the dataset again.
 
     Notes
     -----
-    The dataset is downloaded from [2]. The dataset contains images from 200
-    classes. The meta train/validation/test splits are over 100/50/50 classes.
-    The splits are taken from [3] ([code](https://github.com/wyharveychen/CloserLookFewShot)
-    for reproducibility).
+    The dataset is downloaded from the Multi-digit MNIST repository
+    [1](https://github.com/shaohua0116/MultiDigitMNIST). The dataset contains
+    images (MNIST triple digits) from 1000 classes, for the numbers 000 to 999.
+    The meta train/validation/test splits are 640/160/200 classes.
+    The splits are taken from [1].
 
     References
     ----------
-    .. [1] Hilliard, N., Phillips, L., Howland, S., Yankov, A., Corley, C. D.,
-           Hodas, N. O. (2018). Few-Shot Learning with Metric-Agnostic Conditional
-           Embeddings. (https://arxiv.org/abs/1802.04376)
-    .. [2] Wah, C., Branson, S., Welinder, P., Perona, P., Belongie, S. (2011).
-           The Caltech-UCSD Birds-200-2011 Dataset
-           (http://www.vision.caltech.edu/visipedia/CUB-200-2011.html)
-    .. [3] Chen, W., Liu, Y. and Kira, Z. and Wang, Y. and  Huang, J. (2019).
-           A Closer Look at Few-shot Classification. International Conference on
-           Learning Representations (https://openreview.net/forum?id=HkxLXnAcFQ)
+    .. [1] Sun, S. (2019). Multi-digit MNIST for Few-shot Learning.
+    (https://github.com/shaohua0116/MultiDigitMNIST)
+
+    .. [2] LeCun, Y., Cortes, C., and Burges, CJ. (2010). MNIST Handwritten
+    Digit Database. (http://yann.lecun.com/exdb/mnist)
 
     """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, meta_split=None,
                  transform=None, target_transform=None, dataset_transform=None,
                  class_augmentations=None, download=False):
-        dataset = CUBClassDataset(root, meta_train=meta_train, meta_val=meta_val,
+        dataset = TripleMNISTClassDataset(root,
+            meta_train=meta_train, meta_val=meta_val,
             meta_test=meta_test, meta_split=meta_split, transform=transform,
             class_augmentations=class_augmentations, download=download)
-        super(CUB, self).__init__(dataset, num_classes_per_task,
-            target_transform=target_transform, dataset_transform=dataset_transform)
+        super(TripleMNIST, self).__init__(dataset, num_classes_per_task,
+            target_transform=target_transform,
+            dataset_transform=dataset_transform)
 
 
-class CUBClassDataset(ClassDataset):
-    folder = 'cub'
-    download_url = 'http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz'
-    tgz_md5 = '97eceeb196236b17998738112f37df78'
-    image_folder = 'CUB_200_2011/images'
+class TripleMNISTClassDataset(ClassDataset):
+    folder = 'triplemnist'
+    # Google Drive ID from https://github.com/shaohua0116/MultiDigitMNIST
+    gdrive_id = '1xqyW289seXYaDSqD2jaBPMKVAAjPP9ee'
+    zip_filename = 'triple_mnist_seed_123_image_size_84_84.zip'
+    zip_md5 = '9508b047f9fbb834c02bc13ef44245da'
 
     filename = '{0}_data.hdf5'
     filename_labels = '{0}_labels.json'
 
+    image_folder = 'triple_mnist_seed_123_image_size_84_84'
+
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, class_augmentations=None,
                  download=False):
-        super(CUBClassDataset, self).__init__(meta_train=meta_train,
+        super(TripleMNISTClassDataset, self).__init__(meta_train=meta_train,
             meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
             class_augmentations=class_augmentations)
 
@@ -129,7 +134,7 @@ class CUBClassDataset(ClassDataset):
             self.download()
 
         if not self._check_integrity():
-            raise RuntimeError('CUB integrity check failed')
+            raise RuntimeError('Triple MNIST integrity check failed')
         self._num_classes = len(self.labels)
 
     def __getitem__(self, index):
@@ -138,8 +143,8 @@ class CUBClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return CUBDataset(index, data, label, transform=transform,
-                          target_transform=target_transform)
+        return TripleMNISTDataset(index, data, label, transform=transform,
+                                  target_transform=target_transform)
 
     @property
     def num_classes(self):
@@ -170,7 +175,7 @@ class CUBClassDataset(ClassDataset):
             self._data = None
 
     def download(self):
-        import tarfile
+        import zipfile
         import shutil
         import glob
         from tqdm import tqdm
@@ -178,13 +183,19 @@ class CUBClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        filename = os.path.basename(self.download_url)
-        download_url(self.download_url, self.root, filename, self.tgz_md5)
+        zip_filename = os.path.join(self.root, self.zip_filename)
+        if not os.path.isfile(zip_filename):
+            download_file_from_google_drive(self.gdrive_id, self.root,
+                self.zip_filename, md5=self.zip_md5)
 
-        tgz_filename = os.path.join(self.root, filename)
-        with tarfile.open(tgz_filename, 'r') as f:
-            f.extractall(self.root)
-        image_folder = os.path.join(self.root, self.image_folder)
+        zip_foldername = os.path.join(self.root, self.image_folder)
+        if not os.path.isdir(zip_foldername):
+            with zipfile.ZipFile(zip_filename, 'r') as f:
+                for member in tqdm(f.infolist(), desc='Extracting '):
+                    try:
+                        f.extract(member, self.root)
+                    except zipfile.BadZipFile:
+                        print('Error: Zip file is corrupted')
 
         for split in ['train', 'val', 'test']:
             filename = os.path.join(self.root, self.filename.format(split))
@@ -192,36 +203,36 @@ class CUBClassDataset(ClassDataset):
                 continue
 
             labels = get_asset(self.folder, '{0}.json'.format(split))
-            labels_filename = os.path.join(self.root, self.filename_labels.format(split))
+            labels_filename = os.path.join(self.root,
+                                           self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:
                 json.dump(labels, f)
+
+            image_folder = os.path.join(zip_foldername, split)
 
             with h5py.File(filename, 'w') as f:
                 group = f.create_group('datasets')
                 dtype = h5py.special_dtype(vlen=np.uint8)
                 for i, label in enumerate(tqdm(labels, desc=filename)):
-                    images = glob.glob(os.path.join(image_folder, label, '*.jpg'))
+                    images = glob.glob(os.path.join(image_folder, label,
+                                                    '*.png'))
                     images.sort()
-                    dataset = group.create_dataset(label, (len(images),), dtype=dtype)
+                    dataset = group.create_dataset(label, (len(images),),
+                                                   dtype=dtype)
                     for i, image in enumerate(images):
                         with open(image, 'rb') as f:
                             array = bytearray(f.read())
                             dataset[i] = np.asarray(array, dtype=np.uint8)
 
-        tar_folder, _ = os.path.splitext(tgz_filename)
-        if os.path.isdir(tar_folder):
-            shutil.rmtree(tar_folder)
-
-        attributes_filename = os.path.join(self.root, 'attributes.txt')
-        if os.path.isfile(attributes_filename):
-            os.remove(attributes_filename)
+        if os.path.isdir(zip_foldername):
+            shutil.rmtree(zip_foldername)
 
 
-class CUBDataset(Dataset):
+class TripleMNISTDataset(Dataset):
     def __init__(self, index, data, label,
                  transform=None, target_transform=None):
-        super(CUBDataset, self).__init__(index, transform=transform,
-                                         target_transform=target_transform)
+        super(TripleMNISTDataset, self).__init__(index, transform=transform,
+                                                 target_transform=target_transform)
         self.data = data
         self.label = label
 

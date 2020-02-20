@@ -152,8 +152,8 @@ class OmniglotClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return OmniglotDataset(data, character_name, transform=transform,
-            target_transform=target_transform)
+        return OmniglotDataset(index, data, character_name,
+            transform=transform, target_transform=target_transform)
 
     @property
     def num_classes(self):
@@ -242,9 +242,10 @@ class OmniglotClassDataset(ClassDataset):
 
 
 class OmniglotDataset(Dataset):
-    def __init__(self, data, character_name, transform=None, target_transform=None):
-        super(OmniglotDataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+    def __init__(self, index, data, character_name,
+                 transform=None, target_transform=None):
+        super(OmniglotDataset, self).__init__(index, transform=transform,
+                                              target_transform=target_transform)
         self.data = data
         self.character_name = character_name
 

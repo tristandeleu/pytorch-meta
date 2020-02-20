@@ -143,7 +143,7 @@ class DoubleMNISTClassDataset(ClassDataset):
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
 
-        return DoubleMNISTDataset(data, label, transform=transform,
+        return DoubleMNISTDataset(index, data, label, transform=transform,
                                   target_transform=target_transform)
 
     @property
@@ -188,8 +188,14 @@ class DoubleMNISTClassDataset(ClassDataset):
             download_file_from_google_drive(self.gdrive_id, self.root,
                 self.zip_filename, md5=self.zip_md5)
 
+        zip_foldername = os.path.join(self.root, self.image_folder)
+        if not os.path.isdir(zip_foldername):
             with zipfile.ZipFile(zip_filename, 'r') as f:
-                f.extractall(self.root)
+                for member in tqdm(f.infolist(), desc='Extracting '):
+                    try:
+                        f.extract(member, self.root)
+                    except zipfile.BadZipFile:
+                        print('Error: Zip file is corrupted')
 
         for split in ['train', 'val', 'test']:
             filename = os.path.join(self.root, self.filename.format(split))
@@ -202,7 +208,7 @@ class DoubleMNISTClassDataset(ClassDataset):
             with open(labels_filename, 'w') as f:
                 json.dump(labels, f)
 
-            image_folder = os.path.join(self.root, self.image_folder, split)
+            image_folder = os.path.join(zip_foldername, split)
 
             with h5py.File(filename, 'w') as f:
                 group = f.create_group('datasets')
@@ -218,15 +224,15 @@ class DoubleMNISTClassDataset(ClassDataset):
                             array = bytearray(f.read())
                             dataset[i] = np.asarray(array, dtype=np.uint8)
 
-        zip_folder, _ = os.path.splitext(zip_filename)
-        if os.path.isdir(zip_folder):
-            shutil.rmtree(zip_folder)
+        if os.path.isdir(zip_foldername):
+            shutil.rmtree(zip_foldername)
 
 
 class DoubleMNISTDataset(Dataset):
-    def __init__(self, data, label, transform=None, target_transform=None):
-        super(DoubleMNISTDataset, self).__init__(transform=transform,
-            target_transform=target_transform)
+    def __init__(self, index, data, label,
+                 transform=None, target_transform=None):
+        super(DoubleMNISTDataset, self).__init__(index, transform=transform,
+                                                 target_transform=target_transform)
         self.data = data
         self.label = label
 

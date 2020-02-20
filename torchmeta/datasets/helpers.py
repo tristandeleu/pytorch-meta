@@ -1,6 +1,6 @@
 import warnings
 
-from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS, CUB, DoubleMNIST
+from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS, CUB, DoubleMNIST, TripleMNIST
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -10,7 +10,8 @@ __all__ = [
     'tieredimagenet',
     'cifar_fs',
     'cub',
-    'doublemnist'
+    'doublemnist',
+    'triplemnist'
 ]
 
 
@@ -292,5 +293,45 @@ def doublemnist(folder, shots, ways, shuffle=True, test_shots=None,
     `datasets.doublemnist.DoubleMNIST` : Meta-dataset for the Double MNIST dataset.
     """
     return helper_with_default(DoubleMNIST, folder, shots, ways,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, defaults={}, **kwargs)
+
+
+def triplemnist(folder, shots, ways, shuffle=True, test_shots=None,
+                seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Triple MNIST dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `triplemnist` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds 
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way` 
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the 
+        number of test examples is equal to the number of training examples per 
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `TripleMNIST` class.
+
+    See also
+    --------
+    `datasets.triplemnist.TripleMNIST` : Meta-dataset for the Triple MNIST dataset.
+    """
+    return helper_with_default(TripleMNIST, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults={}, **kwargs)

@@ -373,6 +373,59 @@ torchmeta.datasets.DoubleMNIST(root, num_classes_per_task=None,
     - **[1]** Sun, S. (2019). Multi-digit MNIST for Few-shot Learning. (https://github.com/shaohua0116/MultiDigitMNIST)
     - **[2]** LeCun, Y., Cortes, C., and Burges, CJ. (2010). MNIST Handwritten Digit Database. (http://yann.lecun.com/exdb/mnist)
 
+## TripleMNIST
+
+The Triple MNIST dataset, introduced in [1]. This dataset is based on the MNIST dataset [2]. It consists of sampled images from MNIST that are put together to create images with multiple digits. It contains 1,000,000 images from 1000 different classes (1000 images per class, for the numbers 000 to 999).
+
+```python
+torchmeta.datasets.TripleMNIST(root, num_classes_per_task=None,
+    meta_train=False, meta_val=False, meta_test=False, meta_split=None,
+    transform=None, target_transform=None, dataset_transform=None,
+    class_augmentations=None, download=False)
+```
+
+**Parameters**
+
+ - **root**: *string*
+ Root directory where the dataset folder `triplemnist` exists.
+
+ - **num_classes_per_task**: *int*
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.
+
+ - **meta_train**: *bool (default: `False`)*
+ Use the meta-train split of the dataset. If set to `True`, then the arguments `meta_val` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_val**: *bool (default: `False`)*
+ Use the meta-validation split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_test**: *bool (default: `False`)*
+ Use the meta-test split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_val` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_split**: *string in {'train', 'val', 'test'}, optional*
+ Name of the split to use. This overrides the arguments `meta_train`, `meta_val` and `meta_test` if all three are set to `False`.
+
+ - **transform**: *callable, optional*
+ A function/transform that takes a `PIL` image, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **target_transform**: *callable, optional*
+ A function/transform that takes a target, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **dataset_transform**: *callable, optional*
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
+
+ - **class_augmentations**: *list of callable, optional*
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. `torchmeta.transforms.HorizontalFlip()`.
+
+ - **download**: *bool (default: `False`)*
+ If `True`, downloads the pickle files and processes the dataset in the root directory (under the `triplemnist` folder). If the dataset is already available, this does not download/process the dataset again.
+
+!!! note "Notes"
+    The dataset is downloaded from the Multi-digit MNIST repository [1](https://github.com/shaohua0116/MultiDigitMNIST). The dataset contains images (MNIST triple digits) from 1000 classes, for the numbers 000 to 999. The meta train/validation/test splits are 640/160/200 classes. The splits are taken from [1].
+
+!!! attention "References"
+    - **[1]** Sun, S. (2019). Multi-digit MNIST for Few-shot Learning. (https://github.com/shaohua0116/MultiDigitMNIST)
+    - **[2]** LeCun, Y., Cortes, C., and Burges, CJ. (2010). MNIST Handwritten Digit Database. (http://yann.lecun.com/exdb/mnist)
+
 ## TCGA
 
 The TCGA dataset [1]. A dataset of classification tasks over the values of an attribute, based on the gene expression data from patients diagnosed with specific types of cancer. This dataset is based on data from the Cancer Genome Atlas Program from the National Cancer Institute.

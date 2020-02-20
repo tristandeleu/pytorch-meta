@@ -4,9 +4,10 @@ from tqdm import tqdm
 
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
+from torchmeta.utils.prototype import get_prototypes, prototypical_loss
 
 from model import PrototypicalNetwork
-from utils import get_prototypes, prototypical_loss, get_accuracy
+from utils import get_accuracy
 
 def train(args):
     dataset = omniglot(args.folder, shots=args.num_shots, ways=args.num_ways,
