@@ -64,9 +64,6 @@ def test_fixed_random_state_class_splitter():
         # no overlap between train and test splits at single split
         assert len(train_samples.intersection(test_samples)) == 0
 
-        #print("train split: " + str([train_task[i] for i in range(len(train_task))]))
-        #print("test split:  " + str([test_task[i] for i in range(len(train_task))]))
-
         all_train_samples.append(train_samples)
         all_train_samples.append(train_samples)
 
