@@ -11,6 +11,7 @@ __all__ = ['Splitter', 'ClassSplitter', 'WeightedClassSplitter']
 class Splitter(object):
     def __init__(self, splits, random_state_seed):
         self.splits = splits
+        self.random_state_seed = random_state_seed
         self.seed(random_state_seed)
 
     def seed(self, seed):
@@ -152,7 +153,7 @@ class ClassSplitter_(Splitter):
                     num_samples, self._min_samples_per_class))
 
             if self.shuffle:
-                seed = hash(task) % (2 ** 32 - 1)  # Seed must be between 0 and 2**32 - 1
+                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -180,7 +181,7 @@ class ClassSplitter_(Splitter):
                     self._min_samples_per_class))
 
             if self.shuffle:
-                seed = hash(task) % (2 ** 32 - 1)  # Seed must be between 0 and 2**32 - 1
+                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -310,7 +311,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(class_indices))
             if self.shuffle:
-                seed = hash(task) % (2 ** 32 - 1)  # Seed must be between 0 and 2**32 - 1
+                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -343,7 +344,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(dataset))
             if self.shuffle:
-                seed = hash(task) % (2 ** 32 - 1)  # Seed must be between 0 and 2**32 - 1
+                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
