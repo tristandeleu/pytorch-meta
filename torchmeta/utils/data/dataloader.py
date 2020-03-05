@@ -8,20 +8,23 @@ from torchmeta.utils.data.dataset import CombinationMetaDataset
 from torchmeta.utils.data.sampler import (CombinationSequentialSampler,
                                           CombinationRandomSampler)
 
-def batch_meta_collate(collate_fn):
-    def collate_task(task):
+class BatchMetaCollate(object):
+
+    def __init__(self, collate_fn):
+        super().__init__()
+        self.collate_fn = collate_fn
+
+    def collate_task(self, task):
         if isinstance(task, TorchDataset):
-            return collate_fn([task[idx] for idx in range(len(task))])
+            return self.collate_fn([task[idx] for idx in range(len(task))])
         elif isinstance(task, OrderedDict):
-            return OrderedDict([(key, collate_task(subtask))
+            return OrderedDict([(key, self.collate_task(subtask))
                 for (key, subtask) in task.items()])
         else:
             raise NotImplementedError()
 
-    def _collate_fn(batch):
-        return collate_fn([collate_task(task) for task in batch])
-
-    return _collate_fn
+    def _collate_fn(self, batch):
+        return self.collate_fn([self.collate_task(task) for task in batch])
 
 def no_collate(batch):
     return batch
@@ -51,7 +54,7 @@ class MetaDataLoader(DataLoader):
 class BatchMetaDataLoader(MetaDataLoader):
     def __init__(self, dataset, batch_size=1, shuffle=True, sampler=None, num_workers=0,
                  pin_memory=False, drop_last=False, timeout=0, worker_init_fn=None):
-        collate_fn = batch_meta_collate(default_collate)
+        collate_fn = BatchMetaCollate(default_collate)._collate_fn
 
         super(BatchMetaDataLoader, self).__init__(dataset,
             batch_size=batch_size, shuffle=shuffle, sampler=sampler,
