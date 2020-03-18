@@ -11,8 +11,8 @@ import numpy as np
 
 class Pascal5i(CombinationMetaDataset):
     """
-    The Omniglot dataset [1]. A dataset of 1623 handwritten characters from
-    50 different alphabets.
+    Pascal5i dataset [1]. A dataset for few-shot object segmentation supporting 4 folds
+    each fold has 15 training classes and 5 testing classes.
 
     Parameters
     ----------
@@ -28,32 +28,17 @@ class Pascal5i(CombinationMetaDataset):
         arguments `meta_val` and `meta_test` must be set to `False`. Exactly one
         of these three arguments must be set to `True`.
 
-    meta_val : bool (default: `False`)
-        Use the meta-validation split of the dataset. If set to `True`, then the
-        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one
-        of these three arguments must be set to `True`.
-
     meta_test : bool (default: `False`)
         Use the meta-test split of the dataset. If set to `True`, then the
         arguments `meta_train` and `meta_val` must be set to `False`. Exactly one
         of these three arguments must be set to `True`.
 
-    meta_split : string in {'train', 'val', 'test'}, optional
+    meta_split : string in {'train', 'test'}, optional
         Name of the split to use. This overrides the arguments `meta_train`,
-        `meta_val` and `meta_test` if all three are set to `False`.
-
-    use_vinyals_split : bool (default: `True`)
-        If set to `True`, the dataset uses the splits defined in [3]. If `False`,
-        then the meta-train split corresponds to `images_background`, and the
-        meta-test split corresponds to `images_evaluation` (raises an error when
-        calling the meta-validation split).
+        and `meta_test` if all three are set to `False`.
 
     transform : callable, optional
         A function/transform that takes a `PIL` image, and returns a transformed
-        version. See also `torchvision.transforms`.
-
-    target_transform : callable, optional
-        A function/transform that takes a target, and returns a transformed
         version. See also `torchvision.transforms`.
 
     dataset_transform : callable, optional
@@ -70,26 +55,17 @@ class Pascal5i(CombinationMetaDataset):
         directory (under the `omniglot` folder). If the dataset is already
         available, this does not download/process the dataset again.
 
+    fold : int (default: 0)
+        Fold number ranges between 0-3 that controls training(15) and testing(5) classes.
+
     Notes
     -----
-    The dataset is downloaded from the original [Omniglot repository]
-    (https://github.com/brendenlake/omniglot). The meta train/validation/test
-    splits used in [3] are taken from [this repository]
-    (https://github.com/jakesnell/prototypical-networks). These splits are
-    over 1028/172/423 classes (characters).
+    Currently Only 1-way is supported
 
     References
     ----------
-    .. [1] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2015). Human-level
-           concept learning through probabilistic program induction. Science, 350(6266),
-           1332-1338 (http://www.sciencemag.org/content/350/6266/1332.short)
-
-    .. [2] Lake, B. M., Salakhutdinov, R., and Tenenbaum, J. B. (2019). The Omniglot
-           Challenge: A 3-Year Progress Report (https://arxiv.org/abs/1902.03477)
-
-    .. [3] Vinyals, O., Blundell, C., Lillicrap, T. and Wierstra, D. (2016).
-           Matching Networks for One Shot Learning. In Advances in Neural
-           Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
+    .. [1] Shaban, Amirreza, et al. "One-shot learning for semantic segmentation."
+            arXiv preprint arXiv:1709.03410 (2017).
     """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_test=False, meta_split=None,
@@ -154,8 +130,9 @@ class Pascal5iClassDataset(ClassDataset):
         data, masks = self.data[0][class_name], self.data[1][class_name]
         transform = self.get_transform(index, self.transform)
         target_transform = self.get_target_transform(index)
+        class_id = self.read_labels().index(class_name)
 
-        return PascalDataset((data, masks), class_name, transform=transform,
+        return PascalDataset((data, masks), class_id, transform=transform,
             target_transform=target_transform)
 
     @property
@@ -253,11 +230,11 @@ class Pascal5iClassDataset(ClassDataset):
                     f.extractall(self.root)
 
 class PascalDataset(Dataset):
-    def __init__(self, data, class_name, transform=None, target_transform=None):
+    def __init__(self, data, class_id, transform=None, target_transform=None):
         super(PascalDataset, self).__init__(transform=transform,
             target_transform=target_transform)
         self.data, self.masks = data
-        self.class_name = class_name
+        self.class_id = class_id
 
     def __len__(self):
         return len(self.data)
@@ -265,12 +242,9 @@ class PascalDataset(Dataset):
     def __getitem__(self, index):
         image = Image.open(self.data[index])
         mask = Image.open(self.masks[index])
-        target = self.class_name
+        target = self.class_id
 
         if self.transform is not None:
             image, mask = self.transform(image, mask)
-
-        if self.target_transform is not None:
-            target = self.target_transform(target)
 
         return (image, mask, target)

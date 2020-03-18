@@ -21,6 +21,8 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Fewshot-CIFAR100 ([Oreshkin et al., 2018](https://arxiv.org/abs/1805.10123))
     - Caltech-UCSD Birds ([Hilliard et al., 2019](https://arxiv.org/abs/1802.04376), [Wah et al., 2019](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html))
     - Double MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
+  - **Few-shot Segmentation** (semantic segmentation):
+    - Pascal5i 1-way Setup
 
 ## Installation
 You can install Torchmeta either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/). To install `virtualenv`:
@@ -68,6 +70,24 @@ for batch in dataloader:
     test_inputs, test_targets = batch["test"]
     print('Test inputs shape: {0}'.format(test_inputs.shape))      # (16, 75, 1, 28, 28)
     print('Test targets shape: {0}'.format(test_targets.shape))    # (16, 75)
+```
+
+#### Minimal example for Pascal5i
+```python
+from torchmeta.datasets.helpers import pascal5i
+from torchmeta.utils.data import BatchMetaDataLoader
+
+dataset = pascal5i("data", ways=1, shots=1, test_shots=2, meta_train=True, download=True, fold=0)
+dataloader = BatchMetaDataLoader(dataset, batch_size=16, num_workers=0)
+
+for batch in dataloader:
+    train_inputs, train_masks, train_targets = batch["train"]
+    print('Train inputs shape: {0}'.format(train_inputs.shape))    # (Batch, 1, 1, 500, 500)
+    print('Train targets shape: {0}'.format(train_targets.shape))  # (Batch,)
+
+    test_inputs, test_masks, test_targets = batch["test"]
+    print('Test inputs shape: {0}'.format(test_inputs.shape))      # (Batch, 1, 1, 500, 500)
+    print('Test targets shape: {0}'.format(test_targets.shape))    # (Batch,)
 ```
 
 #### Advanced example

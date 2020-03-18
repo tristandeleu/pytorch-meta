@@ -39,7 +39,7 @@ def helper_with_default(klass, folder, shots, ways, shuffle=True,
 
 def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
              seed=None, **kwargs):
-    """Helper function to create a meta-dataset for the Omniglot dataset.
+    """Helper function to create a meta-dataset for the PASCAL-VOC dataset.
 
     Parameters
     ----------
@@ -68,9 +68,6 @@ def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
     kwargs
         Additional arguments passed to the `Omniglot` class.
 
-    See also
-    --------
-    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
     """
     defaults = {
         'transform': SegmentationPairTransform(500),
