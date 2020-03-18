@@ -1,3 +1,11 @@
+"""
+;==========================================
+; Title: Pascal-5i Dataset for Few-shot Object Segmentation
+; Author: Mennatullah Siam
+; Company: Huawei Technologies
+; Date:   18 March 2020
+;==========================================
+"""
 import os
 import json
 import glob
@@ -13,6 +21,7 @@ class Pascal5i(CombinationMetaDataset):
     """
     Pascal5i dataset [1]. A dataset for few-shot object segmentation supporting 4 folds
     each fold has 15 training classes and 5 testing classes.
+    Using Preprocessed Masks from [2]
 
     Parameters
     ----------
@@ -66,6 +75,9 @@ class Pascal5i(CombinationMetaDataset):
     ----------
     .. [1] Shaban, Amirreza, et al. "One-shot learning for semantic segmentation."
             arXiv preprint arXiv:1709.03410 (2017).
+       [2] Zhang, Chi, et al. "Canet: Class-agnostic segmentation networks with
+            iterative refinement and attentive few-shot learning."
+            Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2019.
     """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_test=False, meta_split=None,
