@@ -73,24 +73,6 @@ for batch in dataloader:
     print('Test targets shape: {0}'.format(test_targets.shape))    # (16, 75)
 ```
 
-#### Minimal example for Pascal5i
-```python
-from torchmeta.datasets.helpers import pascal5i
-from torchmeta.utils.data import BatchMetaDataLoader
-
-dataset = pascal5i("data", ways=1, shots=1, test_shots=2, meta_train=True, download=True, fold=0)
-dataloader = BatchMetaDataLoader(dataset, batch_size=16, num_workers=0)
-
-for batch in dataloader:
-    train_inputs, train_masks, train_targets = batch["train"]
-    print('Train inputs shape: {0}'.format(train_inputs.shape))    # (Batch, 1, 1, 500, 500)
-    print('Train targets shape: {0}'.format(train_targets.shape))  # (Batch,)
-
-    test_inputs, test_masks, test_targets = batch["test"]
-    print('Test inputs shape: {0}'.format(test_inputs.shape))      # (Batch, 1, 1, 500, 500)
-    print('Test targets shape: {0}'.format(test_targets.shape))    # (Batch,)
-```
-
 #### Advanced example
 Helper functions are only available for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable `dataset` defined above is equivalent to the following
 ```python
