@@ -13,6 +13,7 @@ api-reference:
         - DoubleMNIST
         - TripleMNIST
         - TCGA
+        - Pascal5i
 
   - docs/api_reference/modules.md:
     - name: Modules

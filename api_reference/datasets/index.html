@@ -89,6 +89,9 @@
     <li class="toctree-l3"><a href="#tcga">TCGA</a></li>
     
 
+    <li class="toctree-l3"><a href="#pascal5i">Pascal5i</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -745,6 +748,67 @@
 <p class="admonition-title">References</p>
 <ul>
 <li><strong>[1]</strong> Samiei, M., Wurfl, T., Deleu, T., Weiss, M., Dutil, F., Fevens, T., Boucher, G., Lemieux, S., and Cohen, J. P. (2019). The TCGA Meta-Dataset Clinical Benchmark. (https://arxiv.org/abs/1910.08636)</li>
+</ul>
+</div>
+<h2 id="pascal5i">Pascal5i</h2>
+<p>Pascal5i dataset [1]. A dataset for few-shot object segmentation supporting 4 folds each fold has 15 training classes and 5 testing classes. Using Preprocessed Masks from [2]</p>
+<div class="highlight"><pre><span></span><span class="n">torchmeta</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Pascal5i</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">num_classes_per_task</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">meta_train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">meta_test</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meta_split</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">dataset_transform</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">class_augmentations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong>root</strong>: <em>string</em><br />
+ Root directory where the dataset folder <code>omniglot</code> exists.</p>
+</li>
+<li>
+<p><strong>num_classes_per_task</strong>: <em>int</em><br />
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.</p>
+</li>
+<li>
+<p><strong>meta_train</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-train split of the dataset. If set to <code>True</code>, then the arguments <code>meta_val</code> and <code>meta_test</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_test</strong>: <em>bool (default: <code>False</code>)</em><br />
+ Use the meta-test split of the dataset. If set to <code>True</code>, then the arguments <code>meta_train</code> and <code>meta_val</code> must be set to <code>False</code>. Exactly one of these three arguments must be set to <code>True</code>.</p>
+</li>
+<li>
+<p><strong>meta_split</strong>: <em>string in {'train', 'test'}, optional</em><br />
+ Name of the split to use. This overrides the arguments <code>meta_train</code>, and <code>meta_test</code> if all three are set to <code>False</code>.</p>
+</li>
+<li>
+<p><strong>transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a <code>PIL</code> image, and returns a transformed version. See also <code>torchvision.transforms</code>.</p>
+</li>
+<li>
+<p><strong>dataset_transform</strong>: <em>callable, optional</em><br />
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. <code>torchmeta.transforms.ClassSplitter()</code>.</p>
+</li>
+<li>
+<p><strong>class_augmentations</strong>: <em>list of callable, optional</em><br />
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. <code>torchmeta.transforms.HorizontalFlip()</code>.</p>
+</li>
+<li>
+<p><strong>download</strong>: <em>bool (default: <code>False</code>)</em><br />
+ If <code>True</code>, downloads the zip files and processes the dataset in the root directory (under the <code>omniglot</code> folder). If the dataset is already available, this does not download/process the dataset again.</p>
+</li>
+<li>
+<p><strong>fold</strong>: <em>int (default: 0)</em><br />
+ Fold number ranges between 0-3 that controls training(15) and testing(5) classes.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Notes</p>
+<p>Currently Only 1-way is supported</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">References</p>
+<ul>
+<li><strong>[1]</strong> Shaban, Amirreza, et al. "One-shot learning for semantic segmentation." arXiv preprint arXiv:1709.03410 (2017).</li>
+<li><strong>[2]</strong> Zhang, Chi, et al. "Canet: Class-agnostic segmentation networks with iterative refinement and attentive few-shot learning." Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2019.</li>
 </ul>
 </div>
               
