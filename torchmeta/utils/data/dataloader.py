@@ -23,7 +23,7 @@ class BatchMetaCollate(object):
         else:
             raise NotImplementedError()
 
-    def _collate_fn(self, batch):
+    def __call__(self, batch):
         return self.collate_fn([self.collate_task(task) for task in batch])
 
 def no_collate(batch):
@@ -54,7 +54,7 @@ class MetaDataLoader(DataLoader):
 class BatchMetaDataLoader(MetaDataLoader):
     def __init__(self, dataset, batch_size=1, shuffle=True, sampler=None, num_workers=0,
                  pin_memory=False, drop_last=False, timeout=0, worker_init_fn=None):
-        collate_fn = BatchMetaCollate(default_collate)._collate_fn
+        collate_fn = BatchMetaCollate(default_collate)
 
         super(BatchMetaDataLoader, self).__init__(dataset,
             batch_size=batch_size, shuffle=shuffle, sampler=sampler,
