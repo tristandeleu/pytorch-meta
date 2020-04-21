@@ -106,3 +106,13 @@ torchmeta.modules.MetaLayerNorm(normalized_shape, eps=1e-05,
 
 !!! note "Notes"
     See: `torch.nn.LayerNorm`
+
+## DataParallel
+
+```python
+torchmeta.modules.DataParallel(module, device_ids=None, output_device=None,
+    dim=0)
+```
+
+!!! note "Notes"
+    See: `torch.nn.Parallel`
