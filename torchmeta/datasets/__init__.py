@@ -6,6 +6,7 @@ from torchmeta.datasets.miniimagenet import MiniImagenet
 from torchmeta.datasets.omniglot import Omniglot
 from torchmeta.datasets.tieredimagenet import TieredImagenet
 from torchmeta.datasets.tcga import TCGA
+from torchmeta.datasets.pascal5i import Pascal5i
 
 from torchmeta.datasets import helpers
 
@@ -19,5 +20,6 @@ __all__ = [
     'CUB',
     'DoubleMNIST',
     'TripleMNIST',
+    'Pascal5i',
     'helpers'
 ]

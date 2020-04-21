@@ -1,7 +1,8 @@
 import warnings
 
-from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS, CUB, DoubleMNIST, TripleMNIST
-from torchmeta.transforms import Categorical, ClassSplitter, Rotation
+from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
+                                CUB, DoubleMNIST, TripleMNIST, Pascal5i)
+from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
 __all__ = [
@@ -13,7 +14,6 @@ __all__ = [
     'doublemnist',
     'triplemnist'
 ]
-
 
 def helper_with_default(klass, folder, shots, ways, shuffle=True,
                         test_shots=None, seed=None, defaults={}, **kwargs):
@@ -31,14 +31,12 @@ def helper_with_default(klass, folder, shots, ways, shuffle=True,
         kwargs['class_augmentations'] = defaults.get('class_augmentations', None)
     if test_shots is None:
         test_shots = shots
-
     dataset = klass(folder, num_classes_per_task=ways, **kwargs)
     dataset = ClassSplitter(dataset, shuffle=shuffle,
         num_train_per_class=shots, num_test_per_class=test_shots)
     dataset.seed(seed)
 
     return dataset
-
 
 def omniglot(folder, shots, ways, shuffle=True, test_shots=None,
              seed=None, **kwargs):
@@ -50,19 +48,19 @@ def omniglot(folder, shots, ways, shuffle=True, test_shots=None,
         Root directory where the dataset folder `omniglot` exists.
 
     shots : int
-        Number of (training) examples per class in each task. This corresponds 
+        Number of (training) examples per class in each task. This corresponds
         to `k` in `k-shot` classification.
 
     ways : int
-        Number of classes per task. This corresponds to `N` in `N-way` 
+        Number of classes per task. This corresponds to `N` in `N-way`
         classification.
 
     shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
 
     test_shots : int, optional
-        Number of test examples per class in each task. If `None`, then the 
-        number of test examples is equal to the number of training examples per 
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
         class.
 
     seed : int, optional
@@ -137,19 +135,19 @@ def tieredimagenet(folder, shots, ways, shuffle=True, test_shots=None,
         Root directory where the dataset folder `tieredimagenet` exists.
 
     shots : int
-        Number of (training) examples per class in each task. This corresponds 
+        Number of (training) examples per class in each task. This corresponds
         to `k` in `k-shot` classification.
 
     ways : int
-        Number of classes per task. This corresponds to `N` in `N-way` 
+        Number of classes per task. This corresponds to `N` in `N-way`
         classification.
 
     shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
 
     test_shots : int, optional
-        Number of test examples per class in each task. If `None`, then the 
-        number of test examples is equal to the number of training examples per 
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
         class.
 
     seed : int, optional
@@ -180,19 +178,19 @@ def cifar_fs(folder, shots, ways, shuffle=True, test_shots=None,
         Root directory where the dataset folder `cifar100` exists.
 
     shots : int
-        Number of (training) examples per class in each task. This corresponds 
+        Number of (training) examples per class in each task. This corresponds
         to `k` in `k-shot` classification.
 
     ways : int
-        Number of classes per task. This corresponds to `N` in `N-way` 
+        Number of classes per task. This corresponds to `N` in `N-way`
         classification.
 
     shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
 
     test_shots : int, optional
-        Number of test examples per class in each task. If `None`, then the 
-        number of test examples is equal to the number of training examples per 
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
         class.
 
     seed : int, optional
@@ -219,19 +217,19 @@ def cub(folder, shots, ways, shuffle=True, test_shots=None,
         Root directory where the dataset folder `cub` exists.
 
     shots : int
-        Number of (training) examples per class in each task. This corresponds 
+        Number of (training) examples per class in each task. This corresponds
         to `k` in `k-shot` classification.
 
     ways : int
-        Number of classes per task. This corresponds to `N` in `N-way` 
+        Number of classes per task. This corresponds to `N` in `N-way`
         classification.
 
     shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
 
     test_shots : int, optional
-        Number of test examples per class in each task. If `None`, then the 
-        number of test examples is equal to the number of training examples per 
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
         class.
 
     seed : int, optional
@@ -267,19 +265,19 @@ def doublemnist(folder, shots, ways, shuffle=True, test_shots=None,
         Root directory where the dataset folder `doublemnist` exists.
 
     shots : int
-        Number of (training) examples per class in each task. This corresponds 
+        Number of (training) examples per class in each task. This corresponds
         to `k` in `k-shot` classification.
 
     ways : int
-        Number of classes per task. This corresponds to `N` in `N-way` 
+        Number of classes per task. This corresponds to `N` in `N-way`
         classification.
 
     shuffle : bool (default: `True`)
         Shuffle the examples when creating the tasks.
 
     test_shots : int, optional
-        Number of test examples per class in each task. If `None`, then the 
-        number of test examples is equal to the number of training examples per 
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
         class.
 
     seed : int, optional
@@ -295,7 +293,6 @@ def doublemnist(folder, shots, ways, shuffle=True, test_shots=None,
     return helper_with_default(DoubleMNIST, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults={}, **kwargs)
-
 
 def triplemnist(folder, shots, ways, shuffle=True, test_shots=None,
                 seed=None, **kwargs):
@@ -335,3 +332,43 @@ def triplemnist(folder, shots, ways, shuffle=True, test_shots=None,
     return helper_with_default(TripleMNIST, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults={}, **kwargs)
+
+def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
+             seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the PASCAL-VOC dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification. Only supports 1-way currently
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    """
+    defaults = {
+        'transform': SegmentationPairTransform(500),
+        'class_augmentations': []
+    }
+    return helper_with_default(Pascal5i, folder, shots, ways,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, defaults=defaults, **kwargs)
