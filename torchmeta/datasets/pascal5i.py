@@ -75,7 +75,7 @@ class Pascal5i(CombinationMetaDataset):
     ----------
     .. [1] Shaban, Amirreza, et al. "One-shot learning for semantic segmentation."
             arXiv preprint arXiv:1709.03410 (2017).
-       [2] Zhang, Chi, et al. "Canet: Class-agnostic segmentation networks with
+    .. [2] Zhang, Chi, et al. "Canet: Class-agnostic segmentation networks with
             iterative refinement and attentive few-shot learning."
             Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2019.
     """

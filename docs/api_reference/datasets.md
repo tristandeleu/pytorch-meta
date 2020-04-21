@@ -480,3 +480,52 @@ torchmeta.datasets.TCGA(root, meta_train=False, meta_val=False,
 
 !!! attention "References"
     - **[1]** Samiei, M., Wurfl, T., Deleu, T., Weiss, M., Dutil, F., Fevens, T., Boucher, G., Lemieux, S., and Cohen, J. P. (2019). The TCGA Meta-Dataset Clinical Benchmark. (https://arxiv.org/abs/1910.08636)
+
+## Pascal5i
+
+Pascal5i dataset [1]. A dataset for few-shot object segmentation supporting 4 folds each fold has 15 training classes and 5 testing classes. Using Preprocessed Masks from [2]
+
+```python
+torchmeta.datasets.Pascal5i(root, num_classes_per_task=None, meta_train=False,
+    meta_test=False, meta_split=None, transform=None, target_transform=None,
+    dataset_transform=None, class_augmentations=None, download=False, fold=0)
+```
+
+**Parameters**
+
+ - **root**: *string*
+ Root directory where the dataset folder `omniglot` exists.
+
+ - **num_classes_per_task**: *int*
+ Number of classes per tasks. This corresponds to "N" in "N-way" classification.
+
+ - **meta_train**: *bool (default: `False`)*
+ Use the meta-train split of the dataset. If set to `True`, then the arguments `meta_val` and `meta_test` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_test**: *bool (default: `False`)*
+ Use the meta-test split of the dataset. If set to `True`, then the arguments `meta_train` and `meta_val` must be set to `False`. Exactly one of these three arguments must be set to `True`.
+
+ - **meta_split**: *string in {'train', 'test'}, optional*
+ Name of the split to use. This overrides the arguments `meta_train`, and `meta_test` if all three are set to `False`.
+
+ - **transform**: *callable, optional*
+ A function/transform that takes a `PIL` image, and returns a transformed version. See also `torchvision.transforms`.
+
+ - **dataset_transform**: *callable, optional*
+ A function/transform that takes a dataset (ie. a task), and returns a transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
+
+ - **class_augmentations**: *list of callable, optional*
+ A list of functions that augment the dataset with new classes. These classes are transformations of existing classes. E.g. `torchmeta.transforms.HorizontalFlip()`.
+
+ - **download**: *bool (default: `False`)*
+ If `True`, downloads the zip files and processes the dataset in the root directory (under the `omniglot` folder). If the dataset is already available, this does not download/process the dataset again.
+
+ - **fold**: *int (default: 0)*
+ Fold number ranges between 0-3 that controls training(15) and testing(5) classes.
+
+!!! note "Notes"
+    Currently Only 1-way is supported
+
+!!! attention "References"
+    - **[1]** Shaban, Amirreza, et al. "One-shot learning for semantic segmentation." arXiv preprint arXiv:1709.03410 (2017).
+    - **[2]** Zhang, Chi, et al. "Canet: Class-agnostic segmentation networks with iterative refinement and attentive few-shot learning." Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2019.
