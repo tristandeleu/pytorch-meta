@@ -16,5 +16,5 @@ class DataParallel(DataParallel_, MetaModule):
 
         inputs_, kwargs_ = scatter_kwargs(inputs, kwargs, device_ids, dim=self.dim)
         # Add params argument unchanged back in kwargs
-        kwargs_ = tuple(k.update(params=params) for k in kwargs_)
+        kwargs_ = tuple(dict(params=params, **k) for k in kwargs_)
         return inputs_, kwargs_
