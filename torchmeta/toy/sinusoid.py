@@ -81,9 +81,9 @@ class Sinusoid(MetaDataset):
 
     def __getitem__(self, index):
         amplitude, phase = self.amplitudes[index], self.phases[index]
-        task = SinusoidTask(amplitude, phase, self._input_range, self.noise_std,
-            self.num_samples_per_task, self.transform, self.target_transform,
-            np_random=self.np_random)
+        task = SinusoidTask(index, amplitude, phase, self._input_range,
+            self.noise_std, self.num_samples_per_task, self.transform,
+            self.target_transform, np_random=self.np_random)
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -92,9 +92,10 @@ class Sinusoid(MetaDataset):
 
 
 class SinusoidTask(Task):
-    def __init__(self, amplitude, phase, input_range, noise_std, num_samples,
-                 transform=None, target_transform=None, np_random=None):
-        super(SinusoidTask, self).__init__(None) # Regression task
+    def __init__(self, index, amplitude, phase, input_range, noise_std,
+                 num_samples, transform=None, target_transform=None,
+                 np_random=None):
+        super(SinusoidTask, self).__init__(index, None) # Regression task
         self.amplitude = amplitude
         self.phase = phase
         self.input_range = input_range

@@ -103,7 +103,7 @@ class Harmonic(MetaDataset):
         phases = self.phases[index]
         amplitudes = self.amplitudes[index]
 
-        task = HarmonicTask(domain, frequency, phases, amplitudes,
+        task = HarmonicTask(index, domain, frequency, phases, amplitudes,
             self.noise_std, self.num_samples_per_task, self.transform,
             self.target_transform, np_random=self.np_random)
 
@@ -114,10 +114,10 @@ class Harmonic(MetaDataset):
 
 
 class HarmonicTask(Task):
-    def __init__(self, domain, frequency, phases, amplitudes, noise_std,
-                 num_samples, transform=None, target_transform=None,
-                 np_random=None):
-        super(HarmonicTask, self).__init__(None) # Regression task
+    def __init__(self, index, domain, frequency, phases, amplitudes,
+                 noise_std, num_samples, transform=None,
+                 target_transform=None, np_random=None):
+        super(HarmonicTask, self).__init__(index, None) # Regression task
         self.domain = domain
         self.frequency = frequency
         self.phases = phases

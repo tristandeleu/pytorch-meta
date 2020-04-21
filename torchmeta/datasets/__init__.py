@@ -1,3 +1,4 @@
+from torchmeta.datasets.triplemnist import TripleMNIST
 from torchmeta.datasets.doublemnist import DoubleMNIST
 from torchmeta.datasets.cub import CUB
 from torchmeta.datasets.cifar100 import CIFARFS, FC100
@@ -18,6 +19,7 @@ __all__ = [
     'FC100',
     'CUB',
     'DoubleMNIST',
-    'helpers',
-    'Pascal5i'
+    'TripleMNIST',
+    'Pascal5i',
+    'helpers'
 ]

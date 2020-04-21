@@ -1,7 +1,7 @@
 import warnings
 
-from torchmeta.datasets import Omniglot, MiniImagenet, TieredImagenet, CIFARFS, \
-                                CUB, DoubleMNIST, Pascal5i
+from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
+                                CUB, DoubleMNIST, TripleMNIST, Pascal5i)
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -11,7 +11,8 @@ __all__ = [
     'tieredimagenet',
     'cifar_fs',
     'cub',
-    'doublemnist'
+    'doublemnist',
+    'triplemnist'
 ]
 
 def helper_with_default(klass, folder, shots, ways, shuffle=True,
@@ -36,47 +37,6 @@ def helper_with_default(klass, folder, shots, ways, shuffle=True,
     dataset.seed(seed)
 
     return dataset
-
-def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
-             seed=None, **kwargs):
-    """Helper function to create a meta-dataset for the PASCAL-VOC dataset.
-
-    Parameters
-    ----------
-    folder : string
-        Root directory where the dataset folder `omniglot` exists.
-
-    shots : int
-        Number of (training) examples per class in each task. This corresponds
-        to `k` in `k-shot` classification.
-
-    ways : int
-        Number of classes per task. This corresponds to `N` in `N-way`
-        classification. Only supports 1-way currently
-
-    shuffle : bool (default: `True`)
-        Shuffle the examples when creating the tasks.
-
-    test_shots : int, optional
-        Number of test examples per class in each task. If `None`, then the
-        number of test examples is equal to the number of training examples per
-        class.
-
-    seed : int, optional
-        Random seed to be used in the meta-dataset.
-
-    kwargs
-        Additional arguments passed to the `Omniglot` class.
-
-    """
-    defaults = {
-        'transform': SegmentationPairTransform(500),
-        'class_augmentations': []
-    }
-    return helper_with_default(Pascal5i, folder, shots, ways,
-                               shuffle=shuffle, test_shots=test_shots,
-                               seed=seed, defaults=defaults, **kwargs)
-
 
 def omniglot(folder, shots, ways, shuffle=True, test_shots=None,
              seed=None, **kwargs):
@@ -333,3 +293,82 @@ def doublemnist(folder, shots, ways, shuffle=True, test_shots=None,
     return helper_with_default(DoubleMNIST, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults={}, **kwargs)
+
+def triplemnist(folder, shots, ways, shuffle=True, test_shots=None,
+                seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Triple MNIST dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `triplemnist` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds 
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way` 
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the 
+        number of test examples is equal to the number of training examples per 
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `TripleMNIST` class.
+
+    See also
+    --------
+    `datasets.triplemnist.TripleMNIST` : Meta-dataset for the Triple MNIST dataset.
+    """
+    return helper_with_default(TripleMNIST, folder, shots, ways,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, defaults={}, **kwargs)
+
+def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
+             seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the PASCAL-VOC dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification. Only supports 1-way currently
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    """
+    defaults = {
+        'transform': SegmentationPairTransform(500),
+        'class_augmentations': []
+    }
+    return helper_with_default(Pascal5i, folder, shots, ways,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, defaults=defaults, **kwargs)

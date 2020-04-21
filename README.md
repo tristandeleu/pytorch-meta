@@ -21,6 +21,7 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Fewshot-CIFAR100 ([Oreshkin et al., 2018](https://arxiv.org/abs/1805.10123))
     - Caltech-UCSD Birds ([Hilliard et al., 2019](https://arxiv.org/abs/1802.04376), [Wah et al., 2019](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html))
     - Double MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
+    - Triple MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
   - **Few-shot Segmentation** (semantic segmentation):
     - Pascal5i 1-way Setup
 
