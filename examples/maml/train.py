@@ -2,14 +2,27 @@ import os
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
+import logging
 
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
+from torchmeta.utils.gradient_based import gradient_update_parameters
 
 from model import ConvolutionalNeuralNetwork
-from utils import update_parameters, get_accuracy
+from utils import get_accuracy
+
+logger = logging.getLogger(__name__)
+
 
 def train(args):
+    logger.warning('This script is an example to showcase the MetaModule and '
+                   'data-loading features of Torchmeta, and as such has been '
+                   'very lightly tested. For a better tested implementation of '
+                   'Model-Agnostic Meta-Learning (MAML) using Torchmeta with '
+                   'more features (including multi-step adaptation and '
+                   'different datasets), please check `https://github.com/'
+                   'tristandeleu/pytorch-maml`.')
+
     dataset = omniglot(args.folder, shots=args.num_shots, ways=args.num_ways,
         shuffle=True, test_shots=15, meta_train=True, download=args.download)
     dataloader = BatchMetaDataLoader(dataset, batch_size=args.batch_size,
@@ -43,7 +56,7 @@ def train(args):
                 inner_loss = F.cross_entropy(train_logit, train_target)
 
                 model.zero_grad()
-                params = update_parameters(model, inner_loss,
+                params = gradient_update_parameters(model, inner_loss,
                     step_size=args.step_size, first_order=args.first_order)
 
                 test_logit = model(test_input, params=params)
@@ -65,7 +78,7 @@ def train(args):
     # Save model
     if args.output_folder is not None:
         filename = os.path.join(args.output_folder, 'maml_omniglot_'
-            '{0}shot_{1}way.pt'.format(args.num_shots, args.num_ways))
+            '{0}shot_{1}way.th'.format(args.num_shots, args.num_ways))
         with open(filename, 'wb') as f:
             state_dict = model.state_dict()
             torch.save(state_dict, f)
