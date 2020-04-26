@@ -15,13 +15,10 @@ logger = logging.getLogger(__name__)
 
 
 def train(args):
+    # Training script identical to MAML, see `examples/maml/train.py`
     logger.warning('This script is an example to showcase the MetaModule and '
                    'data-loading features of Torchmeta, and as such has been '
-                   'very lightly tested. For a better tested implementation of '
-                   'Model-Agnostic Meta-Learning (MAML) using Torchmeta with '
-                   'more features (including multi-step adaptation and '
-                   'different datasets), please check `https://github.com/'
-                   'tristandeleu/pytorch-maml`.')
+                   'very lightly tested.')
 
     dataset = omniglot(args.folder,
                        shots=args.num_shots,
@@ -87,8 +84,9 @@ def train(args):
 
     # Save model
     if args.output_folder is not None:
-        filename = os.path.join(args.output_folder, 'maml_omniglot_'
+        filename = os.path.join(args.output_folder, 'anil_omniglot_'
             '{0}shot_{1}way.th'.format(args.num_shots, args.num_ways))
+
         with open(filename, 'wb') as f:
             state_dict = model.state_dict()
             torch.save(state_dict, f)
@@ -96,7 +94,7 @@ def train(args):
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser('Model-Agnostic Meta-Learning (MAML)')
+    parser = argparse.ArgumentParser('Almost No Inner Loop (ANIL)')
 
     parser.add_argument('folder', type=str,
         help='Path to the folder the data is downloaded to.')
