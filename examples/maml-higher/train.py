@@ -11,7 +11,6 @@ import higher  # tested with higher v0.2
 
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
-from torchmeta.utils.gradient_based import gradient_update_parameters
 
 logger = logging.getLogger(__name__)
 
