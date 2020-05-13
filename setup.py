@@ -34,7 +34,7 @@ setup(
         'torchvision>=0.5.0,<0.7.0',
         'numpy>=1.14.0',
         'Pillow>=7.0.0',
-        'h5py~=2.9.0',
+        'h5py',
         'tqdm>=4.0.0',
         'requests' # Required by Torchvision
     ],
