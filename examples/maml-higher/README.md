@@ -1,6 +1,6 @@
 # Model-Agnostic Meta-Learning (MAML)
 
-To run, please install `higher` in addition to `torchmeta`:
+To run, please install [`higher`](https://github.com/facebookresearch/higher) in addition to `torchmeta`:
 ```bash
 pip install higher==0.2
 ```
