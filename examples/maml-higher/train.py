@@ -7,7 +7,7 @@ import logging
 
 from collections import OrderedDict
 
-import higher
+import higher  # tested with higher v0.2
 
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
@@ -70,13 +70,10 @@ def get_accuracy(logits, targets):
 
 
 def train(args):
-    logger.warning('This script is an example to showcase the MetaModule and '
-                   'data-loading features of Torchmeta, and as such has been '
-                   'very lightly tested. For a better tested implementation of '
-                   'Model-Agnostic Meta-Learning (MAML) using Torchmeta with '
-                   'more features (including multi-step adaptation and '
-                   'different datasets), please check `https://github.com/'
-                   'tristandeleu/pytorch-maml`.')
+    logger.warning('This script is an example to showcase the data-loading '
+                   'features of Torchmeta in conjunction with using higher to '
+                   'make models "unrollable" and optimizers differentiable, '
+                   'and as such has been  very lightly tested.')
 
     dataset = omniglot(args.folder,
                        shots=args.num_shots,
