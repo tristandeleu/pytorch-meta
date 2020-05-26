@@ -10,7 +10,9 @@ __all__ = ['CombinationSequentialSampler', 'CombinationRandomSampler']
 class CombinationSequentialSampler(SequentialSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
-            raise ValueError()
+            raise TypeError('Expected `data_source` to be an instance of '
+                            '`CombinationMetaDataset`, but found '
+                            '{0}'.format(type(data_source)))
         super(CombinationSequentialSampler, self).__init__(data_source)
 
     def __iter__(self):
@@ -22,7 +24,9 @@ class CombinationSequentialSampler(SequentialSampler):
 class CombinationRandomSampler(RandomSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
-            raise ValueError()
+            raise TypeError('Expected `data_source` to be an instance of '
+                            '`CombinationMetaDataset`, but found '
+                            '{0}'.format(type(data_source)))
         super(CombinationRandomSampler, self).__init__(data_source)
 
     def __iter__(self):
