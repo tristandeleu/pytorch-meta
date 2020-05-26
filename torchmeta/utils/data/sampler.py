@@ -23,7 +23,7 @@ class CombinationRandomSampler(RandomSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
             raise ValueError()
-        self.data_source = data_source
+        super(CombinationRandomSampler, self).__init__(data_source)
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)
