@@ -120,3 +120,24 @@ def test_datasets_helpers_dataloader(name, shots, split):
     assert test_inputs.shape[:2] == (4, 5 * 15) # test_shots
     assert test_targets.ndim == 2
     assert test_targets.shape[:2] == (4, 5 * 15)
+
+
+@pytest.mark.skipif(not is_local, reason='Requires datasets downloaded locally')
+def test_overflow_length_dataloader():
+    folder = os.getenv('TORCHMETA_DATA_FOLDER')
+    download = bool(os.getenv('TORCHMETA_DOWNLOAD', False))
+
+    # The number of tasks is C(4112, 20), which exceeds machine precision
+    dataset = helpers.omniglot(folder,
+                               ways=20,
+                               shots=1,
+                               test_shots=5,
+                               meta_train=True,
+                               download=download)
+
+    meta_dataloader = BatchMetaDataLoader(dataset, batch_size=4)
+
+    batch = next(iter(meta_dataloader))
+    assert isinstance(batch, dict)
+    assert 'train' in batch
+    assert 'test' in batch

@@ -1,4 +1,5 @@
 import random
+import warnings
 from itertools import combinations
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
@@ -27,7 +28,14 @@ class CombinationRandomSampler(RandomSampler):
             raise TypeError('Expected `data_source` to be an instance of '
                             '`CombinationMetaDataset`, but found '
                             '{0}'.format(type(data_source)))
-        super(CombinationRandomSampler, self).__init__(data_source)
+        # Temporarily disable the warning if the length of the length of the 
+        # dataset exceeds the machine precision. This avoids getting this
+        # warning shown with MetaDataLoader, even though MetaDataLoader itself
+        # does not use the length of the dataset.
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            super(CombinationRandomSampler, self).__init__(data_source,
+                                                           replacement=True)
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)

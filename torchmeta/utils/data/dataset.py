@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import warnings
 from copy import deepcopy
@@ -295,8 +296,19 @@ class CombinationMetaDataset(MetaDataset):
     def __len__(self):
         num_classes, length = len(self.dataset), 1
         for i in range(1, self.num_classes_per_task + 1):
-            length *= (num_classes - i + 1) / i
-        return int(length)
+            length *= (num_classes - i + 1) // i
+
+        if length > sys.maxsize:
+            warnings.warn('The number of possible tasks in {0} is '
+                'combinatorially large (equal to C({1}, {2})), and exceeds '
+                'machine precision. Setting the length of the dataset to the '
+                'maximum integer value, which undervalues the actual number of '
+                'possible tasks in the dataset. Therefore the value returned by '
+                '`len(dataset)` should not be trusted as being representative '
+                'of the true number of tasks.'.format(self, len(self.dataset),
+                self.num_classes_per_task), UserWarning, stacklevel=2)
+            length = sys.maxsize
+        return length
 
 
 def _seed_dataset_transform(transform, seed=None):
