@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import copy
 
+from ordered_set import OrderedSet
 from torchmeta.utils.data import Task, MetaDataset
 from torchmeta.datasets.utils import get_asset
 
@@ -449,12 +450,12 @@ def _assign_samples(tcga_metadataset):
 
 def _expand_sample_usage(meta_dataset, all_allowed_samples, additional_samples):
     expanded_metadataset = {}
-    all_samples_of_metadataset = set()
+    all_samples_of_metadataset = OrderedSet()
     for key, value in meta_dataset.items():
         all_samples_of_metadataset.update(value)
     all_samples_of_metadataset.update(additional_samples)
 
-    used_additional_samples = set()
+    used_additional_samples = OrderedSet()
     for key in meta_dataset.keys():
         allowed_samples = set(all_allowed_samples[key])
         intersection = allowed_samples.intersection(all_samples_of_metadataset)
@@ -473,7 +474,7 @@ def _split_tcga(tcga_metadataset, counts):
     keys = [i for i in all_allowed_samples.keys()]
     difference = set(sample_to_task_assignment.keys()).difference(set(keys))
 
-    unassigned_samples = set()
+    unassigned_samples = OrderedSet()
     for key in difference:
         unassigned_samples.update(sample_to_task_assignment[key])
 
@@ -494,11 +495,11 @@ def _split_tcga(tcga_metadataset, counts):
     order = np.argsort([len(metadataset) for metadataset in metadatasets])
 
     # Finally we expand the tasks by reusing samples wherever possible in the sets
-    blacklist = set()
+    blacklist = OrderedSet()
     for i in order:
         additional_samples = unassigned_samples.difference(blacklist)
-        expanded_metadataset, used_additional_samples = _expand_sample_usage(metadatasets[i], all_allowed_samples,
-                                                                             additional_samples)
+        expanded_metadataset, used_additional_samples = _expand_sample_usage(
+            metadatasets[i], all_allowed_samples, additional_samples)
         expanded_metadatasets[i] = (expanded_metadataset)
         blacklist.update(used_additional_samples)
 

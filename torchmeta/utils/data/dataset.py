@@ -4,6 +4,8 @@ import warnings
 from copy import deepcopy
 
 from itertools import combinations
+from ordered_set import OrderedSet
+
 from torchvision.transforms import Compose
 
 from torchmeta.utils.data.task import ConcatTask
@@ -68,7 +70,7 @@ class ClassDataset(object):
             if not isinstance(class_augmentations, list):
                 raise TypeError('Unknown type for `class_augmentations`. '
                     'Expected `list`, got `{0}`.'.format(type(class_augmentations)))
-            unique_augmentations = set()
+            unique_augmentations = OrderedSet()
             for augmentations in class_augmentations:
                 for transform in augmentations:
                     if transform in unique_augmentations:

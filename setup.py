@@ -36,7 +36,8 @@ setup(
         'Pillow>=7.0.0',
         'h5py',
         'tqdm>=4.0.0',
-        'requests' # Required by Torchvision
+        'requests',  # Required by Torchvision
+        'ordered-set'
     ],
     extras_require=extras,
     package_data={'torchmeta': ['torchmeta/datasets/assets/*']},
