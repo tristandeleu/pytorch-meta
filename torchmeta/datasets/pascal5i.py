@@ -144,8 +144,8 @@ class Pascal5iClassDataset(ClassDataset):
         target_transform = self.get_target_transform(index)
         class_id = self.read_labels().index(class_name)
 
-        return PascalDataset((data, masks), class_id, transform=transform,
-            target_transform=target_transform)
+        return PascalDataset(index, (data, masks), class_id,
+            transform=transform, target_transform=target_transform)
 
     @property
     def num_classes(self):
@@ -242,8 +242,9 @@ class Pascal5iClassDataset(ClassDataset):
                     f.extractall(self.root)
 
 class PascalDataset(Dataset):
-    def __init__(self, data, class_id, transform=None, target_transform=None):
-        super(PascalDataset, self).__init__(transform=transform,
+    def __init__(self, index, data, class_id,
+                 transform=None, target_transform=None):
+        super(PascalDataset, self).__init__(index, transform=transform,
             target_transform=target_transform)
         self.data, self.masks = data
         self.class_id = class_id
