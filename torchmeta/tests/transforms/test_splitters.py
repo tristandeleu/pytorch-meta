@@ -2,6 +2,7 @@ import pytest
 
 import numpy as np
 from collections import OrderedDict
+from ordered_set import OrderedSet
 
 from torchmeta.transforms.splitters import ClassSplitter
 from torchmeta.toy import Sinusoid
@@ -68,8 +69,8 @@ def test_class_splitter_for_fold_overlaps():
         all_train_samples.append(train_samples)
 
     # gather unique samples from multiple splits
-    samples_in_all_train_splits = set().union(*all_train_samples)
-    samples_in_all_test_splits = set().union(*all_test_samples)
+    samples_in_all_train_splits = OrderedSet().union(*all_train_samples)
+    samples_in_all_test_splits = OrderedSet().union(*all_test_samples)
 
     # no overlap between train and test splits at multiple splits
     assert len(samples_in_all_test_splits.intersection(samples_in_all_train_splits)) == 0
