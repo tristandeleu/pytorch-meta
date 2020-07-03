@@ -2,6 +2,7 @@ from torchmeta.utils import data
 from torchmeta.utils.gradient_based import gradient_update_parameters
 from torchmeta.utils.metrics import hardness_metric
 from torchmeta.utils.prototype import get_num_samples, get_prototypes, prototypical_loss
+from torchmeta.utils.matching import matching_loss
 
 __all__ = [
     'data',
@@ -9,5 +10,6 @@ __all__ = [
     'hardness_metric',
     'get_num_samples',
     'get_prototypes',
-    'prototypical_loss'
+    'prototypical_loss',
+    'matching_loss'
 ]
