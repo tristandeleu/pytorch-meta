@@ -1,6 +1,6 @@
 # Matching Networks
 
-> Vinyals, Oriol, Charles Blundell, Timothy Lillicrap, and Daan Wierstra. Matching networks for one shot learning. *Advances in Neural Information Processing Systems (NIPS)*, 2016 [[ArXiv](https://arxiv.org/abs/1606.04080)]
+> Oriol Vinyals, Charles Blundell, Timothy Lillicrap, and Daan Wierstra. Matching networks for one shot learning. *Advances in Neural Information Processing Systems (NIPS)*, 2016 [[ArXiv](https://arxiv.org/abs/1606.04080)]
 
 Matching Networks code is based on BoyuanJiang's [matching-networks-pytorch](https://github.com/BoyuanJiang/matching-networks-pytorch).
 
