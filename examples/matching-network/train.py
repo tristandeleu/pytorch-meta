@@ -5,7 +5,7 @@ import logging
 
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
-from torchmeta.utils.matching import matching_loss
+from torchmeta.utils.matching import matching_log_probas, matching_loss
 
 from model import MatchingNetwork
 
@@ -30,8 +30,8 @@ def train(args):
                                      num_workers=args.num_workers)
 
     model = MatchingNetwork(1,
-                                args.embedding_size,
-                                hidden_size=args.hidden_size)
+                            args.embedding_size,
+                            hidden_size=args.hidden_size)
     model.to(device=args.device)
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -51,16 +51,22 @@ def train(args):
             test_targets = test_targets.to(device=args.device)
             test_embeddings = model(test_inputs)
 
-            loss = matching_loss(train_embeddings, test_embeddings, train_targets, test_targets)
-
+            loss = matching_loss(train_embeddings,
+                                 train_targets,
+                                 test_embeddings,
+                                 test_targets,
+                                 args.num_ways)
             loss.backward()
             optimizer.step()
 
             with torch.no_grad():
                 # calculate the accuracy
-                logits = matching_loss(train_embeddings, test_embeddings, train_targets)
-                values, indices = logits.max(2)
-                accuracy = torch.mean((indices.squeeze() == test_targets).float())
+                log_probas = matching_log_probas(train_embeddings,
+                                                 train_targets,
+                                                 test_embeddings,
+                                                 args.num_ways)
+                test_predictions = torch.argmax(log_probas, dim=1)
+                accuracy = torch.mean((test_predictions == test_targets).float())
                 pbar.set_postfix(accuracy='{0:.4f}'.format(accuracy.item()))
 
             if batch_idx >= args.num_batches:
@@ -68,7 +74,7 @@ def train(args):
 
     # Save model
     if args.output_folder is not None:
-        filename = os.path.join(args.output_folder, 'matching_omniglot_'
+        filename = os.path.join(args.output_folder, 'matching_network_omniglot_'
             '{0}shot_{1}way.pt'.format(args.num_shots, args.num_ways))
         with open(filename, 'wb') as f:
             state_dict = model.state_dict()
@@ -77,7 +83,7 @@ def train(args):
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser('Prototypical Networks')
+    parser = argparse.ArgumentParser('Matching Networks')
 
     parser.add_argument('folder', type=str,
         help='Path to the folder the data is downloaded to.')
