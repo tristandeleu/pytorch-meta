@@ -1,6 +1,6 @@
 import torch.nn as nn
 from torchmeta.modules import MetaModule, MetaLinear
-from torchmeta.modules.utils import get_subdict
+
 
 def conv3x3(in_channels, out_channels, **kwargs):
     # The convolutional layers (for feature extraction) use standard layers from
@@ -33,5 +33,5 @@ class ConvolutionalNeuralNetwork(MetaModule):
     def forward(self, inputs, params=None):
         features = self.features(inputs)
         features = features.view((features.size(0), -1))
-        logits = self.classifier(features, params=get_subdict(params, 'classifier'))
+        logits = self.classifier(features, params=self.get_subdict(params, 'classifier'))
         return logits
