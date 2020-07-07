@@ -199,4 +199,4 @@ def matching_loss(train_embeddings,
                                  test_embeddings,
                                  num_classes,
                                  eps=eps)
-    return F.cross_entropy(logits, test_targets, **kwargs)
+    return F.nll_loss(logits, test_targets, **kwargs)
