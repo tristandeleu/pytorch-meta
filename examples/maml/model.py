@@ -1,7 +1,7 @@
 import torch.nn as nn
 from torchmeta.modules import (MetaModule, MetaSequential, MetaConv2d,
                                MetaBatchNorm2d, MetaLinear)
-from torchmeta.modules.utils import get_subdict
+
 
 def conv3x3(in_channels, out_channels, **kwargs):
     return MetaSequential(
@@ -28,7 +28,7 @@ class ConvolutionalNeuralNetwork(MetaModule):
         self.classifier = MetaLinear(hidden_size, out_features)
 
     def forward(self, inputs, params=None):
-        features = self.features(inputs, params=get_subdict(params, 'features'))
+        features = self.features(inputs, params=self.get_subdict(params, 'features'))
         features = features.view((features.size(0), -1))
-        logits = self.classifier(features, params=get_subdict(params, 'classifier'))
+        logits = self.classifier(features, params=self.get_subdict(params, 'classifier'))
         return logits

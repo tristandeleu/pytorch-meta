@@ -34,7 +34,7 @@ source venv/bin/activate
 ```
 
 #### Requirements
- - Python 3.5 or above
+ - Python 3.6 or above
  - PyTorch 1.3 or above
  - Torchvision 0.4 or above
 

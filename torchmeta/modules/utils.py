@@ -1,7 +1,14 @@
 import re
+import warnings
+
 from collections import OrderedDict
 
 def get_subdict(dictionary, key=None):
+    warnings.warn('The function `torchmeta.modules.utils.get_subdict` is '
+                  'deprecated, and will be removed in Torchmeta v1.5. Please '
+                  'use the `get_subdict` method from `MetaModule` (e.g. '
+                  '`self.get_subdict(params, "{0}")`) instead.'.format(key),
+                  stacklevel=2)
     if dictionary is None:
         return None
 
