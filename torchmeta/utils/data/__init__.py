@@ -2,6 +2,7 @@ from torchmeta.utils.data.dataloader import MetaDataLoader, BatchMetaDataLoader
 from torchmeta.utils.data.dataset import ClassDataset, MetaDataset, CombinationMetaDataset
 from torchmeta.utils.data.sampler import CombinationSequentialSampler, CombinationRandomSampler
 from torchmeta.utils.data.task import Dataset, Task, ConcatTask, SubsetTask
+from torchmeta.utils.data.wrappers import NonEpisodicWrapper
 
 __all__ = [
     'MetaDataLoader',
@@ -14,5 +15,6 @@ __all__ = [
     'Dataset',
     'Task',
     'ConcatTask',
-    'SubsetTask'
+    'SubsetTask',
+    'NonEpisodicWrapper'
 ]
