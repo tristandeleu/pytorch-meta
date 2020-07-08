@@ -116,7 +116,7 @@ class TieredImagenetClassDataset(ClassDataset):
 
         self._data_file = None
         self._data = None
-        self._labels_specific = None
+        self._labels = None
 
         self.split_filename = os.path.join(self.root,
             self.filename.format(self.meta_split))
@@ -128,7 +128,7 @@ class TieredImagenetClassDataset(ClassDataset):
 
         if not self._check_integrity():
             raise RuntimeError('TieredImagenet integrity check failed')
-        self._num_classes = len(self.labels_specific)
+        self._num_classes = len(self.labels)
 
     @property
     def data(self):
@@ -138,14 +138,14 @@ class TieredImagenetClassDataset(ClassDataset):
         return self._data
 
     @property
-    def labels_specific(self):
-        if self._labels_specific is None:
+    def labels(self):
+        if self._labels is None:
             with open(self.split_filename_labels, 'r') as f:
-                self._labels_specific = json.load(f)
-        return self._labels_specific
+                self._labels = json.load(f)
+        return self._labels
 
     def __getitem__(self, index):
-        specific_class_name = self.labels_specific[index % self.num_classes]
+        specific_class_name = self.labels[index % self.num_classes]
         data = self.data[specific_class_name]
         general_class_name = data.attrs['label_general']
         transform = self.get_transform(index, self.transform)
