@@ -74,7 +74,8 @@ class NonEpisodicWrapper(Dataset):
 
     @property
     def num_classes(self):
-        return len(self._labels)
+        num_augmentations = len(self.dataset.dataset.class_augmentations)
+        return len(self._labels) * (num_augmentations + 1)
 
     def __len__(self):
         num_augmentations = len(self.dataset.dataset.class_augmentations)
