@@ -41,14 +41,15 @@ class MetaModule(nn.Module):
             if key is None:
                 self._children_modules_parameters_cache[(key, all_names)] = all_names
 
-            key_escape = re.escape(key)
-            key_re = re.compile(r'^{0}\.(.+)'.format(key_escape))
-            # Compatibility with DataParallel
-            if not any(filter(key_re.match, all_names)):
-                key_re = re.compile(r'^module\.{0}\.(.+)'.format(key_escape))
+            else:
+                key_escape = re.escape(key)
+                key_re = re.compile(r'^{0}\.(.+)'.format(key_escape))
+                # Compatibility with DataParallel
+                if not any(filter(key_re.match, all_names)):
+                    key_re = re.compile(r'^module\.{0}\.(.+)'.format(key_escape))
 
-            self._children_modules_parameters_cache[(key, all_names)] = [
-                key_re.sub(r'\1', k) for k in all_names if key_re.match(k) is not None]
+                self._children_modules_parameters_cache[(key, all_names)] = [
+                    key_re.sub(r'\1', k) for k in all_names if key_re.match(k) is not None]
 
         names = self._children_modules_parameters_cache[(key, all_names)]
 
