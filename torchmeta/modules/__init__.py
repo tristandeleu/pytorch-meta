@@ -5,6 +5,7 @@ from torchmeta.modules.linear import MetaLinear, MetaBilinear
 from torchmeta.modules.module import MetaModule
 from torchmeta.modules.normalization import MetaLayerNorm
 from torchmeta.modules.parallel import DataParallel
+from torchmeta.modules.sparse import MetaEmbedding, MetaEmbeddingBag
 
 __all__ = [
     'MetaBatchNorm1d', 'MetaBatchNorm2d', 'MetaBatchNorm3d',
@@ -13,5 +14,6 @@ __all__ = [
     'MetaLinear', 'MetaBilinear',
     'MetaModule',
     'MetaLayerNorm',
-    'DataParallel'
+    'DataParallel',
+    'MetaEmbedding', 'MetaEmbeddingBag',
 ]
