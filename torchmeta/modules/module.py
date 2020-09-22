@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import re
+import warnings
 
 from collections import OrderedDict
 
@@ -52,5 +53,14 @@ class MetaModule(nn.Module):
                     key_re.sub(r'\1', k) for k in all_names if key_re.match(k) is not None]
 
         names = self._children_modules_parameters_cache[(key, all_names)]
+        if not names:
+            warnings.warn('Module `{0}` has no parameter corresponding to the '
+                          'submodule named `{1}` in the dictionary `params` '
+                          'provided as an argument to `forward()`. Using the '
+                          'default parameters for this submodule. The list of '
+                          'the parameters in `params`: [{2}].'.format(
+                          self.__class__.__name__, key, ', '.join(all_names)),
+                          stacklevel=2)
+            return None
 
         return OrderedDict([(name, params[f'{key}.{name}']) for name in names])
