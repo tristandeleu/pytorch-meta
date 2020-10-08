@@ -298,7 +298,7 @@ class CombinationMetaDataset(MetaDataset):
     def __len__(self):
         num_classes, length = len(self.dataset), 1
         for i in range(1, self.num_classes_per_task + 1):
-            length *= (num_classes - i + 1) // i
+            length *= (num_classes - i + 1) / i
 
         if length > sys.maxsize:
             warnings.warn('The number of possible tasks in {0} is '
@@ -310,7 +310,7 @@ class CombinationMetaDataset(MetaDataset):
                 'of the true number of tasks.'.format(self, len(self.dataset),
                 self.num_classes_per_task), UserWarning, stacklevel=2)
             length = sys.maxsize
-        return length
+        return int(length)
 
 
 def _seed_dataset_transform(transform, seed=None):
