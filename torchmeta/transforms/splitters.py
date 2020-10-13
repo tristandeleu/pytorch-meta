@@ -144,7 +144,7 @@ class ClassSplitter_(Splitter):
         all_class_indices = self._get_class_indices(task)
         indices = OrderedDict([(split, []) for split in self.splits])
 
-        for name, class_indices in all_class_indices.items():
+        for i, (name, class_indices) in enumerate(all_class_indices.items()):
             num_samples = len(class_indices)
             if num_samples < self._min_samples_per_class:
                 raise ValueError('The number of samples for class `{0}` ({1}) '
@@ -153,7 +153,7 @@ class ClassSplitter_(Splitter):
                     num_samples, self._min_samples_per_class))
 
             if self.shuffle:
-                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
+                seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -181,7 +181,7 @@ class ClassSplitter_(Splitter):
                     self._min_samples_per_class))
 
             if self.shuffle:
-                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
+                seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -307,11 +307,11 @@ class WeightedClassSplitter_(Splitter):
                     'required by `WeightedClassSplitter` ({1}).'.format(
                     min_samples, self._min_samples_per_class))
 
-        for class_indices in all_class_indices.values():
+        for i, class_indices in enumerate(all_class_indices.values()):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(class_indices))
             if self.shuffle:
-                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
+                seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -344,7 +344,7 @@ class WeightedClassSplitter_(Splitter):
             num_samples = (min_samples if self.force_equal_per_class
                 else len(dataset))
             if self.shuffle:
-                seed = (hash(task) + self.random_state_seed) % (2 ** 32)
+                seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
