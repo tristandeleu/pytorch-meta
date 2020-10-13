@@ -9,7 +9,6 @@ from torchmeta.utils.gradient_based import gradient_update_parameters
 
 is_multi_gpu = (torch.cuda.device_count() > 1)
 
-@pytest.fixture
 def model():
     model = MetaSequential(
         MetaLinear(2, 3, bias=True),
@@ -18,8 +17,10 @@ def model():
 
     return model
 
-@pytest.fixture
-def params():
+def linear_model():
+    return MetaLinear(2, 1)
+
+def params(prefix=''):
     device = torch.device('cuda:0')
     weight_0 = torch.tensor([
         [0.02, 0.03],
@@ -30,10 +31,21 @@ def params():
     weight_2 = torch.tensor([[0.29, 0.31, 0.37]],
                             device=device, dtype=torch.float32)
 
-    return {'0.weight': weight_0, '0.bias': bias_0, '2.weight': weight_2}
+    return ({f'{prefix}0.weight': weight_0, f'{prefix}0.bias': bias_0,
+            f'{prefix}2.weight': weight_2})
+
+def linear_params(prefix=''):
+    device = torch.device('cuda:0')
+    weight = torch.tensor([
+        [0.02, 0.03],
+        [0.05, 0.07]], device=device, dtype=torch.float32)
+    bias = torch.tensor([0.11], device=device, dtype=torch.float32)
+
+    return {f'{prefix}weight': weight, f'{prefix}bias': bias}
 
 
 @pytest.mark.skipif(not is_multi_gpu, reason='Requires Multi-GPU support')
+@pytest.mark.parametrize('model', [linear_model(), model()])
 def test_dataparallel(model):
     device = torch.device('cuda:0')
     model = DataParallel(model)
@@ -47,6 +59,12 @@ def test_dataparallel(model):
 
 
 @pytest.mark.skipif(not is_multi_gpu, reason='Requires Multi-GPU support')
+@pytest.mark.parametrize('model,params', [
+    (linear_model(), linear_params('')),
+    (linear_model(), linear_params('module.')),
+    (model(), params('')),
+    (model(), params('module.'))
+])
 def test_dataparallel_params(model, params):
     device = torch.device('cuda:0')
     model = DataParallel(model)
@@ -60,6 +78,7 @@ def test_dataparallel_params(model, params):
 
 
 @pytest.mark.skipif(not is_multi_gpu, reason='Requires Multi-GPU support')
+@pytest.mark.parametrize('model', [linear_model(), model()])
 def test_dataparallel_params_none(model):
     device = torch.device('cuda:0')
     model = DataParallel(model)
@@ -73,6 +92,7 @@ def test_dataparallel_params_none(model):
 
 
 @pytest.mark.skipif(not is_multi_gpu, reason='Requires Multi-GPU support')
+@pytest.mark.parametrize('model', [linear_model(), model()])
 def test_dataparallel_params_maml(model):
     device = torch.device('cuda:0')
     model = DataParallel(model)
