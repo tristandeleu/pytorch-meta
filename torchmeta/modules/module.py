@@ -40,24 +40,16 @@ class MetaModule(nn.Module):
         all_names = tuple(params.keys())
         if (key, all_names) not in self._children_modules_parameters_cache:
             if key is None:
-                self._children_modules_parameters_cache[(key, all_names)] = (all_names, False)
+                self._children_modules_parameters_cache[(key, all_names)] = all_names
 
             else:
                 key_escape = re.escape(key)
-                add_prefix = False
                 key_re = re.compile(r'^{0}\.(.+)'.format(key_escape))
-                # Compatibility with DataParallel
-                if not any(filter(key_re.match, all_names)):
-                    add_prefix = True
-                    key_re = re.compile(r'^module\.{0}\.(.+)'.format(key_escape))
 
-                names = [key_re.sub(r'\1', k) for k in all_names
-                         if key_re.match(k) is not None]
-                add_prefix &= (len(names) > 0)
+                self._children_modules_parameters_cache[(key, all_names)] = [
+                    key_re.sub(r'\1', k) for k in all_names if key_re.match(k) is not None]
 
-                self._children_modules_parameters_cache[(key, all_names)] = (names, add_prefix)
-
-        names, add_prefix = self._children_modules_parameters_cache[(key, all_names)]
+        names = self._children_modules_parameters_cache[(key, all_names)]
         if not names:
             warnings.warn('Module `{0}` has no parameter corresponding to the '
                           'submodule named `{1}` in the dictionary `params` '
@@ -67,6 +59,5 @@ class MetaModule(nn.Module):
                           self.__class__.__name__, key, ', '.join(all_names)),
                           stacklevel=2)
             return None
-        prefix = 'module.' if add_prefix else ''
 
-        return OrderedDict([(name, params[f'{prefix}{key}.{name}']) for name in names])
+        return OrderedDict([(name, params[f'{key}.{name}']) for name in names])
