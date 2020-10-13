@@ -60,9 +60,9 @@ def test_ridge_regression(reg_lambda, use_woodbury, scale, bias):
         loss += reg_lambda * torch.sum(solution.bias ** 2)
     loss.backward()
 
-    np.testing.assert_allclose(solution.weight.grad.numpy(), 0., atol=1e-5)
+    np.testing.assert_allclose(solution.weight.grad.numpy(), 0., atol=1e-4)
     if bias:
-        np.testing.assert_allclose(solution.bias.grad.numpy(), 0., atol=1e-5)
+        np.testing.assert_allclose(solution.bias.grad.numpy(), 0., atol=1e-4)
 
 
 @pytest.mark.parametrize('reg_lambda', [0.1, 1.])
@@ -149,6 +149,6 @@ def test_ridge_regression_regression_task(use_woodbury, scale, bias):
         loss += reg_lambda * torch.sum(solution.bias ** 2)
     loss.backward()
 
-    np.testing.assert_allclose(solution.weight.grad.numpy(), 0., atol=1e-5)
+    np.testing.assert_allclose(solution.weight.grad.numpy(), 0., atol=1e-4)
     if bias:
-        np.testing.assert_allclose(solution.bias.grad.numpy(), 0., atol=1e-5)
+        np.testing.assert_allclose(solution.bias.grad.numpy(), 0., atol=1e-4)
