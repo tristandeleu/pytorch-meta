@@ -36,10 +36,8 @@ def params(prefix=''):
 
 def linear_params(prefix=''):
     device = torch.device('cuda:0')
-    weight = torch.tensor([
-        [0.02, 0.03],
-        [0.05, 0.07]], device=device, dtype=torch.float32)
-    bias = torch.tensor([0.11], device=device, dtype=torch.float32)
+    weight = torch.tensor([[0.02, 0.03]], device=device, dtype=torch.float32)
+    bias = torch.tensor([0.05], device=device, dtype=torch.float32)
 
     return {f'{prefix}weight': weight, f'{prefix}bias': bias}
 

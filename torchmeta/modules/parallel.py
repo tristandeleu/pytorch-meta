@@ -1,4 +1,6 @@
 import torch
+import warnings
+
 from torch.nn import DataParallel as DataParallel_
 from torchmeta.modules.module import MetaModule
 from collections import OrderedDict
@@ -26,11 +28,20 @@ class DataParallel(DataParallel_, MetaModule):
 
     def _replicate_params(self, params, inputs, device_ids, detach=False):
         if params is None:
-            params = OrderedDict(self.module.named_parameters())
+            module_params = OrderedDict(self.module.named_parameters())
+        else:
+            # Temporarily disable the warning if no parameter with key prefix
+            # `module` was found. In that case, the original params dictionary
+            # is used.
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                module_params = self.get_subdict(params, key='module')
+            if module_params is None:
+                module_params = params
 
-        replicas = _broadcast_coalesced_reshape(list(params.values()),
+        replicas = _broadcast_coalesced_reshape(list(module_params.values()),
                                                 device_ids[:len(inputs)],
                                                 detach)
-        replicas = tuple(OrderedDict(zip(params.keys(), replica))
+        replicas = tuple(OrderedDict(zip(module_params.keys(), replica))
                          for replica in replicas)
         return replicas
