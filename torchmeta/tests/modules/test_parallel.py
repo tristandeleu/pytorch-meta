@@ -21,25 +21,28 @@ def linear_model():
     return MetaLinear(2, 1)
 
 def params(prefix=''):
-    device = torch.device('cuda:0')
     weight_0 = torch.tensor([
         [0.02, 0.03],
         [0.05, 0.07],
-        [0.11, 0.13]], device=device, dtype=torch.float32)
-    bias_0 = torch.tensor([0.17, 0.19, 0.23],
-                          device=device, dtype=torch.float32)
-    weight_2 = torch.tensor([[0.29, 0.31, 0.37]],
-                            device=device, dtype=torch.float32)
+        [0.11, 0.13]], dtype=torch.float32)
+    bias_0 = torch.tensor([0.17, 0.19, 0.23], dtype=torch.float32)
+    weight_2 = torch.tensor([[0.29, 0.31, 0.37]], dtype=torch.float32)
 
-    return ({f'{prefix}0.weight': weight_0, f'{prefix}0.bias': bias_0,
-            f'{prefix}2.weight': weight_2})
+    return ({
+        f'{prefix}0.weight': weight_0,
+        f'{prefix}0.bias': bias_0,
+        f'{prefix}2.weight': weight_2
+    })
 
 def linear_params(prefix=''):
-    device = torch.device('cuda:0')
-    weight = torch.tensor([[0.02, 0.03]], device=device, dtype=torch.float32)
-    bias = torch.tensor([0.05], device=device, dtype=torch.float32)
+    weight = torch.tensor([[0.02, 0.03]], dtype=torch.float32)
+    bias = torch.tensor([0.05], dtype=torch.float32)
 
     return {f'{prefix}weight': weight, f'{prefix}bias': bias}
+
+def _dict_to_device(params, device):
+    return dict((name, param.to(device=device))
+        for (name, param) in params.items())
 
 
 @pytest.mark.skipif(not is_multi_gpu, reason='Requires Multi-GPU support')
@@ -67,6 +70,7 @@ def test_dataparallel_params(model, params):
     device = torch.device('cuda:0')
     model = DataParallel(model)
     model.to(device=device)
+    params = _dict_to_device(params, device)
 
     inputs = torch.rand(5, 2).to(device=device)
     outputs = model(inputs, params=params)
