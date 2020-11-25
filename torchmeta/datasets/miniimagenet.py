@@ -5,7 +5,8 @@ import h5py
 import json
 
 from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchvision.datasets.utils import download_file_from_google_drive
+# QKFIX: See torchmeta.datasets.utils for more informations
+from torchmeta.datasets.utils import download_file_from_google_drive
 
 
 class MiniImagenet(CombinationMetaDataset):
