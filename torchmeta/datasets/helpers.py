@@ -1,7 +1,7 @@
 import warnings
 
 from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
-                                CUB, DoubleMNIST, TripleMNIST, Pascal5i)
+                                FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i)
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -10,6 +10,7 @@ __all__ = [
     'miniimagenet',
     'tieredimagenet',
     'cifar_fs',
+    'fc100',
     'cub',
     'doublemnist',
     'triplemnist'
@@ -204,6 +205,45 @@ def cifar_fs(folder, shots, ways, shuffle=True, test_shots=None,
     `datasets.cifar100.CIFARFS` : Meta-dataset for the CIFAR-FS dataset.
     """
     return helper_with_default(CIFARFS, folder, shots, ways,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, defaults={}, **kwargs)
+
+def fc100(folder, shots, ways, shuffle=True, test_shots=None,
+          seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the FC100 dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `cifar100` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `FC100` class.
+
+    See also
+    --------
+    `datasets.cifar100.FC100` : Meta-dataset for the FC100 dataset.
+    """
+    return helper_with_default(FC100, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults={}, **kwargs)
 
