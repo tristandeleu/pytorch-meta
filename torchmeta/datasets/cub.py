@@ -100,7 +100,9 @@ class CUB(CombinationMetaDataset):
 
 class CUBClassDataset(ClassDataset):
     folder = 'cub'
-    download_url = 'http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz'
+    # # Google Drive ID from http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz
+    gdrive_id = '1hbzc_P1FuxMkcabkgn9ZKinBwW683j45'
+    tgz_filename = 'CUB_200_2011.tgz'
     tgz_md5 = '97eceeb196236b17998738112f37df78'
     image_folder = 'CUB_200_2011/images'
 
@@ -179,10 +181,10 @@ class CUBClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        filename = os.path.basename(self.download_url)
-        download_url(self.download_url, self.root, filename, self.tgz_md5)
+        download_file_from_google_drive(self.gdrive_id, self.root,
+            self.tgz_filename, md5=self.tgz_md5)
 
-        tgz_filename = os.path.join(self.root, filename)
+        tgz_filename = os.path.join(self.root, self.tgz_filename)
         with tarfile.open(tgz_filename, 'r') as f:
             f.extractall(self.root)
         image_folder = os.path.join(self.root, self.image_folder)
