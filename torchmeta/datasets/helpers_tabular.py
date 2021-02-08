@@ -1,7 +1,7 @@
 import warnings
 
 from torchmeta.datasets import Covertype
-from torchmeta.transforms import Categorical, ClassSplitter, Co
+from torchmeta.transforms import Categorical, ClassSplitter
 from torchmeta.transforms.tabular_transforms import NumpyToTorch
 
 __all__ = [
