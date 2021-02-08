@@ -7,8 +7,10 @@ from torchmeta.datasets.omniglot import Omniglot
 from torchmeta.datasets.tieredimagenet import TieredImagenet
 from torchmeta.datasets.tcga import TCGA
 from torchmeta.datasets.pascal5i import Pascal5i
+from torchmeta.datasets.covertype_task_id_2118 import Covertype
 
 from torchmeta.datasets import helpers
+from torchmeta.datasets import helpers_tabular
 
 __all__ = [
     'TCGA',
@@ -21,5 +23,7 @@ __all__ = [
     'DoubleMNIST',
     'TripleMNIST',
     'Pascal5i',
-    'helpers'
+    'helpers',
+    'Covertype',
+    'helpers_tabular'
 ]
