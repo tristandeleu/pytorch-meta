@@ -1,11 +1,12 @@
 import warnings
 
-from torchmeta.datasets import Covertype
+from torchmeta.datasets import Covertype, Letter
 from torchmeta.transforms import Categorical, ClassSplitter
 from torchmeta.transforms.tabular_transforms import NumpyToTorch
 
 __all__ = [
-    'covertype'
+    'covertype',
+    'letter'
 ]
 
 
@@ -103,4 +104,31 @@ def covertype(folder: str, shots: int, ways: int, shuffle: bool=True,
                       "split, are label augmentation, it may be possible that there are not "
                       "enough classes in the split.".format(ways))
     return helper_with_default_tabular(Covertype, folder, shots, ways, shuffle=shuffle,
+                                       test_shots=test_shots, seed=seed, defaults=None, **kwargs)
+
+
+def letter(folder: str, shots: int, ways: int, shuffle: bool=True,
+              test_shots: int=None, seed: int=None, **kwargs) -> Letter:
+    """
+    Wrapper that creates a meta-dataset for the Letter Image Recognition dataset.
+
+    Todo fix docstring
+    Notes
+    --------
+    Letter has 26 classes in total with splits train/val/test : 3/2/2.
+
+    The ClassDataset currently uses benchlib to load the original dataset.
+    It might be better to directly load it from open-ml in the future.
+    https://code.amazon.com/packages/Benchlib/trees/mainline
+
+    See also
+    --------
+    `datasets.Letter` : Meta-dataset for the Letter dataset.
+    """
+    if ways > 3:
+        warnings.warn("The number of ways is ({0}), but the default splits train/val/test "
+                      "contain only 3/2/2 classes respectively. Unless you use a custom"
+                      "split, are label augmentation, it may be possible that there are not "
+                      "enough classes in the split.".format(ways))
+    return helper_with_default_tabular(Letter, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
