@@ -112,10 +112,9 @@ def letter(folder: str, shots: int, ways: int, shuffle: bool=True,
     """
     Wrapper that creates a meta-dataset for the Letter Image Recognition dataset.
 
-    Todo fix docstring
     Notes
     --------
-    Letter has 26 classes in total with splits train/val/test : 3/2/2.
+    Letter has 26 classes in total with default splits train/val/test : 15/5/6.
 
     The ClassDataset currently uses benchlib to load the original dataset.
     It might be better to directly load it from open-ml in the future.
@@ -125,10 +124,5 @@ def letter(folder: str, shots: int, ways: int, shuffle: bool=True,
     --------
     `datasets.Letter` : Meta-dataset for the Letter dataset.
     """
-    if ways > 3:
-        warnings.warn("The number of ways is ({0}), but the default splits train/val/test "
-                      "contain only 3/2/2 classes respectively. Unless you use a custom"
-                      "split, are label augmentation, it may be possible that there are not "
-                      "enough classes in the split.".format(ways))
     return helper_with_default_tabular(Letter, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
