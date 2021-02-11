@@ -374,6 +374,10 @@ class OneVsAllMetaDataset(MetaDataset):
                             target_transform=wrap_transform(Categorical(),
                                                             self._copy_categorical_2,
                                                             transform_type=Categorical))
+
+        # Todo: the task contains two ConcatTasks. The first one represents the dataset with the label `index'.
+        #  the second one represents the `'vs-all' dataset with all aother labels. The sampler samples shots corrently
+        #  but the targets show the tas_2 labels still for the second dataset. Not sure how to correct for this.
 #        task = ConcatTask([task_1, task_2],
 #                          self.num_classes_per_task,
 #                          target_transform=wrap_transform(Categorical(2),
