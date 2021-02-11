@@ -367,12 +367,12 @@ class OneVsAllMetaDataset(MetaDataset):
         dataset_one = ConcatTask([self.dataset[index]],
                                  1,
                                  target_transform=wrap_transform(Categorical(),
-                                                                 self._copy_categorical_1,
+                                                                 self._copy_categorical_one,
                                                                  transform_type=Categorical))
         dataset_vs_all = ConcatTask([self.dataset[i] for i in idx_set],
                                     1,
                                     target_transform=wrap_transform(Categorical(),
-                                                                    self._copy_categorical_2,
+                                                                    self._copy_categorical_vs_all,
                                                                     transform_type=Categorical))
 
         # Todo: the task contains two ConcatTasks. The first one represents the dataset with the label `index'.
@@ -390,14 +390,14 @@ class OneVsAllMetaDataset(MetaDataset):
 
         return task
 
-    def _copy_categorical_2(self, transform):
+    def _copy_categorical_vs_all(self, transform):
         assert isinstance(transform, Categorical)
         transform.reset()
         if transform.num_classes is None:
             transform.num_classes = len(self.dataset) - 1
         return deepcopy(transform)
 
-    def _copy_categorical_1(self, transform):
+    def _copy_categorical_one(self, transform):
         assert isinstance(transform, Categorical)
         transform.reset()
         if transform.num_classes is None:
