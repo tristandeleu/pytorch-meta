@@ -364,16 +364,16 @@ class OneVsAllMetaDataset(MetaDataset):
 
         # Use deepcopy on `Categorical` target transforms, to avoid any side
         # effect across tasks.
-        task_1 = ConcatTask([self.dataset[index]],
-                            1,
-                            target_transform=wrap_transform(Categorical(),
-                                                            self._copy_categorical_1,
-                                                            transform_type=Categorical))
-        task_2 = ConcatTask([self.dataset[i] for i in idx_set],
-                            1,
-                            target_transform=wrap_transform(Categorical(),
-                                                            self._copy_categorical_2,
-                                                            transform_type=Categorical))
+        dataset_one = ConcatTask([self.dataset[index]],
+                                 1,
+                                 target_transform=wrap_transform(Categorical(),
+                                                                 self._copy_categorical_1,
+                                                                 transform_type=Categorical))
+        dataset_vs_all = ConcatTask([self.dataset[i] for i in idx_set],
+                                    1,
+                                    target_transform=wrap_transform(Categorical(),
+                                                                    self._copy_categorical_2,
+                                                                    transform_type=Categorical))
 
         # Todo: the task contains two ConcatTasks. The first one represents the dataset with the label `index'.
         #  the second one represents the `'vs-all' dataset with all aother labels. The sampler samples shots corrently
@@ -383,7 +383,7 @@ class OneVsAllMetaDataset(MetaDataset):
 #                          target_transform=wrap_transform(Categorical(2),
 #                                                          self._copy_categorical,
 #                                                          transform_type=Categorical))
-        task = ConcatTask([task_1, task_2],
+        task = ConcatTask([dataset_one, dataset_vs_all],
                           self.num_classes_per_task)
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
