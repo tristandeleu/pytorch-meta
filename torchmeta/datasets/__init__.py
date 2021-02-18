@@ -10,6 +10,7 @@ from torchmeta.datasets.pascal5i import Pascal5i
 from torchmeta.datasets.letter_task_id_6 import Letter
 from torchmeta.datasets.one_hundred_plants_texture import PlantsTexture
 from torchmeta.datasets.one_hundred_plants_shape import PlantsShape
+from torchmeta.datasets.one_hundred_plants_margin import PlantsMargin
 
 from torchmeta.datasets import helpers
 from torchmeta.datasets import helpers_tabular
@@ -29,5 +30,6 @@ __all__ = [
     'Letter',
     'PlantsTexture',
     'PlantsShape',
+    'PlantsMargin',
     'helpers_tabular'
 ]

@@ -1,13 +1,14 @@
 import warnings
 
-from torchmeta.datasets import Letter, PlantsTexture, PlantsShape
+from torchmeta.datasets import Letter, PlantsTexture, PlantsShape, PlantsMargin
 from torchmeta.transforms import Categorical, ClassSplitter
 from torchmeta.transforms.tabular_transforms import NumpyToTorch
 
 __all__ = [
     'letter',
     'plants_texture',
-    'plants_shape'
+    'plants_shape',
+    'plants_margin'
 ]
 
 
@@ -134,4 +135,21 @@ def plants_shape(folder: str, shots: int, ways: int, shuffle: bool=True,
     `datasets.PlantsShape` : Meta-dataset for the PlantsShape dataset.
     """
     return helper_with_default_tabular(PlantsShape, folder, shots, ways, shuffle=shuffle,
+                                       test_shots=test_shots, seed=seed, defaults=None, **kwargs)
+
+
+def plants_margin(folder: str, shots: int, ways: int, shuffle: bool=True,
+                  test_shots: int=None, seed: int=None, **kwargs) -> PlantsMargin:
+    """
+    Wrapper that creates a meta-dataset for the PlantsMargin tabular dataset.
+
+    Notes
+    --------
+    PlantsMargin has 100 classes in total with default splits train/val/test : 70/15/15.
+
+    See also
+    --------
+    `datasets.PlantsMargin` : Meta-dataset for the PlantsMargin dataset.
+    """
+    return helper_with_default_tabular(PlantsMargin, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
