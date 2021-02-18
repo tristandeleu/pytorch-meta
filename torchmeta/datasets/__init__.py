@@ -7,7 +7,6 @@ from torchmeta.datasets.omniglot import Omniglot
 from torchmeta.datasets.tieredimagenet import TieredImagenet
 from torchmeta.datasets.tcga import TCGA
 from torchmeta.datasets.pascal5i import Pascal5i
-from torchmeta.datasets.covertype_task_id_2118 import Covertype
 from torchmeta.datasets.letter_task_id_6 import Letter
 from torchmeta.datasets.one_hundred_plants_texture import PlantsTexture
 
@@ -26,7 +25,6 @@ __all__ = [
     'TripleMNIST',
     'Pascal5i',
     'helpers',
-    'Covertype',
     'Letter',
     'PlantsTexture',
     'helpers_tabular'
