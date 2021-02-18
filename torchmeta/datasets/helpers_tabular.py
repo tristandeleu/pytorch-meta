@@ -1,12 +1,13 @@
 import warnings
 
-from torchmeta.datasets import Letter, PlantsTexture
+from torchmeta.datasets import Letter, PlantsTexture, PlantsShape
 from torchmeta.transforms import Categorical, ClassSplitter
 from torchmeta.transforms.tabular_transforms import NumpyToTorch
 
 __all__ = [
     'letter',
-    'plants_texture'
+    'plants_texture',
+    'plants_shape'
 ]
 
 
@@ -116,4 +117,21 @@ def plants_texture(folder: str, shots: int, ways: int, shuffle: bool=True,
     `datasets.PlantsTexture` : Meta-dataset for the PlantsTexture dataset.
     """
     return helper_with_default_tabular(PlantsTexture, folder, shots, ways, shuffle=shuffle,
+                                       test_shots=test_shots, seed=seed, defaults=None, **kwargs)
+
+
+def plants_shape(folder: str, shots: int, ways: int, shuffle: bool=True,
+                 test_shots: int=None, seed: int=None, **kwargs) -> PlantsShape:
+    """
+    Wrapper that creates a meta-dataset for the PlantsShape tabular dataset.
+
+    Notes
+    --------
+    PlantsShape has 100 classes in total with default splits train/val/test : 70/15/15.
+
+    See also
+    --------
+    `datasets.PlantsShape` : Meta-dataset for the PlantsShape dataset.
+    """
+    return helper_with_default_tabular(PlantsShape, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
