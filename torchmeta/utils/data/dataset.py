@@ -385,6 +385,9 @@ class OneVsAllMetaDataset(MetaDataset):
 #                                                          transform_type=Categorical))
         task = ConcatTask([dataset_one, dataset_vs_all],
                           self.num_classes_per_task)
+#        task.target_transform_append(wrap_transform(Categorical(2),
+#                                                    self._copy_categorical,
+#                                                    transform_type=Categorical))
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
 
