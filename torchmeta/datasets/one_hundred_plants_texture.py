@@ -12,7 +12,7 @@ class PlantsTexture(CombinationMetaDataset):
     """The PlantsTexture dataset """
     def __init__(self, root, num_classes_per_task=None, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=False, normalize=True):
+                 class_augmentations=None, download=False, normalize=False):
         """
         One-hundred plant species leaves dataset (Class = Texture) [1], [2], [3]
         https://archive.ics.uci.edu/ml/datasets/One-hundred+plant+species+leaves+data+set) - 2010
@@ -92,7 +92,7 @@ class PlantsTexture(CombinationMetaDataset):
             root directory (under the `one_hundred_plants_texture' folder). If the dataset
             is already available, this does not download/process the dataset again.
 
-        normalize : bool (default: `True`)
+        normalize : bool (default: `False`)
             If `True`, normalizes each feature f with (f-lower) / (upper - lower) where upper
             and lower are the min and max values of feature f of the meta-train dataset.
 
