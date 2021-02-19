@@ -216,33 +216,33 @@ class PlantsMarginClassDataset(ClassDataset):
         # for each meta-data-split, get the labels, then check which data-point belongs to the set (via a mask).
         # then, retrieve the features and targets belonging to the set. Then create hdf5 file for these features.
         for s, split in enumerate(['train', 'val', 'test']):
-            label_set = get_asset(self.folder, '{0}.json'.format(split))
-            label_set_integers = [int(l) for l in label_set]
+            labels_assets_split = get_asset(self.folder, '{0}.json'.format(split))
+            labels_assets_split_integers = [int(label) for label in labels_assets_split]
 
-            is_in_set = [t in label_set_integers for t in targets]
-            features_set = features[is_in_set, :]
-            targets_set = targets[is_in_set]
-            assert targets_set.shape[0] == features_set.shape[0]
+            is_in_split = [t in labels_assets_split_integers for t in targets]
+            features_split = features[is_in_split, :]
+            targets_split = targets[is_in_split]
+            assert targets_split.shape[0] == features_split.shape[0]
 
-            unique_targets_set = np.sort(np.unique(targets_set))
-            if len(label_set_integers) > unique_targets_set.shape[0]:
-                print(f"unique set of labels is smaller ({len(unique_targets_set.shape[0])}) than set of labels "
-                      f"given by assets ({len(label_set_integers)}). Proceeding with unique set of labels.")
+            unique_targets_split = np.sort(np.unique(targets_split))
+            if len(labels_assets_split) > unique_targets_split.shape[0]:
+                print(f"unique set of labels ({len(unique_targets_split.shape[0])}) is smaller than set of labels "
+                      f"given by assets ({len(labels_assets_split)}). Proceeding with unique set of labels.")
 
             # write unique targets to json file.
-            len_str = int(np.ceil(np.log10(unique_targets_set.shape[0] + 1)))
-            unique_targets_str = [str(i).zfill(len_str) for i in unique_targets_set]
+            len_str = int(np.ceil(np.log10(unique_targets_split.shape[0] + 1)))
+            unique_targets_split_str = [str(i).zfill(len_str) for i in unique_targets_split]
 
             labels_filename = os.path.join(self.root, self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:
-                json.dump(unique_targets_str, f)
+                json.dump(unique_targets_split_str, f)
 
             # normalize between 0 and 1 with stats from 'train' split only
             if split == 'train':
                 lower, upper = np.zeros(features.shape[1]), np.ones(features.shape[1])
                 if normalize:
-                    lower = np.min(features_set, axis=0)
-                    upper = np.max(features_set, axis=0)
+                    lower = np.min(features_split, axis=0)
+                    upper = np.max(features_split, axis=0)
                 self._lower_upper = {'lower': lower.tolist(), 'upper': upper.tolist()}
                 lower_upper_filename = os.path.join(self.root, self.filename_lower_upper)
                 with open(lower_upper_filename, 'w') as f:
@@ -251,15 +251,15 @@ class PlantsMarginClassDataset(ClassDataset):
             lower, upper = self.lower_upper
             lower = np.array(lower)
             upper = np.array(upper)
-            features_set = np.true_divide((features_set - lower), (upper - lower))
+            features_split = np.true_divide((features_split - lower), (upper - lower))
 
             # write data (features and class labels)
             filename = os.path.join(self.root, self.filename.format(split))
             with h5py.File(filename, 'w') as f:
                 group = f.create_group('datasets')
 
-                for i, label in enumerate(tqdm(unique_targets_str, desc=filename)):
-                    data_class = features_set[targets_set == int(label), :]
+                for i, label in enumerate(tqdm(unique_targets_split_str, desc=filename)):
+                    data_class = features_split[targets_split == int(label), :]
                     group.create_dataset(label, data=data_class)
 
 

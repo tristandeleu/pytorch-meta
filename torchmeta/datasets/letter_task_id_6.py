@@ -16,7 +16,8 @@ class Letter(CombinationMetaDataset):
         """
         Letter Image Recognition Data [1]:
 
-        https://archive.ics.uci.edu/ml/datasets/Letter+Recognition - 01-01-1991
+        Author: David J. Slate
+        Source: [UCI](https://archive.ics.uci.edu/ml/datasets/Letter+Recognition) - 01-01-1991
 
         The objective is to identify each of a large number of black-and-white
         rectangular pixel displays as one of the 26 capital letters in the English
@@ -29,13 +30,10 @@ class Letter(CombinationMetaDataset):
         to predict the letter category for the remaining 4000.  See the article
         cited above for more details.
 
-        The dataset is loaded and processed with benchlib. Originally it is from open-ml.
-        https://www.openml.org/d/6
-
         Parameters
         ----------
         root : string
-            Root directory where the dataset folder `letter_task_id_6` exists.
+            Root directory where the dataset folder `letter` exists.
 
         num_classes_per_task : int
             Number of classes per tasks. This corresponds to "N" in "N-way"
@@ -79,7 +77,7 @@ class Letter(CombinationMetaDataset):
 
         download : bool (default: `False`)
             If `True`, downloads the original files and processes the dataset in the
-            root directory (under the `letter_task_id_6` folder). If the dataset
+            root directory (under the `letter` folder). If the dataset
             is already available, this does not download/process the dataset again.
 
         References
@@ -103,10 +101,11 @@ class Letter(CombinationMetaDataset):
 
 class LetterClassDataset(ClassDataset):
 
-    benchlib_namespace = "openml_datasets"
-    benchlib_dataset_name = "letter_task_id_6"
+    open_ml_id = 6
+    open_ml_url = 'https://www.openml.org/d/' + str(open_ml_id)
+    dataset_name = "letter"
 
-    folder = "letter_task_id_6"
+    folder = "letter"
     filename = '{0}_data.hdf5'
     filename_labels = '{0}_labels.json'
 
@@ -172,67 +171,44 @@ class LetterClassDataset(ClassDataset):
         if self._check_integrity():
             return
 
-        from benchlib.datasets.syne_datasets import get_syne_dataset
-        from benchlib.datasets.data_detergent import DataDetergent
+        from sklearn.datasets import fetch_openml
 
-        # feature transforms are performed by the DataDetergent
-        d = DataDetergent(get_syne_dataset(namespace=self.benchlib_namespace,
-                                           dataset_name=self.benchlib_dataset_name + "/"),
-                          do_impute_nans=True,
-                          do_normalize_cols=True,
-                          do_remove_const_features=True)
-
-        # stack the features and targets into one big numpy array each, since we want a new split.
-        features = []
-        targets = []
-        for split in ['train', 'val', 'test']:
-            if split == 'train':
-                data = d.get_training_data()
-            elif split == 'val':
-                data = d.get_validation_data()
-            elif split == 'test':
-                data = d.get_test_data()
-            else:
-                raise ValueError(f"split {split} not found.")
-            features.append(data[0])
-            targets.append(data[1])
-        data = None
-        features = np.concatenate(features, axis=0)
-        targets = np.concatenate(targets, axis=0)
+        data = fetch_openml(data_id=self.open_ml_id)
+        features = data.data
+        targets = np.array([int(t) for t in data.target])
 
         # for each meta-data-split, get the labels, then check which data-point belongs to the set (via a mask).
         # then, retrieve the features and targets belonging to the set. Then create hdf5 file for these features.
         for s, split in enumerate(['train', 'val', 'test']):
-            label_set = get_asset(self.folder, '{0}.json'.format(split))
-            label_set_integers = [int(l) for l in label_set]
+            labels_assets_split = get_asset(self.folder, '{0}.json'.format(split))
+            labels_assets_split_integers = [int(label) for label in labels_assets_split]
 
-            is_in_set = [t in label_set_integers for t in targets]
-            features_set = features[is_in_set, :]
-            targets_set = targets[is_in_set]
-            assert targets_set.shape[0] == features_set.shape[0]
+            is_in_split = [t in labels_assets_split_integers for t in targets]
+            features_split = features[is_in_split, :]
+            targets_split = targets[is_in_split]
+            assert targets_split.shape[0] == features_split.shape[0]
 
-            unique_targets_set = np.sort(np.unique(targets_set))
-            if len(label_set_integers) > unique_targets_set.shape[0]:
-                print(f"unique set of labels is smaller ({len(unique_targets_set.shape[0])}) than set of labels "
-                      f"given by assets ({len(label_set_integers)}). Proceeding with unique set of labels.")
+            unique_targets_split = np.sort(np.unique(targets_split))
+            if len(labels_assets_split) > unique_targets_split.shape[0]:
+                print(f"unique set of labels ({len(unique_targets_split.shape[0])}) is smaller than set of labels "
+                      f"given by assets ({len(labels_assets_split)}). Proceeding with unique set of labels.")
 
-            # write unique targets with enough data to json file. this is not necessarily the same as the tag set
-            len_str = int(np.ceil(np.log10(unique_targets_set.shape[0] + 1)))
-            unique_targets_str = [str(i).zfill(len_str) for i in unique_targets_set]
+            # write unique targets to json file.
+            len_str = int(np.ceil(np.log10(unique_targets_split.shape[0] + 1)))
+            unique_targets_split_str = [str(i).zfill(len_str) for i in unique_targets_split]
 
             labels_filename = os.path.join(self.root, self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:
-                json.dump(unique_targets_str, f)
+                json.dump(unique_targets_split_str, f)
 
             # write data (features and class labels)
             filename = os.path.join(self.root, self.filename.format(split))
             with h5py.File(filename, 'w') as f:
                 group = f.create_group('datasets')
-                dtype = h5py.special_dtype(vlen=np.float64)
 
-                for i, label in enumerate(tqdm(unique_targets_str, desc=filename)):
-                    data_class = features_set[targets_set == int(label), :]
-                    group.create_dataset(label, data=data_class)  # , dtype=dtype)
+                for i, label in enumerate(tqdm(unique_targets_split_str, desc=filename)):
+                    data_class = features_split[targets_split == int(label), :]
+                    group.create_dataset(label, data=data_class)
 
 
 class LetterDataset(Dataset):
@@ -260,35 +236,31 @@ class LetterDataset(Dataset):
 def create_asset(root='data', number_of_classes_per_split=None, numpy_seed=42):
     """This methods creates the assets of the letter dataset. These are the meta-dataset splits from the
     original data. Only run this method in case you want to create new assets. Once created, copy the assets to
-    this directory: torchmeta.datasets.assets.letter_task_id_6. You can also manually change the assets."""
+    this directory: torchmeta.datasets.assets.letter. You can also manually change the assets."""
 
-    # split fractions: train, valid, tes
+    # number of classes per split: train, valid, test (26 classes in total)
     if number_of_classes_per_split is None:
         number_of_classes_per_split = {"train": 15,
                                        "val": 5,
                                        "test": 6}
+
+    #Todo get targets from somewhere
     num_classes = 0
     for key in number_of_classes_per_split:
         num_classes += number_of_classes_per_split[key]
     assert num_classes == 26
 
-    def make_split(num_classes, number_of_classes_per_split):
-        """get permutation of labels and split according to number of classes per split"""
-        np.random.seed(numpy_seed)
-
-        perm = np.random.permutation(num_classes)
-        class_splits = {}
-        start = 0
-        for split in ["train", "val", "test"]:
-            num_c = number_of_classes_per_split[split]
-
-            class_splits[split] = [str(i) for i in perm[start:start+num_c]]
-            start += num_c
-        return class_splits
-
     # Split the classes according to the number of classes per split, and store the splits in the data directory.
-    class_splits = make_split(num_classes, number_of_classes_per_split)
-    print(class_splits)
+    np.random.seed(numpy_seed)
+    perm = np.random.permutation(num_classes)
+    class_splits = {}
+    start = 0
+    for split in ["train", "val", "test"]:
+        num_c = number_of_classes_per_split[split]
+        class_splits[split] = [str(i) for i in perm[start:start+num_c]]
+        start += num_c
+
+    # write splits
     root_path = os.path.join(os.path.expanduser(root), LetterClassDataset.folder)
     for split in ["train", "val", "test"]:
         asset_filename = os.path.join(root_path, "{0}.json".format(split))
