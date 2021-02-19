@@ -92,13 +92,9 @@ def letter(folder: str, shots: int, ways: int, shuffle: bool=True,
     --------
     Letter has 26 classes in total with default splits train/val/test : 15/5/6.
 
-    The ClassDataset currently uses benchlib to load the original dataset.
-    It might be better to directly load it from open-ml in the future.
-    https://code.amazon.com/packages/Benchlib/trees/mainline
-
     See also
     --------
-    `datasets.Letter` : Meta-dataset for the Letter dataset.
+    `datasets.Letter` : CombinationMetaDataset for the Letter dataset.
     """
     return helper_with_default_tabular(Letter, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
@@ -115,7 +111,7 @@ def plants_texture(folder: str, shots: int, ways: int, shuffle: bool=True,
 
     See also
     --------
-    `datasets.PlantsTexture` : Meta-dataset for the PlantsTexture dataset.
+    `datasets.PlantsTexture` : CombinationMetaDataset for the PlantsTexture dataset.
     """
     return helper_with_default_tabular(PlantsTexture, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
@@ -149,7 +145,7 @@ def plants_margin(folder: str, shots: int, ways: int, shuffle: bool=True,
 
     See also
     --------
-    `datasets.PlantsMargin` : Meta-dataset for the PlantsMargin dataset.
+    `datasets.PlantsMargin` : CombinationMetaDataset for the PlantsMargin dataset.
     """
     return helper_with_default_tabular(PlantsMargin, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
