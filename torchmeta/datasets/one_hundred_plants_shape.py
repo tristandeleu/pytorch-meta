@@ -15,6 +15,7 @@ class PlantsShape(CombinationMetaDataset):
                  class_augmentations=None, download=False, normalize=False):
         """
         One-hundred plant species leaves dataset (Class = Shape) [1], [2], [3]
+        open-ml-id: 1492
         https://archive.ics.uci.edu/ml/datasets/One-hundred+plant+species+leaves+data+set) - 2010
 
 
@@ -211,31 +212,27 @@ class PlantsShapeClassDataset(ClassDataset):
 
         data = fetch_openml(data_id=self.open_ml_id)
         features = data.data
-        targets = np.array([int(t) for t in data.target])
+        targets = data.target
 
         # for each meta-data-split, get the labels, then check which data-point belongs to the set (via a mask).
         # then, retrieve the features and targets belonging to the set. Then create hdf5 file for these features.
         for s, split in enumerate(['train', 'val', 'test']):
             labels_assets_split = get_asset(self.folder, '{0}.json'.format(split))
-            labels_assets_split_integers = [int(label) for label in labels_assets_split]
 
-            is_in_split = [t in labels_assets_split_integers for t in targets]
+            is_in_split = [t in labels_assets_split for t in targets]
             features_split = features[is_in_split, :]
             targets_split = targets[is_in_split]
             assert targets_split.shape[0] == features_split.shape[0]
 
             unique_targets_split = np.sort(np.unique(targets_split))
             if len(labels_assets_split) > unique_targets_split.shape[0]:
-                print(f"unique set of labels ({len(unique_targets_split.shape[0])}) is smaller than set of labels "
+                print(f"unique set of labels ({(unique_targets_split.shape[0])}) is smaller than set of labels "
                       f"given by assets ({len(labels_assets_split)}). Proceeding with unique set of labels.")
 
             # write unique targets to json file.
-            len_str = int(np.ceil(np.log10(unique_targets_split.shape[0] + 1)))
-            unique_targets_split_str = [str(i).zfill(len_str) for i in unique_targets_split]
-
             labels_filename = os.path.join(self.root, self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:
-                json.dump(unique_targets_split_str, f)
+                json.dump(unique_targets_split, f)
 
             # normalize to zero mean ans standard deviation 1 with stats from 'train' split only
             if split == 'train':
@@ -259,8 +256,8 @@ class PlantsShapeClassDataset(ClassDataset):
             with h5py.File(filename, 'w') as f:
                 group = f.create_group('datasets')
 
-                for i, label in enumerate(tqdm(unique_targets_split_str, desc=filename)):
-                    data_class = features_split[targets_split == int(label), :]
+                for i, label in enumerate(tqdm(unique_targets_split, desc=filename)):
+                    data_class = features_split[targets_split == label, :]
                     group.create_dataset(label, data=data_class)
 
 
@@ -313,8 +310,8 @@ def create_asset(root='data', fractions=None, seed=42):
                      'val': [unique_targets[i] for i in perm[num_split[0]: num_split[0] + num_split[1]]],
                      'test': [unique_targets[i] for i in perm[num_split[0] + num_split[1]:]]}
 
+    # write splits
     root_path = os.path.join(os.path.expanduser(root), PlantsShapeClassDataset.folder)
-
     for split in ["train", "val", "test"]:
         asset_filename = os.path.join(root_path, "{0}.json".format(split))
         with open(asset_filename, 'w') as f:

@@ -7,7 +7,7 @@ from torchmeta.datasets.omniglot import Omniglot
 from torchmeta.datasets.tieredimagenet import TieredImagenet
 from torchmeta.datasets.tcga import TCGA
 from torchmeta.datasets.pascal5i import Pascal5i
-from torchmeta.datasets.letter_task_id_6 import Letter
+from torchmeta.datasets.letter import Letter
 from torchmeta.datasets.one_hundred_plants_texture import PlantsTexture
 from torchmeta.datasets.one_hundred_plants_shape import PlantsShape
 from torchmeta.datasets.one_hundred_plants_margin import PlantsMargin
@@ -16,6 +16,7 @@ from torchmeta.datasets import helpers
 from torchmeta.datasets import helpers_tabular
 
 __all__ = [
+    # image data
     'TCGA',
     'Omniglot',
     'MiniImagenet',
@@ -27,6 +28,7 @@ __all__ = [
     'TripleMNIST',
     'Pascal5i',
     'helpers',
+    # tabular data
     'Letter',
     'PlantsTexture',
     'PlantsShape',
