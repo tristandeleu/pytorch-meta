@@ -1,6 +1,6 @@
 import warnings
 
-from torchmeta.datasets import Letter, PlantsTexture, PlantsShape, PlantsMargin
+from torchmeta.datasets import Letter, PlantsTexture, PlantsShape, PlantsMargin, Bach
 from torchmeta.transforms import Categorical, ClassSplitter
 from torchmeta.transforms.tabular_transforms import NumpyToTorch
 
@@ -8,7 +8,8 @@ __all__ = [
     'letter',
     'plants_texture',
     'plants_shape',
-    'plants_margin'
+    'plants_margin',
+    'bach'
 ]
 
 
@@ -149,3 +150,23 @@ def plants_margin(folder: str, shots: int, ways: int, shuffle: bool=True,
     """
     return helper_with_default_tabular(PlantsMargin, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None, **kwargs)
+
+
+def bach(folder: str, shots: int, ways: int, shuffle: bool=True, test_shots: int=None,
+         min_num_samples_per_class: int=None, seed: int=None, **kwargs) -> Bach:
+    """
+    Wrapper that creates a meta-dataset for the Bach tabular dataset.
+
+    Notes
+    --------
+    Bach has 101 classes in total with default splits train/val/test : 70/15/15. # Todo change
+
+    See also
+    --------
+    `datasets.Bach` : CombinationMetaDataset for the Bach dataset.
+    """
+    if min_num_samples_per_class is None:
+        min_num_samples_per_class = int(2 * shots)
+    return helper_with_default_tabular(Bach, folder, shots, ways, shuffle=shuffle,
+                                       test_shots=test_shots, seed=seed, defaults=None,
+                                       min_num_samples_per_class=min_num_samples_per_class, **kwargs)

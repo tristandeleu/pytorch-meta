@@ -11,6 +11,7 @@ from torchmeta.datasets.letter import Letter
 from torchmeta.datasets.one_hundred_plants_texture import PlantsTexture
 from torchmeta.datasets.one_hundred_plants_shape import PlantsShape
 from torchmeta.datasets.one_hundred_plants_margin import PlantsMargin
+from torchmeta.datasets.bach import Bach
 
 from torchmeta.datasets import helpers
 from torchmeta.datasets import helpers_tabular
@@ -33,5 +34,6 @@ __all__ = [
     'PlantsTexture',
     'PlantsShape',
     'PlantsMargin',
+    'Bach',
     'helpers_tabular'
 ]

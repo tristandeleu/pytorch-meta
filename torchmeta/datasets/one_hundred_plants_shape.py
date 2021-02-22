@@ -12,7 +12,7 @@ class PlantsShape(CombinationMetaDataset):
     """The PlantsShape dataset """
     def __init__(self, root, num_classes_per_task=None, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=False, normalize=False):
+                 class_augmentations=None, download=False, process_features=False):
         """
         One-hundred plant species leaves dataset (Class = Shape) [1], [2], [3]
         open-ml-id: 1492
@@ -93,7 +93,7 @@ class PlantsShape(CombinationMetaDataset):
             root directory (under the `one_hundred_plants_shape' folder). If the dataset
             is already available, this does not download/process the dataset again.
 
-        normalize : bool (default: `False`)
+        process_features : bool (default: `False`)
             If `True`, normalizes each feature f according to with (f-mean) / (std + 1e-10) where
             mean and std are the mean and standard deviation of the feature f of the meta-train dataset.
 
@@ -113,14 +113,14 @@ class PlantsShape(CombinationMetaDataset):
 
         """
         dataset = PlantsShapeClassDataset(root,
-                                            meta_train=meta_train,
-                                            meta_val=meta_val,
-                                            meta_test=meta_test,
-                                            meta_split=meta_split,
-                                            transform=transform,
-                                            class_augmentations=class_augmentations,
-                                            download=download,
-                                            normalize=normalize)
+                                          meta_train=meta_train,
+                                          meta_val=meta_val,
+                                          meta_test=meta_test,
+                                          meta_split=meta_split,
+                                          transform=transform,
+                                          class_augmentations=class_augmentations,
+                                          download=download,
+                                          normalize=process_features)
         super(PlantsShape, self).__init__(dataset,
                                             num_classes_per_task,
                                             target_transform=target_transform,

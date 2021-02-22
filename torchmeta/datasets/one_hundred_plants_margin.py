@@ -12,7 +12,7 @@ class PlantsMargin(CombinationMetaDataset):
     """The PlantsMargin dataset """
     def __init__(self, root, num_classes_per_task=None, meta_train=False, meta_val=False, meta_test=False,
                  meta_split=None, transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=False, normalize=False):
+                 class_augmentations=None, download=False, process_features=False):
         """
         One-hundred plant species leaves dataset (Class = Margin) [1], [2], [3]
         open-ml-id: 1491
@@ -93,7 +93,7 @@ class PlantsMargin(CombinationMetaDataset):
             root directory (under the `one_hundred_plants_margin' folder). If the dataset
             is already available, this does not download/process the dataset again.
 
-        normalize : bool (default: `False`)
+        process_features : bool (default: `False`)
             If `True`, normalizes each feature f with (f-lower) / (upper - lower) where upper
             and lower are the min and max values of feature f of the meta-train dataset.
 
@@ -113,14 +113,14 @@ class PlantsMargin(CombinationMetaDataset):
 
         """
         dataset = PlantsMarginClassDataset(root,
-                                            meta_train=meta_train,
-                                            meta_val=meta_val,
-                                            meta_test=meta_test,
-                                            meta_split=meta_split,
-                                            transform=transform,
-                                            class_augmentations=class_augmentations,
-                                            download=download,
-                                            normalize=normalize)
+                                           meta_train=meta_train,
+                                           meta_val=meta_val,
+                                           meta_test=meta_test,
+                                           meta_split=meta_split,
+                                           transform=transform,
+                                           class_augmentations=class_augmentations,
+                                           download=download,
+                                           normalize=process_features)
         super(PlantsMargin, self).__init__(dataset,
                                             num_classes_per_task,
                                             target_transform=target_transform,
