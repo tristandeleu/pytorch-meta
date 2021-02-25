@@ -166,7 +166,10 @@ def bach(folder: str, shots: int, ways: int, shuffle: bool=True, test_shots: int
     `datasets.Bach` : CombinationMetaDataset for the Bach dataset.
     """
     if min_num_samples_per_class is None:
-        min_num_samples_per_class = int(2 * shots)
+        if test_shots is None:
+            min_num_samples_per_class = int(2 * shots)
+        else:
+            min_num_samples_per_class = int(test_shots + shots)
     return helper_with_default_tabular(Bach, folder, shots, ways, shuffle=shuffle,
                                        test_shots=test_shots, seed=seed, defaults=None,
                                        min_num_samples_per_class=min_num_samples_per_class, **kwargs)
