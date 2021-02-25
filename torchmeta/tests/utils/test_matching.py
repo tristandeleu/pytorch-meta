@@ -62,7 +62,7 @@ def test_pairwise_similarity_zero():
                 similarities_np[i, j, k] /= max(norm1_np[i, j] * norm2_np[i, k], eps)
     np.testing.assert_allclose(similarities_th.numpy(), similarities_np, atol=1e-5)
 
-
+@flaky
 def test_matching_log_probas():
     num_classes = 11
     eps = 1e-8

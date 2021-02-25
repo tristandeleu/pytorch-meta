@@ -37,7 +37,8 @@ setup(
         'h5py',
         'tqdm>=4.0.0',
         'requests',  # Required by Torchvision
-        'ordered-set'
+        'ordered-set',
+        'flaky'
     ],
     extras_require=extras,
     package_data={'torchmeta': ['torchmeta/datasets/assets/*']},
