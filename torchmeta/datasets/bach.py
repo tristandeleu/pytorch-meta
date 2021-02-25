@@ -172,6 +172,10 @@ class BachClassDataset(ClassDataset):
         if download:
             self.download(process_features, min_num_samples_per_class)
 
+        if min_num_samples_per_class != self.meta_data["min_num_data_per_class"]:
+            raise ValueError("min_num_samples_per_class given ({0}) does not match existing value"
+                             "({1}).".format(min_num_samples_per_class, self.meta_data["min_num_data_per_class"]))
+
         if not self._check_integrity():
             raise RuntimeError('Bach integrity check failed')
         self._num_classes = len(self.labels)
