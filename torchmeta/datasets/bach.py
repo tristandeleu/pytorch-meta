@@ -287,9 +287,9 @@ class BachClassDataset(ClassDataset):
         # for each meta-data-split, get the labels, then check which data-point belongs to the set (via a mask).
         # then, retrieve the features and targets belonging to the set. Then create hdf5 file for these features.
         for s, split in enumerate(['train', 'val', 'test']):
-            labels_assets_split = get_asset(self.folder, '{0}.json'.format(split))
+            targets_assets_split = get_asset(self.folder, '{0}.json'.format(split))
 
-            is_in_split = [t in labels_assets_split for t in targets]
+            is_in_split = [t in targets_assets_split for t in targets]
             features_split = features[is_in_split, :]
             targets_split = targets[is_in_split]
             assert targets_split.shape[0] == features_split.shape[0]
