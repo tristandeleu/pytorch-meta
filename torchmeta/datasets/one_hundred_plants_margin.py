@@ -232,7 +232,7 @@ class PlantsMarginClassDataset(ClassDataset):
             # write unique targets to json file.
             labels_filename = os.path.join(self.root, self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:
-                json.dump(unique_targets_split, f)
+                json.dump(unique_targets_split.tolist(), f)
 
             # normalize between 0 and 1 with stats from 'train' split only
             if split == 'train':
