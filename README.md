@@ -24,6 +24,12 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Triple MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
   - **Few-shot segmentation** (semantic segmentation):
     - Pascal5i 1-way Setup
+  - **Few-shot classification (tabular datasets)**
+    - Letter ([Frey & Slate, 1991](https://www.openml.org/d/6))
+    - One Hundred Plants (Margin) ([Mallah et al. 2013](https://www.openml.org/d/1491))
+    - One Hundred Plants (Shape) ([Mallah et al. 2013](https://www.openml.org/d/1492))
+    - One Hundred Plants (Texture) ([Mallah et al. 2013](https://www.openml.org/d/1493))
+    - Bach-Choral-Harmony ([Radicioni & Esposito, 2010](https://www.openml.org/d/4552))
 
 ## Installation
 You can install Torchmeta either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/). To install `virtualenv`:
