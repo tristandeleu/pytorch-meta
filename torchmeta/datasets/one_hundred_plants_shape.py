@@ -94,7 +94,7 @@ class PlantsShape(CombinationMetaDataset):
             is already available, this does not download/process the dataset again.
 
         process_features : bool (default: `False`)
-            If `True`, normalizes each feature f according to with (f-mean) / (std + 1e-10) where
+            If `True`, normalizes each feature f according to (f-mean) / (std + 1e-10) where
             mean and std are the mean and standard deviation of the feature f of the meta-train dataset.
 
         References
@@ -217,24 +217,24 @@ class PlantsShapeClassDataset(ClassDataset):
         # for each meta-data-split, get the labels, then check which data-point belongs to the set (via a mask).
         # then, retrieve the features and targets belonging to the set. Then create hdf5 file for these features.
         for s, split in enumerate(['train', 'val', 'test']):
-            labels_assets_split = get_asset(self.folder, '{0}.json'.format(split))
+            targets_assets_split = get_asset(self.folder, '{0}.json'.format(split))
 
-            is_in_split = [t in labels_assets_split for t in targets]
+            is_in_split = [t in targets_assets_split for t in targets]
             features_split = features[is_in_split, :]
             targets_split = targets[is_in_split]
             assert targets_split.shape[0] == features_split.shape[0]
 
             unique_targets_split = np.sort(np.unique(targets_split))
-            if len(labels_assets_split) > unique_targets_split.shape[0]:
+            if len(targets_assets_split) > unique_targets_split.shape[0]:
                 print(f"unique set of labels ({(unique_targets_split.shape[0])}) is smaller than set of labels "
-                      f"given by assets ({len(labels_assets_split)}). Proceeding with unique set of labels.")
+                      f"given by assets ({len(targets_assets_split)}). Proceeding with unique set of labels.")
 
             # write unique targets to json file.
             labels_filename = os.path.join(self.root, self.filename_labels.format(split))
             with open(labels_filename, 'w') as f:
                 json.dump(unique_targets_split, f)
 
-            # normalize to zero mean ans standard deviation 1 with stats from 'train' split only
+            # normalize to zero mean and standard deviation 1 with stats from 'train' split only
             if split == 'train':
                 mean, std = np.zeros(features.shape[1]), np.ones(features.shape[1])
                 if normalize:
