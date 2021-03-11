@@ -5,7 +5,11 @@ from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
 from torchmeta.utils.data.dataset import CombinationMetaDataset, OneVsAllMetaDataset, SequenceMetaDataset
 
-__all__ = ['CombinationSequentialSampler', 'CombinationRandomSampler']
+__all__ = ['CombinationSequentialSampler',
+           'CombinationRandomSampler',
+           'OneVsAllSequentialSampler',
+           'OneVsAllRandomSampler'
+           ]
 
 
 class CombinationSequentialSampler(SequentialSampler):

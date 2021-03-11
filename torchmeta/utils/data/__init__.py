@@ -1,7 +1,8 @@
 from torchmeta.utils.data.dataloader import MetaDataLoader, BatchMetaDataLoader
 from torchmeta.utils.data.dataset import ClassDataset, MetaDataset, CombinationMetaDataset, OneVsAllMetaDataset, \
     SequenceMetaDataset
-from torchmeta.utils.data.sampler import CombinationSequentialSampler, CombinationRandomSampler
+from torchmeta.utils.data.sampler import CombinationSequentialSampler, CombinationRandomSampler, \
+    OneVsAllRandomSampler, OneVsAllSequentialSampler
 from torchmeta.utils.data.task import Dataset, Task, ConcatTask, SubsetTask
 from torchmeta.utils.data.wrappers import NonEpisodicWrapper
 
@@ -11,13 +12,15 @@ __all__ = [
     'ClassDataset',
     'MetaDataset',
     'CombinationMetaDataset',
+    'OneVsAllMetaDataset',
+    'SequenceMetaDataset',
     'CombinationSequentialSampler',
     'CombinationRandomSampler',
+    'OneVsAllSequentialSampler',
+    'OneVsAllRandomSampler',
     'Dataset',
     'Task',
     'ConcatTask',
     'SubsetTask',
-    'NonEpisodicWrapper',
-    'OneVsAllMetaDataset',
-    'SequenceMetaDataset'
+    'NonEpisodicWrapper'
 ]
