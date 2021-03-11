@@ -4,9 +4,38 @@ import glob
 import h5py
 from PIL import Image, ImageOps
 
-from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset, OneVsAllMetaDataset
+from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset, OneVsAllMetaDataset, SequenceMetaDataset
 from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
+
+
+class OmniglotSequence(SequenceMetaDataset):
+    """
+    The Omniglot dataset that gives a sequence of tasks.
+
+    References
+    -----
+    See torchmeta.datasets.Omniglot for references and docstring.
+
+    Notes
+    -----
+    The parameter num_classes_per_task is set to 1 per default, as the tasks contain 1 label only.
+    """
+    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
+                 meta_split=None, use_vinyals_split=True, transform=None,
+                 target_transform=None, dataset_transform=None, class_augmentations=None,
+                 download=False):
+        dataset = OmniglotClassDataset(root,
+                                       meta_train=meta_train,
+                                       meta_val=meta_val, meta_test=meta_test,
+                                       use_vinyals_split=use_vinyals_split,
+                                       transform=transform,
+                                       meta_split=meta_split,
+                                       class_augmentations=class_augmentations,
+                                       download=download)
+        super(SequenceMetaDataset, self).__init__(dataset,
+                                                  target_transform=target_transform,
+                                                  dataset_transform=dataset_transform)
 
 
 class OmniglotOneVsAll(OneVsAllMetaDataset):

@@ -12,7 +12,7 @@ from torchmeta.utils.data.task import ConcatTask
 from torchmeta.transforms import FixedCategory, Categorical, DefaultTargetTransform
 from torchmeta.transforms.utils import wrap_transform
 
-__all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset', 'OneVsAllMetaDataset']
+__all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset', 'OneVsAllMetaDataset', 'SequenceMetaDataset']
 
 
 class ClassDataset(object):
@@ -417,6 +417,73 @@ class OneVsAllMetaDataset(MetaDataset):
 
     def __len__(self):
         # for 1 vs all, there are as many tasks as number of labels
+        return len(self.dataset)
+
+
+class SequenceMetaDataset(MetaDataset):
+    """Base class for a meta-dataset, where the tasks are a simple sequence
+    of the classes (there os oly one class per task).
+
+    Parameters
+    ----------
+    dataset : `ClassDataset` instance
+        A dataset of classes. Each item of `dataset` is a dataset, containing
+        all the examples from the same class.
+
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed
+        version. See also `torchvision.transforms`.
+
+    dataset_transform : callable, optional
+        A function/transform that takes a dataset (ie. a task), and returns a
+        transformed version of it. E.g. `transforms.ClassSplitter()`.
+    """
+    def __init__(self, dataset, target_transform=None, dataset_transform=None):
+        self.dataset = dataset
+        self.num_classes_per_task = 1  # 1 vs all is binary
+        # If no target_transform, then use a default target transform that
+        # is well behaved for the `default_collate` function (assign class
+        # augmentations ot integers).
+        if target_transform is None:
+            target_transform = DefaultTargetTransform(dataset.class_augmentations)
+
+        super(SequenceMetaDataset, self).__init__(meta_train=dataset.meta_train,
+            meta_val=dataset.meta_val, meta_test=dataset.meta_test,
+            meta_split=dataset.meta_split, target_transform=target_transform,
+            dataset_transform=dataset_transform)
+
+    def __iter__(self):
+        num_classes = len(self.dataset)
+        for index in range(num_classes):
+            yield self[index]
+
+    def sample_task(self):
+        index = self.np_random.randint(len(self.dataset))
+        return self[index]
+
+    def __getitem__(self, index):
+        if not isinstance(index, int):
+            raise ValueError('The index of a `OneVsAllMetaDataset` must be an integer')
+        # Use deepcopy on `Categorical` target transforms, to avoid any side
+        # effect across tasks.
+        task = ConcatTask([self.dataset[index]],
+                           1,
+                           target_transform=wrap_transform(Categorical(),
+                                                           self._copy_categorical,
+                                                           transform_type=Categorical))
+        if self.dataset_transform is not None:
+            task = self.dataset_transform(task)
+        return task
+
+    def _copy_categorical(self, transform):
+        assert isinstance(transform, Categorical)
+        transform.reset()
+        if transform.num_classes is None:
+            transform.num_classes = self.num_classes_per_task
+        return deepcopy(transform)
+
+    def __len__(self):
+        # for a simple sequence, there areas many tasks as number of labels
         return len(self.dataset)
 
 

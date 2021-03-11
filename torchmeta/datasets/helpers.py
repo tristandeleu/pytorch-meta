@@ -2,7 +2,7 @@ import warnings
 
 from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
                                 FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i,
-                                OmniglotOneVsAll)
+                                OmniglotOneVsAll, OmniglotSequence)
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -15,7 +15,8 @@ __all__ = [
     'cub',
     'doublemnist',
     'triplemnist',
-    'omniglot_onevsall'
+    'omniglot_onevsall',
+    'omniglot_sequence'
 ]
 
 def helper_with_default(klass, folder, shots, ways, shuffle=True,
@@ -441,9 +442,7 @@ def helper_with_default_onevsall(klass, folder, shots, shuffle=True,
 
 def omniglot_onevsall(folder, shots, shuffle=True, test_shots=None,
                       seed=None, **kwargs):
-    """Helper function to create a meta-dataset for the Omniglot dataset.
-
-    """
+    """Helper function to create a meta-dataset for the Omniglot dataset."""
 #    defaults = {
 #        'transform': Compose([Resize(28), ToTensor()]),
 #        'class_augmentations': [Rotation([90, 180, 270])]
@@ -453,3 +452,14 @@ def omniglot_onevsall(folder, shots, shuffle=True, test_shots=None,
     return helper_with_default_onevsall(OmniglotOneVsAll, folder, shots,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults=defaults, **kwargs)
+
+
+def omniglot_sequence(folder, shots, shuffle=True, test_shots=None,
+                      seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset."""
+    defaults = {'transform': Compose([Resize(28), ToTensor()])}
+
+    return helper_with_default_onevsall(OmniglotSequence, folder, shots,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, defaults=defaults, **kwargs)
+# Todo: does this use the right sampler?
