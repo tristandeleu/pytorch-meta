@@ -7,8 +7,8 @@ from torchmeta.utils.data.dataset import CombinationMetaDataset, OneVsAllMetaDat
 
 __all__ = ['CombinationSequentialSampler',
            'CombinationRandomSampler',
-           'OneVsAllSequentialSampler',
-           'OneVsAllRandomSampler'
+           'OneClassSequentialSampler',
+           'OneClassRandomSampler'
            ]
 
 
@@ -48,7 +48,7 @@ class CombinationRandomSampler(RandomSampler):
             yield tuple(random.sample(range(num_classes), num_classes_per_task))
 
 
-class OneVsAllRandomSampler(RandomSampler):
+class OneClassRandomSampler(RandomSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, OneVsAllMetaDataset):
             raise TypeError('Expected `data_source` to be an instance of '
@@ -60,7 +60,7 @@ class OneVsAllRandomSampler(RandomSampler):
         # does not use the length of the dataset.
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            super(OneVsAllRandomSampler, self).__init__(data_source,
+            super(OneClassRandomSampler, self).__init__(data_source,
                                                         replacement=True)
 
     def __iter__(self):
@@ -69,13 +69,13 @@ class OneVsAllRandomSampler(RandomSampler):
             yield random.randint(0, num_classes-1)
 
 
-class OneVsAllSequentialSampler(SequentialSampler):
+class OneClassSequentialSampler(SequentialSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, OneVsAllMetaDataset):
             raise TypeError('Expected `data_source` to be an instance of '
                             '`OneVsAllMetaDataset`, but found '
                             '{0}'.format(type(data_source)))
-        super(OneVsAllSequentialSampler, self).__init__(data_source)
+        super(OneClassSequentialSampler, self).__init__(data_source)
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)

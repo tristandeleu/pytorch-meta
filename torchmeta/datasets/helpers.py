@@ -452,14 +452,3 @@ def omniglot_onevsall(folder, shots, shuffle=True, test_shots=None,
     return helper_with_default_onevsall(OmniglotOneVsAll, folder, shots,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults=defaults, **kwargs)
-
-
-def omniglot_sequence(folder, shots, shuffle=True, test_shots=None,
-                      seed=None, **kwargs):
-    """Helper function to create a meta-dataset for the Omniglot dataset."""
-    defaults = {'transform': Compose([Resize(28), ToTensor()])}
-
-    return helper_with_default_onevsall(OmniglotSequence, folder, shots,
-                               shuffle=shuffle, test_shots=test_shots,
-                               seed=seed, defaults=defaults, **kwargs)
-# Todo: does this use the right sampler?
