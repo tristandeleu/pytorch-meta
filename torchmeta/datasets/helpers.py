@@ -2,7 +2,7 @@ import warnings
 
 from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
                                 FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i,
-                                OmniglotOneVsAll, OmniglotSequence)
+                                OmniglotOneVsAll)
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -15,8 +15,7 @@ __all__ = [
     'cub',
     'doublemnist',
     'triplemnist',
-    'omniglot_onevsall',
-    'omniglot_sequence'
+    'omniglot_onevsall'
 ]
 
 def helper_with_default(klass, folder, shots, ways, shuffle=True,

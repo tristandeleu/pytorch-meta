@@ -12,7 +12,7 @@ from torchmeta.utils.data.task import ConcatTask
 from torchmeta.transforms import FixedCategory, Categorical, DefaultTargetTransform
 from torchmeta.transforms.utils import wrap_transform
 
-__all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset', 'OneVsAllMetaDataset', 'SequenceMetaDataset']
+__all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset', 'OneVsAllMetaDataset']
 
 
 class ClassDataset(object):

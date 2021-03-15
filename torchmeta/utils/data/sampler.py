@@ -3,7 +3,7 @@ import warnings
 from itertools import combinations
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
-from torchmeta.utils.data.dataset import CombinationMetaDataset, OneVsAllMetaDataset, SequenceMetaDataset
+from torchmeta.utils.data.dataset import CombinationMetaDataset, OneVsAllMetaDataset
 
 __all__ = ['CombinationSequentialSampler',
            'CombinationRandomSampler',
