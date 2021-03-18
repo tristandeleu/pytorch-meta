@@ -9,7 +9,7 @@ from ordered_set import OrderedSet
 from torchvision.transforms import Compose
 
 from torchmeta.utils.data.task import ConcatTask
-from torchmeta.transforms import FixedCategory, Categorical, DefaultTargetTransform
+from torchmeta.transforms import FixedCategory, Categorical, DefaultTargetTransform, SetCategory
 from torchmeta.transforms.utils import wrap_transform
 
 __all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset', 'OneVsAllMetaDataset']
@@ -317,6 +317,9 @@ class OneVsAllMetaDataset(MetaDataset):
     """Base class for a meta-dataset, where the classification tasks are over
     one vs. all classes from a `ClassDataset`.
 
+    Every task is a binary classification problem where the class 0 is given by
+    one category, and the class 1 is given by all other categories.
+
     Parameters
     ----------
     dataset : `ClassDataset` instance
@@ -331,8 +334,7 @@ class OneVsAllMetaDataset(MetaDataset):
         A function/transform that takes a dataset (ie. a task), and returns a
         transformed version of it. E.g. `transforms.ClassSplitter()`.
     """
-    def __init__(self, dataset, target_transform=None,
-                 dataset_transform=None):
+    def __init__(self, dataset, target_transform=None, dataset_transform=None):
         self.dataset = dataset
         self.num_classes_per_task = 2  # 1 vs all is binary
         # If no target_transform, then use a default target transform that
@@ -357,52 +359,42 @@ class OneVsAllMetaDataset(MetaDataset):
 
     def __getitem__(self, index):
         if not isinstance(index, int):
-            raise ValueError('The index of a `OneVsAllMetaDataset` must be an integer')
-        # create 2 datasets for the task: first one corresponds to label=index, second one contains all other labels
-        idx_set = [i for i in range(len(self.dataset))]
+            raise ValueError('The index of a `OneVsAllMetaDataset` must be an integer, '
+                             '({0}) given.'.format(type(index)))
+
+        idx_set = [*range(len(self.dataset))]
         del idx_set[index]
 
-        # Use deepcopy on `Categorical` target transforms, to avoid any side
+        # Use deepcopy on `SetCategory` target transforms, to avoid any side
         # effect across tasks.
         dataset_one = ConcatTask([self.dataset[index]],
                                  1,
-                                 target_transform=wrap_transform(Categorical(),
-                                                                 self._copy_categorical_one,
-                                                                 transform_type=Categorical))
+                                 target_transform=wrap_transform(SetCategory(),
+                                                                 self._copy_setcategory_one,
+                                                                 transform_type=SetCategory))
         dataset_vs_all = ConcatTask([self.dataset[i] for i in idx_set],
                                     1,
-                                    target_transform=wrap_transform(Categorical(),
-                                                                    self._copy_categorical_vs_all,
-                                                                    transform_type=Categorical))
+                                    target_transform=wrap_transform(SetCategory(),
+                                                                    self._copy_setcategory_vs_all,
+                                                                    transform_type=SetCategory))
 
-        task = ConcatTask([dataset_one, dataset_vs_all],
-                          self.num_classes_per_task)
+        task = ConcatTask([dataset_one, dataset_vs_all], self.num_classes_per_task)
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
 
         return task
 
-    def _copy_categorical_vs_all(self, transform):
-        assert isinstance(transform, Categorical)
-        transform.reset()
-        if transform.num_classes is None:
-            transform.num_classes = len(self.dataset) - 1
+    def _copy_setcategory_one(self, transform):
+        assert isinstance(transform, SetCategory)
+        if transform.label is None:
+            transform.label = 0
         return deepcopy(transform)
 
-    def _copy_categorical_one(self, transform):
-        assert isinstance(transform, Categorical)
-        transform.reset()
-        if transform.num_classes is None:
-            # transform.num_classes = self.num_classes_per_task
-            transform.num_classes = 1
-        return deepcopy(transform)
-
-    def _copy_categorical(self, transform):
-        assert isinstance(transform, Categorical)
-        transform.reset()
-        if transform.num_classes is None:
-            transform.num_classes = 2
+    def _copy_setcategory_vs_all(self, transform):
+        assert isinstance(transform, SetCategory)
+        if transform.label is None:
+            transform.label = 1
         return deepcopy(transform)
 
     def __len__(self):

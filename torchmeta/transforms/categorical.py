@@ -76,3 +76,15 @@ class FixedCategory(object):
 
     def __repr__(self):
         return ('{0}({1})'.format(self.__class__.__name__, self.transform))
+
+
+class SetCategory(TargetTransform):
+
+    def __init__(self, label=None):
+        self.label = label
+
+    def __call__(self, target):
+        return self.label
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__class__.__name__, self.label)
