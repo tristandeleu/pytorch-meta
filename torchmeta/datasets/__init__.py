@@ -8,7 +8,7 @@ from torchmeta.datasets.tieredimagenet import TieredImagenet
 from torchmeta.datasets.tcga import TCGA
 from torchmeta.datasets.pascal5i import Pascal5i
 
-from torchmeta.datasets import helpers
+from torchmeta.datasets import helpers, helpers_onevsall
 
 __all__ = [
     'TCGA',
@@ -22,5 +22,6 @@ __all__ = [
     'TripleMNIST',
     'Pascal5i',
     'helpers',
-    'OmniglotOneVsAll'
+    'OmniglotOneVsAll',
+    'helpers_onevsall'
 ]
