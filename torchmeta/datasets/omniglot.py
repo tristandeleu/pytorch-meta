@@ -65,8 +65,9 @@ class OmniglotOneVsAll(OneVsAllMetaDataset):
 
     Notes
     -----
-    The parameter num_classes_per_task is set to 2 per default, as the tasks are binary 1 vs. all tasks.
-    See torchmeta.datasets.Omniglot for references on Omniglot and and additional notes.
+    The parameter num_classes_per_task is set to 2 per default, as the tasks are
+    binary 1 vs. classification problems. See torchmeta.datasets.Omniglot for references
+    on the Omniglot dataset and additional notes.
 
     """
     def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
