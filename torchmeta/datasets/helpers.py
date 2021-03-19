@@ -1,8 +1,7 @@
 import warnings
 
 from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
-                                FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i,
-                                OmniglotOneVsAll)
+                                FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i)
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -14,8 +13,7 @@ __all__ = [
     'fc100',
     'cub',
     'doublemnist',
-    'triplemnist',
-    'omniglot_onevsall'
+    'triplemnist'
 ]
 
 def helper_with_default(klass, folder, shots, ways, shuffle=True,
@@ -412,42 +410,5 @@ def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
         'class_augmentations': []
     }
     return helper_with_default(Pascal5i, folder, shots, ways,
-                               shuffle=shuffle, test_shots=test_shots,
-                               seed=seed, defaults=defaults, **kwargs)
-
-
-def helper_with_default_onevsall(klass, folder, shots, shuffle=True,
-                                 test_shots=None, seed=None, defaults=None, **kwargs):
-    if defaults is None:
-        defaults = {}
-    if 'transform' not in kwargs:
-        kwargs['transform'] = defaults.get('transform', ToTensor())
-    if 'target_transform' not in kwargs:
-        kwargs['target_transform'] = defaults.get('target_transform',
-                                                  Categorical(2))
-    if 'class_augmentations' not in kwargs:
-        kwargs['class_augmentations'] = defaults.get('class_augmentations', None)
-    if test_shots is None:
-        test_shots = shots
-    dataset = klass(folder, **kwargs)
-    dataset = ClassSplitter(dataset,
-                            shuffle=shuffle,
-                            num_train_per_class=shots,
-                            num_test_per_class=test_shots)
-    dataset.seed(seed)
-
-    return dataset
-
-
-def omniglot_onevsall(folder, shots, shuffle=True, test_shots=None,
-                      seed=None, **kwargs):
-    """Helper function to create a meta-dataset for the Omniglot dataset."""
-#    defaults = {
-#        'transform': Compose([Resize(28), ToTensor()]),
-#        'class_augmentations': [Rotation([90, 180, 270])]
-#    }
-    defaults = {'transform': Compose([Resize(28), ToTensor()])}
-
-    return helper_with_default_onevsall(OmniglotOneVsAll, folder, shots,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults=defaults, **kwargs)
