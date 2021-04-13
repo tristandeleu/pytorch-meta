@@ -158,9 +158,13 @@ class MetaDataset(object):
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
+
+    seed : int
+        Used to set the seed of the numpy random generator.
+
     """
     def __init__(self, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, target_transform=None, dataset_transform=None):
+                 meta_split=None, target_transform=None, dataset_transform=None, seed=None):
         if meta_train + meta_val + meta_test == 0:
             if meta_split is None:
                 raise ValueError('The meta-split is undefined. Use either the '
@@ -182,7 +186,7 @@ class MetaDataset(object):
         self._meta_split = meta_split
         self.target_transform = target_transform
         self.dataset_transform = dataset_transform
-        self.seed()
+        self.seed(seed)
 
     @property
     def meta_split(self):
@@ -238,9 +242,13 @@ class CombinationMetaDataset(MetaDataset):
     dataset_transform : callable, optional
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `transforms.ClassSplitter()`.
+
+    seed : int
+        Used to set the seed of the numpy random generator.
+
     """
     def __init__(self, dataset, num_classes_per_task, target_transform=None,
-                 dataset_transform=None):
+                 dataset_transform=None, seed=None):
         if not isinstance(num_classes_per_task, int):
             raise TypeError('Unknown type for `num_classes_per_task`. Expected '
                 '`int`, got `{0}`.'.format(type(num_classes_per_task)))
@@ -255,7 +263,7 @@ class CombinationMetaDataset(MetaDataset):
         super(CombinationMetaDataset, self).__init__(meta_train=dataset.meta_train,
             meta_val=dataset.meta_val, meta_test=dataset.meta_test,
             meta_split=dataset.meta_split, target_transform=target_transform,
-            dataset_transform=dataset_transform)
+            dataset_transform=dataset_transform, seed=seed)
 
     def __iter__(self):
         num_classes = len(self.dataset)

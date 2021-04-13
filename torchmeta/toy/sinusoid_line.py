@@ -34,6 +34,9 @@ class SinusoidAndLine(MetaDataset):
         A function/transform that takes a dataset (ie. a task), and returns a 
         transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
 
+    seed : int
+        Used to set the seed of the numpy random generator.
+
     Notes
     -----
     The tasks are created randomly as either random sinusoid functions, or
@@ -52,9 +55,9 @@ class SinusoidAndLine(MetaDataset):
     """
     def __init__(self, num_samples_per_task, num_tasks=1000000,
                  noise_std=None, transform=None, target_transform=None,
-                 dataset_transform=None):
+                 dataset_transform=None, seed=None):
         super(SinusoidAndLine, self).__init__(meta_split='train',
-            target_transform=target_transform, dataset_transform=dataset_transform)
+            target_transform=target_transform, dataset_transform=dataset_transform, seed=seed)
         self.num_samples_per_task = num_samples_per_task
         self.num_tasks = num_tasks
         self.noise_std = noise_std
