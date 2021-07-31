@@ -6,6 +6,7 @@ from io import open
 
 extras = {
     'tcga': ['pandas~=0.24.0', 'academictorrents~=2.1.0', 'six~=1.11.0'],
+    'test': ['flaky']
 }
 
 here = path.abspath(path.dirname(__file__))
@@ -37,8 +38,7 @@ setup(
         'h5py',
         'tqdm>=4.0.0',
         'requests',  # Required by Torchvision
-        'ordered-set',
-        'flaky'
+        'ordered-set'
     ],
     extras_require=extras,
     package_data={'torchmeta': ['torchmeta/datasets/assets/*']},

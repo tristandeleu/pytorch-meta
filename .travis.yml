@@ -4,7 +4,7 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - pip install .
+  - pip install ".[test]"
 script:
   - pytest
 deploy:
