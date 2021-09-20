@@ -49,6 +49,10 @@ def test_metamultiheadattention(bias, add_bias_kv, kdim, vdim):
         meta_model.in_proj_bias.data.copy_(in_proj_bias)
         model.in_proj_bias.data.copy_(in_proj_bias)
 
+        out_proj_bias = torch.randn(3 * 5)
+        meta_model.out_proj.bias.data.copy_(out_proj_bias)
+        model.out_proj.bias.data.copy_(out_proj_bias)
+
     if add_bias_kv:
         bias_k = torch.randn(1, 1, 3 * 5)
         meta_model.bias_k.data.copy_(bias_k)
@@ -61,10 +65,6 @@ def test_metamultiheadattention(bias, add_bias_kv, kdim, vdim):
     out_proj_weight = torch.randn(3 * 5, 3 * 5)
     meta_model.out_proj.weight.data.copy_(out_proj_weight)
     model.out_proj.weight.data.copy_(out_proj_weight)
-
-    out_proj_bias = torch.randn(3 * 5)
-    meta_model.out_proj.bias.data.copy_(out_proj_bias)
-    model.out_proj.bias.data.copy_(out_proj_bias)
 
     query = torch.randn(13, 17, 3 * 5)
     key = torch.randn(19, 17, 3 * 5 if (kdim is None) else kdim)
@@ -111,6 +111,9 @@ def test_metamultiheadattention_params(bias, add_bias_kv, kdim, vdim):
         params['in_proj_bias'] = torch.randn(3 * 3 * 5)
         model.in_proj_bias.data.copy_(params['in_proj_bias'])
 
+        params['out_proj.bias'] = torch.randn(3 * 5)
+        model.out_proj.bias.data.copy_(params['out_proj.bias'])
+
     if add_bias_kv:
         params['bias_k'] = torch.randn(1, 1, 3 * 5)
         model.bias_k.data.copy_(params['bias_k'])
@@ -120,9 +123,6 @@ def test_metamultiheadattention_params(bias, add_bias_kv, kdim, vdim):
 
     params['out_proj.weight'] = torch.randn(3 * 5, 3 * 5)
     model.out_proj.weight.data.copy_(params['out_proj.weight'])
-
-    params['out_proj.bias'] = torch.randn(3 * 5)
-    model.out_proj.bias.data.copy_(params['out_proj.bias'])
 
     query = torch.randn(13, 17, 3 * 5)
     key = torch.randn(19, 17, 3 * 5 if (kdim is None) else kdim)
@@ -154,9 +154,9 @@ def test_metamultiheadattention_meta_named_parameters(bias, add_bias_kv, kdim, v
         assert 'in_proj_weight' in param_names
 
     if bias:
-        'in_proj_bias' in param_names
+        {'in_proj_bias', 'out_proj.bias'} <= param_names
 
     if add_bias_kv:
         assert {'bias_k', 'bias_v'} <= param_names
 
-    assert {'out_proj.weight', 'out_proj.bias'} <= param_names
+    assert 'out_proj.weight' in param_names
