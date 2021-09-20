@@ -10,9 +10,14 @@ from torchmeta.modules.conv import MetaConv1d, MetaConv2d, MetaConv3d
 
 
 @pytest.mark.parametrize('bias', [True, False])
-def test_metaconv1d(bias):
-    meta_model = MetaConv1d(2, 3, kernel_size=5, bias=bias)
-    model = nn.Conv1d(2, 3, kernel_size=5, bias=bias)
+@pytest.mark.parametrize('padding_mode', [None, 'zeros', 'reflect', 'replicate', 'circular'])
+def test_metaconv1d(bias, padding_mode):
+    padding = 0 if padding_mode is None else 2
+    padding_mode = padding_mode or 'zeros'
+    meta_model = MetaConv1d(2, 3, kernel_size=5, padding=padding,
+        padding_mode=padding_mode, bias=bias)
+    model = nn.Conv1d(2, 3, kernel_size=5, padding=padding,
+        padding_mode=padding_mode, bias=bias)
 
     assert isinstance(meta_model, MetaModule)
     assert isinstance(meta_model, nn.Conv1d)
@@ -37,9 +42,14 @@ def test_metaconv1d(bias):
 
 
 @pytest.mark.parametrize('bias', [True, False])
-def test_metaconv1d_params(bias):
-    meta_model = MetaConv1d(2, 3, kernel_size=5, bias=bias)
-    model = nn.Conv1d(2, 3, kernel_size=5, bias=bias)
+@pytest.mark.parametrize('padding_mode', [None, 'zeros', 'reflect', 'replicate', 'circular'])
+def test_metaconv1d_params(bias, padding_mode):
+    padding = 0 if padding_mode is None else 2
+    padding_mode = padding_mode or 'zeros'
+    meta_model = MetaConv1d(2, 3, kernel_size=5, padding=padding,
+        padding_mode=padding_mode, bias=bias)
+    model = nn.Conv1d(2, 3, kernel_size=5, padding=padding,
+        padding_mode=padding_mode, bias=bias)
 
     params = OrderedDict()
     params['weight'] = torch.randn(3, 2, 5)
@@ -59,9 +69,14 @@ def test_metaconv1d_params(bias):
 
 
 @pytest.mark.parametrize('bias', [True, False])
-def test_metaconv2d(bias):
-    meta_model = MetaConv2d(2, 3, kernel_size=(5, 7), bias=bias)
-    model = nn.Conv2d(2, 3, kernel_size=(5, 7), bias=bias)
+@pytest.mark.parametrize('padding_mode', [None, 'zeros', 'reflect', 'replicate', 'circular'])
+def test_metaconv2d(bias, padding_mode):
+    padding = 0 if padding_mode is None else (2, 3)
+    padding_mode = padding_mode or 'zeros'
+    meta_model = MetaConv2d(2, 3, kernel_size=(5, 7), padding=padding,
+        padding_mode=padding_mode, bias=bias)
+    model = nn.Conv2d(2, 3, kernel_size=(5, 7), padding=padding,
+        padding_mode=padding_mode, bias=bias)
 
     assert isinstance(meta_model, MetaModule)
     assert isinstance(meta_model, nn.Conv2d)
@@ -86,9 +101,14 @@ def test_metaconv2d(bias):
 
 
 @pytest.mark.parametrize('bias', [True, False])
-def test_metaconv2d_params(bias):
-    meta_model = MetaConv2d(2, 3, kernel_size=(5, 7), bias=bias)
-    model = nn.Conv2d(2, 3, kernel_size=(5, 7), bias=bias)
+@pytest.mark.parametrize('padding_mode', [None, 'zeros', 'reflect', 'replicate', 'circular'])
+def test_metaconv2d_params(bias, padding_mode):
+    padding = 0 if padding_mode is None else (2, 3)
+    padding_mode = padding_mode or 'zeros'
+    meta_model = MetaConv2d(2, 3, kernel_size=(5, 7), padding=padding,
+        padding_mode=padding_mode, bias=bias)
+    model = nn.Conv2d(2, 3, kernel_size=(5, 7), padding=padding,
+        padding_mode=padding_mode, bias=bias)
 
     params = OrderedDict()
     params['weight'] = torch.randn(3, 2, 5, 7)
@@ -108,9 +128,14 @@ def test_metaconv2d_params(bias):
 
 
 @pytest.mark.parametrize('bias', [True, False])
-def test_metaconv3d(bias):
-    meta_model = MetaConv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
-    model = nn.Conv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
+@pytest.mark.parametrize('padding_mode', [None, 'zeros', 'replicate', 'circular'])
+def test_metaconv3d(bias, padding_mode):
+    padding = 0 if padding_mode is None else (2, 3, 5)
+    padding_mode = padding_mode or 'zeros'
+    meta_model = MetaConv3d(2, 3, kernel_size=(5, 7, 11), padding=padding,
+        padding_mode=padding_mode, bias=bias)
+    model = nn.Conv3d(2, 3, kernel_size=(5, 7, 11), padding=padding,
+        padding_mode=padding_mode, bias=bias)
 
     assert isinstance(meta_model, MetaModule)
     assert isinstance(meta_model, nn.Conv3d)
@@ -135,9 +160,14 @@ def test_metaconv3d(bias):
 
 
 @pytest.mark.parametrize('bias', [True, False])
-def test_metaconv3d_params(bias):
-    meta_model = MetaConv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
-    model = nn.Conv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
+@pytest.mark.parametrize('padding_mode', [None, 'zeros', 'replicate', 'circular'])
+def test_metaconv3d_params(bias, padding_mode):
+    padding = 0 if padding_mode is None else (2, 3, 5)
+    padding_mode = padding_mode or 'zeros'
+    meta_model = MetaConv3d(2, 3, kernel_size=(5, 7, 11), padding=padding,
+        padding_mode=padding_mode, bias=bias)
+    model = nn.Conv3d(2, 3, kernel_size=(5, 7, 11), padding=padding,
+        padding_mode=padding_mode, bias=bias)
 
     params = OrderedDict()
     params['weight'] = torch.randn(3, 2, 5, 7, 11)
