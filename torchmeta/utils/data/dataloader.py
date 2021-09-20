@@ -4,9 +4,11 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset as TorchDataset
 
-from torchmeta.utils.data.dataset import CombinationMetaDataset
+from torchmeta.utils.data.dataset import CombinationMetaDataset, OneVsAllMetaDataset
 from torchmeta.utils.data.sampler import (CombinationSequentialSampler,
-                                          CombinationRandomSampler)
+                                          CombinationRandomSampler,
+                                          OneClassRandomSampler,
+                                          OneClassSequentialSampler)
 
 class BatchMetaCollate(object):
 
@@ -42,6 +44,12 @@ class MetaDataLoader(DataLoader):
                 sampler = CombinationRandomSampler(dataset)
             else:
                 sampler = CombinationSequentialSampler(dataset)
+            shuffle = False
+        if isinstance(dataset, OneVsAllMetaDataset) and (sampler is None):
+            if shuffle:
+                sampler = OneClassRandomSampler(dataset)
+            else:
+                sampler = OneClassSequentialSampler(dataset)
             shuffle = False
 
         super(MetaDataLoader, self).__init__(dataset, batch_size=batch_size,

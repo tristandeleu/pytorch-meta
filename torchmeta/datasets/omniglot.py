@@ -4,9 +4,87 @@ import glob
 import h5py
 from PIL import Image, ImageOps
 
-from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset
+from torchmeta.utils.data import Dataset, ClassDataset, CombinationMetaDataset, OneVsAllMetaDataset
 from torchvision.datasets.utils import list_dir, download_url
 from torchmeta.datasets.utils import get_asset
+
+
+class OmniglotOneVsAll(OneVsAllMetaDataset):
+    """
+    Parameters
+    ----------
+    root : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    meta_train : bool (default: `False`)
+        Use the meta-train split of the dataset. If set to `True`, then the
+        arguments `meta_val` and `meta_test` must be set to `False`. Exactly one
+        of these three arguments must be set to `True`.
+
+    meta_val : bool (default: `False`)
+        Use the meta-validation split of the dataset. If set to `True`, then the
+        arguments `meta_train` and `meta_test` must be set to `False`. Exactly one
+        of these three arguments must be set to `True`.
+
+    meta_test : bool (default: `False`)
+        Use the meta-test split of the dataset. If set to `True`, then the
+        arguments `meta_train` and `meta_val` must be set to `False`. Exactly one
+        of these three arguments must be set to `True`.
+
+    meta_split : string in {'train', 'val', 'test'}, optional
+        Name of the split to use. This overrides the arguments `meta_train`,
+        `meta_val` and `meta_test` if all three are set to `False`.
+
+    use_vinyals_split : bool (default: `True`)
+        If set to `True`, the dataset uses the splits defined in [3]. If `False`,
+        then the meta-train split corresponds to `images_background`, and the
+        meta-test split corresponds to `images_evaluation` (raises an error when
+        calling the meta-validation split).
+
+    transform : callable, optional
+        A function/transform that takes a `PIL` image, and returns a transformed
+        version. See also `torchvision.transforms`.
+
+    target_transform : callable, optional
+        A function/transform that takes a target, and returns a transformed
+        version. See also `torchvision.transforms`.
+
+    dataset_transform : callable, optional
+        A function/transform that takes a dataset (ie. a task), and returns a
+        transformed version of it. E.g. `torchmeta.transforms.ClassSplitter()`.
+
+    class_augmentations : list of callable, optional
+        A list of functions that augment the dataset with new classes. These classes
+        are transformations of existing classes. E.g.
+        `torchmeta.transforms.HorizontalFlip()`.
+
+    download : bool (default: `False`)
+        If `True`, downloads the zip files and processes the dataset in the root
+        directory (under the `omniglot` folder). If the dataset is already
+        available, this does not download/process the dataset again.
+
+    Notes
+    -----
+    The parameter num_classes_per_task is set to 2 per default, as the tasks are
+    binary 1 vs. classification problems. See torchmeta.datasets.Omniglot for references
+    on the Omniglot dataset and additional notes.
+
+    """
+    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
+                 meta_split=None, use_vinyals_split=True, transform=None,
+                 target_transform=None, dataset_transform=None, class_augmentations=None,
+                 download=False):
+        dataset = OmniglotClassDataset(root,
+                                       meta_train=meta_train,
+                                       meta_val=meta_val, meta_test=meta_test,
+                                       use_vinyals_split=use_vinyals_split,
+                                       transform=transform,
+                                       meta_split=meta_split,
+                                       class_augmentations=class_augmentations,
+                                       download=download)
+        super(OmniglotOneVsAll, self).__init__(dataset,
+                                               target_transform=target_transform,
+                                               dataset_transform=dataset_transform)
 
 
 class Omniglot(CombinationMetaDataset):

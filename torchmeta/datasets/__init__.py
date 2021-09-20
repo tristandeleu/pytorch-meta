@@ -3,7 +3,7 @@ from torchmeta.datasets.doublemnist import DoubleMNIST
 from torchmeta.datasets.cub import CUB
 from torchmeta.datasets.cifar100 import CIFARFS, FC100
 from torchmeta.datasets.miniimagenet import MiniImagenet
-from torchmeta.datasets.omniglot import Omniglot
+from torchmeta.datasets.omniglot import Omniglot, OmniglotOneVsAll
 from torchmeta.datasets.tieredimagenet import TieredImagenet
 from torchmeta.datasets.tcga import TCGA
 from torchmeta.datasets.pascal5i import Pascal5i
@@ -12,9 +12,7 @@ from torchmeta.datasets.one_hundred_plants_texture import PlantsTexture
 from torchmeta.datasets.one_hundred_plants_shape import PlantsShape
 from torchmeta.datasets.one_hundred_plants_margin import PlantsMargin
 from torchmeta.datasets.bach import Bach
-
-from torchmeta.datasets import helpers
-from torchmeta.datasets import helpers_tabular
+from torchmeta.datasets import helpers, helpers_tabular, helpers_onevsall
 
 __all__ = [
     # image data
@@ -29,6 +27,9 @@ __all__ = [
     'TripleMNIST',
     'Pascal5i',
     'helpers',
+    # image data (one-vs-all)
+    'OmniglotOneVsAll',
+    'helpers_onevsall'
     # tabular data
     'Letter',
     'PlantsTexture',
