@@ -176,14 +176,16 @@ class LetterClassDataset(ClassDataset):
         features = data.data
         targets = data.target
 
+        os.makedirs(self.root, exist_ok=True)
+
         # for each meta-data-split, get the labels, then check which data-point belongs to the set (via a mask).
         # then, retrieve the features and targets belonging to the set. Then create hdf5 file for these features.
         for s, split in enumerate(['train', 'val', 'test']):
             labels_assets_split = get_asset(self.folder, '{0}.json'.format(split))
 
             is_in_split = [t in labels_assets_split for t in targets]
-            features_split = features[is_in_split, :]
-            targets_split = targets[is_in_split]
+            features_split = features.loc[is_in_split]
+            targets_split = targets.loc[is_in_split]
             assert targets_split.shape[0] == features_split.shape[0]
 
             unique_targets_split = np.unique(targets_split)
@@ -202,7 +204,7 @@ class LetterClassDataset(ClassDataset):
                 group = f.create_group('datasets')
 
                 for i, label in enumerate(tqdm(unique_targets_split, desc=filename)):
-                    data_class = features_split[targets_split == label, :]
+                    data_class = features_split.loc[targets_split == label]
                     group.create_dataset(label, data=data_class)
 
 
