@@ -107,7 +107,7 @@ def ridge_regression(embeddings,
                         dtype=embeddings.dtype,
                         device=embeddings.device)
         A = torch.matmul(embeddings, embeddings.t()) + reg_lambda * eye
-        solution, _ = torch.solve(targets, A)
+        solution = torch.linalg.solve(A, targets)
         weight_bias = torch.matmul(embeddings.t(), solution)
     else:
         eye = torch.eye(embedding_size + bias,
@@ -115,7 +115,7 @@ def ridge_regression(embeddings,
                         device=embeddings.device)
         A = torch.matmul(embeddings.t(), embeddings) + reg_lambda * eye
         b = torch.matmul(embeddings.t(), targets)
-        weight_bias, _ = torch.solve(b, A)
+        weight_bias = torch.linalg.solve(A, b)
 
     if bias:
         return _RR_weight_bias(weight=weight_bias[1:].t(), bias=weight_bias[0])
