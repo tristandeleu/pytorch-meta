@@ -20,11 +20,14 @@ class MetaModule(nn.Module):
     def __init__(self):
         super(MetaModule, self).__init__()
         self._children_modules_parameters_cache = dict()
+        self._enable_meta_learning = True
 
     def meta_named_parameters(self, prefix='', recurse=True):
         gen = self._named_members(
-            lambda module: module._parameters.items()
-            if isinstance(module, MetaModule) else [],
+            lambda module:
+                module._parameters.items()
+                if isinstance(module, MetaModule) and module._enable_meta_learning else
+                [],
             prefix=prefix, recurse=recurse)
         for elem in gen:
             yield elem
