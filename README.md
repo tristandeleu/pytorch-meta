@@ -22,6 +22,7 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Caltech-UCSD Birds ([Hilliard et al., 2019](https://arxiv.org/abs/1802.04376), [Wah et al., 2019](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html))
     - Double MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
     - Triple MNIST ([Sun, 2019](https://github.com/shaohua0116/MultiDigitMNIST))
+    - OmniPrint ([Sun et al., 2021](https://github.com/SunHaozhe/OmniPrint-datasets))
   - **Few-shot segmentation** (semantic segmentation):
     - Pascal5i 1-way Setup
   - **Few-shot classification (tabular datasets)**
