@@ -449,7 +449,7 @@ def omniprint(folder, shots, ways, shuffle=True, test_shots=None,
 
     See also
     --------
-    `datasets.Omniglot` : Meta-dataset for the OmniPrint dataset.
+    `datasets.OmniPrint` : Meta-dataset for the OmniPrint dataset.
     """
     return helper_with_default(OmniPrint, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
