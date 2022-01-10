@@ -42,8 +42,8 @@ class OmniPrint(CombinationMetaDataset):
         `meta_val` and `meta_test` if all three are set to `False`.
 
     print_split : string in {'meta1', 'meta2', 'meta3', 'meta4, 'meta5'}
-	(default: `None`)
-		The string value is mapped to the given OmniPrint split defined in [1].
+    (default: `None`)
+        The string value is mapped to the given OmniPrint split defined in [1].
         The higher the meta split the more synthetic noise is added to the images
         (raises an error when no print_split is defined).
 
@@ -86,7 +86,7 @@ class OmniPrint(CombinationMetaDataset):
            concept learning through probabilistic program induction. Science, 350(6266), 
            1332-1338 (http://www.sciencemag.org/content/350/6266/1332.short)
 
-	"""
+    """
     def __init__(self, root, num_classes_per_task=None, meta_train=False,
                  meta_val=False, meta_test=False, meta_split=None,
                  transform=None, target_transform=None, dataset_transform=None,
@@ -125,8 +125,8 @@ class OmniPrintClassDataset(ClassDataset):
 
         if print_split is None:
             raise ValueError('Trying to use the OmniPrint dataset without '
-			'setting the print split. You must set `print_split` to meta1, '
-			'meta2, meta3, meta4 or meta5.')
+            'setting the print split. You must set `print_split` to meta1, '
+            'meta2, meta3, meta4 or meta5.')
 
         self.root = os.path.join(os.path.expanduser(
             root), self.folder)
