@@ -1,7 +1,8 @@
 import warnings
 
 from torchmeta.datasets import (Omniglot, MiniImagenet, TieredImagenet, CIFARFS,
-                                FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i)
+                                FC100, CUB, DoubleMNIST, TripleMNIST, Pascal5i,
+                                OmniPrint)
 from torchmeta.transforms import Categorical, ClassSplitter, Rotation, SegmentationPairTransform
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 
@@ -412,3 +413,44 @@ def pascal5i(folder, shots, ways=1, shuffle=True, test_shots=None,
     return helper_with_default(Pascal5i, folder, shots, ways,
                                shuffle=shuffle, test_shots=test_shots,
                                seed=seed, defaults=defaults, **kwargs)
+
+
+
+def omniprint(folder, shots, ways, shuffle=True, test_shots=None,
+              seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the OmniPrint dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniprint` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `OmniPrint` class.
+
+    See also
+    --------
+    `datasets.OmniPrint` : Meta-dataset for the OmniPrint dataset.
+    """
+    return helper_with_default(OmniPrint, folder, shots, ways,
+                               shuffle=shuffle, test_shots=test_shots,
+                               seed=seed, **kwargs)
