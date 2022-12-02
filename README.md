@@ -6,7 +6,7 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
 #### Features
   - A unified interface for both few-shot classification and regression problems, to allow easy benchmarking on multiple problems and reproducibility.
   - Helper functions for some popular problems, with default arguments from the literature.
-  - An thin extension of PyTorch's [`Module`](https://pytorch.org/docs/stable/nn.html#torch.nn.Module), called `MetaModule`, that simplifies the creation of certain meta-learning models (e.g. gradient based meta-learning methods). See the [MAML example](examples/maml) for an example using `MetaModule`.
+  - A thin extension of PyTorch's [`Module`](https://pytorch.org/docs/stable/nn.html#torch.nn.Module), called `MetaModule`, that simplifies the creation of certain meta-learning models (e.g. gradient based meta-learning methods). See the [MAML example](examples/maml) for an example using `MetaModule`.
 
 #### Datasets available
   - **Few-shot regression** (toy problems):
