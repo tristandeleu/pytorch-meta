@@ -41,7 +41,7 @@ source venv/bin/activate
 
 #### Requirements
  - Python 3.6 or above
- - PyTorch 1.4 or above
+ - PyTorch 1.9 or above
  - Torchvision 0.5 or above
 
 #### Using pip
