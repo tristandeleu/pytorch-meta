@@ -29,6 +29,9 @@ class MetaMultiheadAttention(nn.MultiheadAttention, MetaModule):
         bias_k = params.get('bias_k', None)
         bias_v = params.get('bias_v', None)
 
+        if self.batch_first:
+            query, key, value = [x.transpose(1, 0) for x in (query, key, value)]
+
         if not self._qkv_same_embed_dim:
             attn_output, attn_output_weights = F.multi_head_attention_forward(
                 query, key, value, self.embed_dim, self.num_heads,
